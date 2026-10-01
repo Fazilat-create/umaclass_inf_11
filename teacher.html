@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Панель учителя · Python</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👩‍🏫</text></svg>">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Comfortaa', 'Segoe UI', 'Verdana', sans-serif;
+    background: linear-gradient(135deg, #eef2ff 0%, #f0f9ff 50%, #fef3f8 100%);
+    background-attachment: fixed;
+    color: #3a3a5a;
+    min-height: 100vh;
+    padding: 20px 15px;
+    line-height: 1.55;
+  }
+  body::before, body::after {
+    content: ""; position: fixed; border-radius: 50%;
+    filter: blur(70px); opacity: 0.35; pointer-events: none; z-index: -1;
+  }
+  body::before { width: 420px; height: 420px; background: #a5b4fc; top: -120px; left: -120px; }
+  body::after  { width: 520px; height: 520px; background: #fbcfe8; bottom: -160px; right: -160px; }
+
+  /* ===== ЭКРАН ВХОДА ===== */
+  .login-screen {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, rgba(238,242,255,0.96), rgba(240,249,255,0.96));
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+  }
+  .login-screen.hidden { display: none; }
+  .login-card {
+    background: #fff; border-radius: 24px;
+    padding: 36px 40px; max-width: 420px; width: 100%;
+    text-align: center;
+    box-shadow: 0 25px 70px rgba(120,120,200,0.25);
+    border: 2px solid #e0e7ff;
+    animation: popIn 0.4s ease;
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .login-card .lock-icon { font-size: 2.8em; margin-bottom: 12px; }
+  .login-card h2 {
+    font-size: 1.35em; margin-bottom: 8px;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .login-card p { color: #6b6b8a; margin-bottom: 20px; font-size: 0.9em; }
+  .login-card input {
+    width: 100%; padding: 13px 16px;
+    border: 2px solid #e0e7ff; border-radius: 12px;
+    font-family: inherit; font-size: 1em;
+    text-align: center; color: #3a3a5a; outline: none;
+    background: #f8faff; letter-spacing: 2px;
+  }
+  .login-card input:focus { border-color: #6366f1; }
+  .login-card input.error { border-color: #fca5a5; background: #fff0f0; }
+  .login-card .login-btn {
+    margin-top: 14px; width: 100%; padding: 13px;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    color: #fff; border: none; border-radius: 12px;
+    font-family: inherit; font-size: 1em; font-weight: 700;
+    cursor: pointer; transition: 0.2s;
+  }
+  .login-card .login-btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .login-card .login-btn:disabled { background: #d1d5f0; cursor: not-allowed; }
+  .login-card .error-text {
+    margin-top: 10px; color: #c04a4a;
+    font-size: 0.85em; font-weight: 600; min-height: 18px;
+  }
+  .login-card .hint {
+    margin-top: 14px; font-size: 0.78em;
+    color: #a99cd0; font-style: italic;
+  }
+  .login-card .back-link {
+    display: inline-block; margin-top: 16px;
+    font-size: 0.82em; color: #8a8ab0;
+    text-decoration: none; font-weight: 600;
+  }
+  .login-card .back-link:hover { color: #4f46e5; }
+
+  /* ===== ПАНЕЛЬ ===== */
+  .container {
+    max-width: 1100px; margin: 0 auto;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(120,120,200,0.18);
+    overflow: clip;
+  }
+  .container.hidden { display: none; }
+
+  header {
+    background: linear-gradient(135deg, #c7d2fe 0%, #fbcfe8 50%, #bae6fd 100%);
+    padding: 16px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+  }
+  header .left { display: flex; align-items: center; gap: 12px; }
+  header .logo { font-size: 1.7em; }
+  header h1 { font-size: 1.08em; color: #4f46e5; font-weight: 700; }
+  header .subtitle { font-size: 0.75em; color: #6b6b8a; }
+  header .right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .nav-home {
+    text-decoration: none; padding: 6px 14px;
+    background: rgba(255,255,255,0.85); color: #4f46e5;
+    border-radius: 20px; font-size: 0.82em; font-weight: 600;
+  }
+  .logout-btn {
+    background: rgba(255,255,255,0.9);
+    color: #c04a4a; border: none;
+    padding: 6px 14px;
+    border-radius: 20px; font-family: inherit;
+    font-size: 0.82em; font-weight: 600;
+    cursor: pointer; transition: 0.2s;
+  }
+  .logout-btn:hover { background: #fff; }
+
+  main { padding: 22px 28px; }
+
+  .moon-greeting {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-left: 4px solid #10b981;
+    border-radius: 14px;
+    padding: 14px 20px;
+    margin-bottom: 18px;
+    color: #065f46;
+    font-weight: 600;
+    font-size: 0.95em;
+  }
+
+  .status-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 18px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+    border: 2px solid;
+    transition: 0.3s;
+  }
+  .status-bar.unlocked {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-color: #a7f3d0;
+    color: #065f46;
+  }
+  .status-bar.locked {
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    border-color: #fed7aa;
+    color: #9a3412;
+  }
+  .status-bar .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #34d399;
+    animation: pulse 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  .status-bar.locked .dot {
+    background: #f87171;
+    animation: none;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+  .status-bar b { font-weight: 700; }
+
+  .card {
+    background: #fff;
+    border: 2px solid #e0e7ff;
+    border-radius: 18px;
+    padding: 20px 24px;
+    margin-bottom: 18px;
+  }
+  .card h3 {
+    color: #4f46e5;
+    font-size: 1em;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card p.help {
+    color: #8a8ab0;
+    font-size: 0.85em;
+    margin-bottom: 12px;
+    line-height: 1.55;
+  }
+
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px dashed #f0eaff;
+    gap: 14px;
+  }
+  .toggle-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .toggle-row:first-of-type { padding-top: 0; }
+  .toggle-row .label { flex: 1; }
+  .toggle-row .label b {
+    display: block;
+    color: #3a3a5a;
+    font-size: 0.92em;
+    margin-bottom: 2px;
+  }
+  .toggle-row .label small {
+    display: block;
+    color: #8a8ab0;
+    font-size: 0.8em;
+    line-height: 1.45;
+  }
+  .switch {
+    position: relative;
+    width: 48px; height: 28px;
+    flex-shrink: 0;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #d1d5f0; border-radius: 28px;
+    transition: 0.3s;
+  }
+  .slider::before {
+    content: ""; position: absolute;
+    height: 22px; width: 22px;
+    left: 3px; bottom: 3px;
+    background: #fff; border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+  input:checked + .slider { background: linear-gradient(135deg, #6366f1, #ec4899); }
+  input:checked + .slider::before { transform: translateX(20px); }
+
+  .actions {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .btn {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff; border: none;
+    padding: 11px 22px;
+    border-radius: 22px;
+    font-family: inherit; font-size: 0.88em; font-weight: 600;
+    cursor: pointer; transition: 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover:not(:disabled) { transform: translateY(-2px); }
+  .btn.mint { background: linear-gradient(135deg, #34d399, #10b981); }
+  .btn.rose { background: linear-gradient(135deg, #ec4899, #db2777); }
+  .btn.ghost {
+    background: #fff; color: #4f46e5;
+    border: 2px solid #e0e7ff;
+  }
+  .btn.ghost:hover { background: #f8faff; border-color: #a5b4fc; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .slides-nav {
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .slide-counter {
+    background: linear-gradient(135deg, #eef2ff, #fdf2f8);
+    border: 2px solid #e0e7ff;
+    border-radius: 14px;
+    padding: 8px 16px;
+    font-size: 0.9em;
+    font-weight: 700;
+    color: #4f46e5;
+    min-width: 100px;
+    text-align: center;
+  }
+  .slide-counter .num { color: #ec4899; }
+
+  .slides-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+  }
+  .slide-item {
+    background: #f8faff;
+    border: 2px solid #e0e7ff;
+    border-radius: 12px;
+    padding: 8px 12px;
+    font-size: 0.83em;
+    color: #4a4a6a;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .slide-item:hover { background: #eef2ff; border-color: #a5b4fc; }
+  .slide-item.active {
+    background: linear-gradient(135deg, #eef2ff, #fdf2f8);
+    border-color: #6366f1;
+    color: #4f46e5;
+    font-weight: 700;
+  }
+  .slide-item .num {
+    background: #fff;
+    color: #6366f1;
+    padding: 1px 8px;
+    border-radius: 8px;
+    font-size: 0.8em;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .slide-item.active .num { background: #6366f1; color: #fff; }
+
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-top: 12px;
+  }
+  .topic {
+    background: linear-gradient(135deg, #f8faff, #fff);
+    border: 2px solid #e0e7ff;
+    border-radius: 16px;
+    padding: 16px;
+    transition: 0.2s;
+  }
+  .topic:hover { border-color: #a5b4fc; transform: translateY(-2px); }
+  .topic .t-icon { font-size: 1.6em; margin-bottom: 6px; }
+  .topic h4 {
+    color: #4f46e5;
+    font-size: 0.95em;
+    margin-bottom: 6px;
+  }
+  .topic p {
+    color: #8a8ab0;
+    font-size: 0.82em;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .topic .topic-status {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.72em;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .topic .status-ready { background: #dcfce7; color: #065f46; }
+  .topic .status-soon { background: #fef3c7; color: #92400e; }
+  .topic .topic-actions {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .topic .topic-actions button {
+    padding: 6px 12px;
+    border-radius: 14px;
+    font-family: inherit; font-size: 0.78em; font-weight: 600;
+    border: none; cursor: pointer;
+    transition: 0.2s;
+  }
+  .topic .btn-open {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+  }
+  .topic .btn-dz {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff;
+  }
+  .topic .btn-soon {
+    background: #f0eaff;
+    color: #8a8ab0;
+    cursor: not-allowed;
+  }
+
+  .tip-block {
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    border-left: 4px solid #f97316;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 0.86em;
+    color: #7c2d12;
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+  .tip-block b { color: #9a3412; }
+  .tip-block code {
+    background: rgba(255,255,255,0.7);
+    padding: 1px 6px; border-radius: 4px;
+    font-family: 'Consolas', monospace;
+  }
+
+  @media (max-width: 700px) {
+    main { padding: 16px; }
+    header { padding: 14px 18px; }
+    .slides-list { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ЭКРАН ВХОДА -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="lock-icon">🔐</div>
+    <h2>Вход для учителя</h2>
+    <p>Эта панель доступна только учителю.<br>Введи пароль, чтобы продолжить.</p>
+    <input type="password" id="passwordInput" placeholder="Пароль" maxlength="40" autocomplete="off">
+    <button class="login-btn" id="loginBtn" disabled onclick="tryLogin()">Войти</button>
+    <div class="error-text" id="errorText"></div>
+    <div class="hint">По умолчанию: <b>teacher2024</b></div>
+    <a href="index.html" class="back-link">← На главную</a>
+  </div>
+</div>
+
+<!-- ПАНЕЛЬ -->
+<div class="container hidden" id="teacherPanel">
+  <header>
+    <div class="left">
+      <a href="index.html" class="nav-home">← Главная</a>
+      <div class="logo">👩‍🏫</div>
+      <div>
+        <h1>Панель учителя</h1>
+        <div class="subtitle">Python</div>
+      </div>
+    </div>
+    <div class="right">
+      <button class="logout-btn" onclick="logout()">Выйти</button>
+    </div>
+  </header>
+
+  <main>
+
+    <div class="moon-greeting">
+      🌙 Ассаляму алейкум ва рахматуллах! Панель учителя готова к работе.
+    </div>
+
+    <!-- СТАТУС -->
+    <div class="status-bar unlocked" id="statusBar">
+      <div class="dot"></div>
+      <div class="status-text">
+        Статус: <b id="statusText">Разблокировано — ученицы могут листать сами</b>
+      </div>
+    </div>
+
+    <!-- УПРАВЛЕНИЕ УРОКОМ -->
+    <div class="card">
+      <h3>🎛️ Управление уроком</h3>
+
+      <div class="toggle-row">
+        <div class="label">
+          <b>Заблокировать навигацию</b>
+          <small>Ученицы увидят только текущий слайд. Кнопки «Назад / Вперёд» скроются. Переключать можешь только ты.</small>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="lockToggle" onchange="toggleLock()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="label">
+          <b>Показать ответы</b>
+          <small>Под заданиями появится блок «Пример решения». Ученицы этого блока не увидят — только ты.</small>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="answersToggle" onchange="toggleAnswers()">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div class="label">
+          <b>Автозаполнение кода</b>
+          <small>В редакторах появится кнопка «📝 Заполнить примером» — только для тебя.</small>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="autofillToggle" onchange="toggleAutofill()">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- ТЕКУЩИЙ СЛАЙД -->
+    <div class="card">
+      <h3>🎯 Текущий слайд</h3>
+      <p class="help">Открой урок в новой вкладке — ученицы увидят тот же слайд, что и ты. Переключай слайды здесь — они обновятся у всех, у кого открыт урок.</p>
+
+      <div class="slides-nav">
+        <button class="btn ghost" onclick="goPrev()">← Назад</button>
+        <div class="slide-counter">Слайд <span class="num" id="slideNum">1</span> / 16</div>
+        <button class="btn ghost" onclick="goNext()">Вперёд →</button>
+      </div>
+
+      <div class="slides-list" id="slidesList"></div>
+    </div>
+
+    <!-- ТЕМЫ -->
+    <div class="card">
+      <h3>📚 Материалы</h3>
+      <p class="help">Открывай урок для показа или давай ученицам самостоятельную работу.</p>
+
+      <div class="topics-grid">
+
+        <div class="topic">
+          <div class="t-icon">🧩</div>
+          <h4>Подпрограммы</h4>
+          <span class="topic-status status-ready">✓ Готово</span>
+          <p>Процедуры и функции. 16 слайдов, 6 заданий.</p>
+          <div class="topic-actions">
+            <button class="btn-open" onclick="openLesson('tema2.html')">🚀 Показать классу</button>
+            <button class="btn-dz" onclick="openLesson('dz2.html')">📝 ДЗ</button>
+          </div>
+        </div>
+
+        <div class="topic">
+          <div class="t-icon">📖</div>
+          <h4>Справочник</h4>
+          <span class="topic-status status-ready">✓ Готов</span>
+          <p>Шпаргалка по основам Python: типы, ввод-вывод, циклы, подпрограммы.</p>
+          <div class="topic-actions">
+            <button class="btn-open" onclick="openLesson('spravochnik.html')">📖 Открыть</button>
+          </div>
+        </div>
+
+        <div class="topic">
+          <div class="t-icon">📊</div>
+          <h4>Массивы</h4>
+          <span class="topic-status status-soon">⏳ Скоро</span>
+          <p>Структурированные типы данных. Массивы.</p>
+          <div class="topic-actions">
+            <button class="btn-soon" disabled>В разработке</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ПОДСКАЗКА -->
+    <div class="tip-block">
+      💡 <b>Как это работает:</b><br>
+      • Все настройки сохраняются в браузере учителя<br>
+      • Ссылки с <code>?teacher=1</code> видят ответы и автозаполнение — их <b>не показывай ученицам</b><br>
+      • Ученица, открывшая просто <code>tema2.html</code>, увидит обычную версию — без ответов и без автозаполнения<br>
+      • Если блокировка включена — ученица не сможет листать сама
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* === КОНСТАНТЫ === */
+const TEACHER_PASSWORD = 'teacher2024';
+const AUTH_KEY = 'teacher_auth_v11';
+const SETTINGS_KEY = 'python_11_teacher_settings';
+const TOTAL_SLIDES = 16;
+
+const SLIDE_TITLES = [
+  'Проблема', 'Анализ', 'Теория', 'Синтаксис',
+  'Как это работает', 'Задание 2', 'Задание 3', 'Параметры',
+  'Задание 4', 'Задание 5', 'Квизы', 'Return',
+  'Предскажи', 'Найди ошибку', 'Напоминание', 'Финал'
+];
+
+/* === СОСТОЯНИЕ === */
+let settings = {
+  locked: false,
+  answers: false,
+  autofill: false,
+  currentSlide: 1
+};
+
+function loadSettings() {
+  try {
+    const s = localStorage.getItem(SETTINGS_KEY);
+    if (s) Object.assign(settings, JSON.parse(s));
+  } catch(e) {}
+}
+function saveSettings() {
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  } catch(e) {}
+}
+
+/* === АВТОРИЗАЦИЯ === */
+function checkAuth() {
+  try { return localStorage.getItem(AUTH_KEY) === 'ok'; }
+  catch(e) { return false; }
+}
+function setAuth() {
+  try { localStorage.setItem(AUTH_KEY, 'ok'); } catch(e) {}
+}
+function clearAuth() {
+  try { localStorage.removeItem(AUTH_KEY); } catch(e) {}
+}
+
+function tryLogin() {
+  const input = document.getElementById('passwordInput');
+  const errorEl = document.getElementById('errorText');
+  const value = input.value;
+
+  if (value === TEACHER_PASSWORD) {
+    setAuth();
+    showPanel();
+  } else {
+    input.classList.add('error');
+    errorEl.textContent = 'Неверный пароль. Попробуй ещё раз.';
+    input.value = '';
+    setTimeout(() => {
+      input.classList.remove('error');
+      input.focus();
+    }, 500);
+  }
+}
+
+function logout() {
+  clearAuth();
+  showLogin();
+}
+
+function showLogin() {
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('teacherPanel').classList.add('hidden');
+  document.getElementById('passwordInput').value = '';
+  document.getElementById('loginBtn').disabled = true;
+  document.getElementById('errorText').textContent = '';
+  setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+}
+
+function showPanel() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('teacherPanel').classList.remove('hidden');
+  loadSettings();
+  syncUI();
+  buildSlidesList();
+  updateStatus();
+  updateSlideNum();
+}
+
+document.getElementById('passwordInput').addEventListener('input', e => {
+  document.getElementById('loginBtn').disabled = !e.target.value;
+  document.getElementById('errorText').textContent = '';
+});
+document.getElementById('passwordInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.value) tryLogin();
+});
+
+/* === СИНХРОНИЗАЦИЯ UI === */
+function syncUI() {
+  document.getElementById('lockToggle').checked = settings.locked;
+  document.getElementById('answersToggle').checked = settings.answers;
+  document.getElementById('autofillToggle').checked = settings.autofill;
+}
+
+function toggleLock() {
+  settings.locked = document.getElementById('lockToggle').checked;
+  saveSettings();
+  updateStatus();
+}
+function toggleAnswers() {
+  settings.answers = document.getElementById('answersToggle').checked;
+  saveSettings();
+}
+function toggleAutofill() {
+  settings.autofill = document.getElementById('autofillToggle').checked;
+  saveSettings();
+}
+
+function updateStatus() {
+  const bar = document.getElementById('statusBar');
+  const text = document.getElementById('statusText');
+  if (settings.locked) {
+    bar.classList.remove('unlocked');
+    bar.classList.add('locked');
+    text.textContent = 'Заблокировано — ученицы видят только текущий слайд';
+  } else {
+    bar.classList.remove('locked');
+    bar.classList.add('unlocked');
+    text.textContent = 'Разблокировано — ученицы могут листать сами';
+  }
+}
+
+/* === СПИСОК СЛАЙДОВ === */
+function buildSlidesList() {
+  const list = document.getElementById('slidesList');
+  list.innerHTML = '';
+  for (let i = 1; i <= TOTAL_SLIDES; i++) {
+    const item = document.createElement('div');
+    item.className = 'slide-item' + (i === settings.currentSlide ? ' active' : '');
+    item.onclick = () => goToSlide(i);
+    item.innerHTML = `
+      <span class="num">${i}</span>
+      <span>${SLIDE_TITLES[i-1] || 'Слайд'}</span>
+    `;
+    list.appendChild(item);
+  }
+}
+
+function updateSlideNum() {
+  document.getElementById('slideNum').textContent = settings.currentSlide;
+}
+
+function goToSlide(n) {
+  if (n < 1 || n > TOTAL_SLIDES) return;
+  settings.currentSlide = n;
+  saveSettings();
+  buildSlidesList();
+  updateSlideNum();
+}
+
+function goPrev() { goToSlide(settings.currentSlide - 1); }
+function goNext() { goToSlide(settings.currentSlide + 1); }
+
+/* === ОТКРЫТИЕ МАТЕРИАЛОВ === */
+function openLesson(filename) {
+  const url = filename.includes('tema') ? filename + '?teacher=1' : filename;
+  window.open(url, '_blank');
+}
+
+/* === СОБЫТИЕ STORAGE === */
+window.addEventListener('storage', (e) => {
+  if (e.key === SETTINGS_KEY) {
+    try {
+      Object.assign(settings, JSON.parse(e.newValue || '{}'));
+      syncUI();
+      buildSlidesList();
+      updateStatus();
+      updateSlideNum();
+    } catch(err) {}
+  }
+});
+
+/* === ИНИЦИАЛИЗАЦИЯ === */
+if (checkAuth()) {
+  showPanel();
+} else {
+  showLogin();
+}
+</script>
+
+</body>
+</html>
