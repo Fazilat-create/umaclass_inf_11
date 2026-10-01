@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Справочник · Основы Python</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<style>
+  html { scroll-behavior: smooth; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Comfortaa', 'Segoe UI', 'Verdana', sans-serif;
+    background: linear-gradient(135deg, #f0fdf4 0%, #eef2ff 50%, #fef3f8 100%);
+    background-attachment: fixed;
+    color: #3a3a5a;
+    min-height: 100vh;
+    padding: 18px 12px;
+    line-height: 1.6;
+  }
+  body::before, body::after {
+    content: ""; position: fixed; border-radius: 50%;
+    filter: blur(70px); opacity: 0.35; pointer-events: none; z-index: -1;
+  }
+  body::before { width: 420px; height: 420px; background: #86efac; top: -120px; left: -120px; }
+  body::after  { width: 520px; height: 520px; background: #a5b4fc; bottom: -160px; right: -160px; }
+
+  .container {
+    max-width: 1000px; margin: 0 auto;
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(120,120,200,0.18);
+    overflow: clip;
+  }
+  header {
+    background: linear-gradient(135deg, #86efac 0%, #a5b4fc 50%, #fbcfe8 100%);
+    padding: 20px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+  }
+  header .left { display: flex; align-items: center; gap: 12px; }
+  header .logo { font-size: 1.8em; }
+  header h1 { font-size: 1.2em; color: #065f46; font-weight: 700; }
+  header .subtitle { font-size: 0.78em; color: #065f46; opacity: 0.75; }
+  .nav-home {
+    text-decoration: none; padding: 6px 14px;
+    background: rgba(255,255,255,0.9); color: #065f46;
+    border-radius: 20px; font-size: 0.82em; font-weight: 600;
+  }
+
+  /* Навигация по разделам */
+  .toc {
+    padding: 16px 28px;
+    background: linear-gradient(135deg, #f0fdf4, #eef2ff);
+    border-bottom: 1px solid rgba(120,120,200,0.1);
+    display: flex; gap: 8px; flex-wrap: wrap;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+  .toc a {
+    text-decoration: none;
+    padding: 6px 14px;
+    background: #fff;
+    color: #4f46e5;
+    border: 2px solid #e0e7ff;
+    border-radius: 18px;
+    font-size: 0.83em;
+    font-weight: 600;
+    transition: 0.2s;
+    cursor: pointer;
+  }
+  .toc a:hover {
+    background: #eef2ff;
+    border-color: #a5b4fc;
+    transform: translateY(-1px);
+  }
+
+  main { padding: 28px 32px; }
+
+  .section {
+    margin-bottom: 32px;
+    scroll-margin-top: 90px;
+  }
+  .section h2 {
+    color: #4f46e5;
+    font-size: 1.25em;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e0e7ff;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section h3 {
+    color: #6366f1;
+    font-size: 1em;
+    margin: 16px 0 8px;
+  }
+  .section p {
+    color: #4a4a6a;
+    font-size: 0.93em;
+    margin-bottom: 10px;
+  }
+
+  .code {
+    background: #f8faff;
+    border: 2px solid #e0e7ff;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-family: 'Consolas', 'Menlo', monospace;
+    font-size: 0.85em;
+    line-height: 1.7;
+    color: #3a3a5a;
+    margin: 8px 0;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .code .kw  { color: #9333ea; font-weight: 600; }
+  .code .fn  { color: #2563eb; }
+  .code .num { color: #ea580c; }
+  .code .str { color: #16a34a; }
+  .code .com { color: #94a3b8; font-style: italic; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 0.9em;
+  }
+  table th {
+    background: #eef2ff;
+    color: #4f46e5;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 2px solid #e0e7ff;
+  }
+  table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f0f8;
+    color: #4a4a6a;
+  }
+  table tr:hover td { background: #f8faff; }
+  table code {
+    background: #f0f4ff;
+    padding: 1px 8px;
+    border-radius: 5px;
+    font-family: 'Consolas', monospace;
+    color: #4f46e5;
+    font-size: 0.9em;
+  }
+
+  .note {
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin: 12px 0;
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 0.88em;
+    line-height: 1.55;
+  }
+  .note .icon { font-size: 1.2em; flex-shrink: 0; line-height: 1.3; }
+  .note.tip  { background: linear-gradient(135deg, #e8fff5, #d0f5e4); border-left: 4px solid #34d399; color: #065f46; }
+  .note.warn { background: linear-gradient(135deg, #fff8e6, #ffefcc); border-left: 4px solid #fbbf24; color: #7a5a1a; }
+  .note.idea { background: linear-gradient(135deg, #eef2ff, #e0e7ff); border-left: 4px solid #6366f1; color: #4f46e5; }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #f0fdf4, #eef2ff);
+    color: #8a8ab0;
+    font-size: 0.85em;
+  }
+  footer a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  @media (max-width: 700px) {
+    main { padding: 18px; }
+    .toc { padding: 12px 18px; }
+    header { padding: 14px 18px; }
+    .section h2 { font-size: 1.1em; }
+    .section { scroll-margin-top: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="left">
+      <a href="index.html" class="nav-home">← Главная</a>
+      <div class="logo">📖</div>
+      <div>
+        <h1>Справочник · Основы Python</h1>
+        <div class="subtitle">Шпаргалка по базовым конструкциям</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="toc">
+    <a href="#output">🖨️ Вывод</a>
+    <a href="#input">⌨️ Ввод</a>
+    <a href="#types">📦 Типы данных</a>
+    <a href="#math">🧮 Операции</a>
+    <a href="#strings">📝 Строки</a>
+    <a href="#conditions">🔀 Условия</a>
+    <a href="#loops">🔁 Циклы</a>
+    <a href="#subprograms">🧩 Подпрограммы</a>
+    <a href="#errors">🐛 Ошибки</a>
+  </div>
+
+  <main>
+
+    <!-- ВЫВОД -->
+    <div class="section" id="output">
+      <h2>🖨️ Вывод на экран</h2>
+      <p>Функция <code>print()</code> печатает значения на экран. Можно передать несколько значений — они разделятся пробелом.</p>
+      <div class="code"><span class="fn">print</span>(<span class="str">"Привет!"</span>)
+<span class="fn">print</span>(<span class="str">"Возраст:"</span>, <span class="num">16</span>)
+<span class="fn">print</span>(<span class="str">"Сумма:"</span>, <span class="num">2</span> + <span class="num">3</span>)</div>
+      <div class="note tip">
+        <div class="icon">💡</div>
+        <div>Между значениями в <code>print()</code> автоматически ставится пробел. Если он не нужен — используй <code>sep=""</code>.</div>
+      </div>
+    </div>
+
+    <!-- ВВОД -->
+    <div class="section" id="input">
+      <h2>⌨️ Ввод с клавиатуры</h2>
+      <p>Функция <code>input()</code> ждёт, пока пользователь введёт строку, и возвращает её.</p>
+      <div class="code"><span class="com"># Возвращает строку</span>
+name = <span class="fn">input</span>(<span class="str">"Как тебя зовут? "</span>)
+
+<span class="com"># Для чисел — преобразуем</span>
+age = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Возраст: "</span>))
+price = <span class="fn">float</span>(<span class="fn">input</span>(<span class="str">"Цена: "</span>))</div>
+      <div class="note warn">
+        <div class="icon">⚠️</div>
+        <div><b>Важно:</b> <code>input()</code> всегда возвращает <b>строку</b>. Для математики нужно преобразовать: <code>int()</code> — целое, <code>float()</code> — дробное.</div>
+      </div>
+    </div>
+
+    <!-- ТИПЫ -->
+    <div class="section" id="types">
+      <h2>📦 Типы данных</h2>
+      <table>
+        <tr><th>Тип</th><th>Описание</th><th>Пример</th></tr>
+        <tr><td><code>int</code></td><td>Целое число</td><td><code>42</code>, <code>-7</code></td></tr>
+        <tr><td><code>float</code></td><td>Дробное число</td><td><code>3.14</code>, <code>-0.5</code></td></tr>
+        <tr><td><code>str</code></td><td>Строка (текст)</td><td><code>"привет"</code></td></tr>
+        <tr><td><code>bool</code></td><td>Логическое</td><td><code>True</code>, <code>False</code></td></tr>
+      </table>
+
+      <h3>Преобразование типов</h3>
+      <div class="code"><span class="fn">int</span>(<span class="str">"42"</span>)       <span class="com"># 42 — строка → число</span>
+<span class="fn">float</span>(<span class="str">"3.14"</span>)   <span class="com"># 3.14</span>
+<span class="fn">str</span>(<span class="num">100</span>)         <span class="com"># "100" — число → строка</span></div>
+    </div>
+
+    <!-- ОПЕРАЦИИ -->
+    <div class="section" id="math">
+      <h2>🧮 Арифметические операции</h2>
+      <table>
+        <tr><th>Оператор</th><th>Что делает</th><th>Пример</th></tr>
+        <tr><td><code>+</code></td><td>Сложение</td><td><code>3 + 2 → 5</code></td></tr>
+        <tr><td><code>-</code></td><td>Вычитание</td><td><code>5 - 2 → 3</code></td></tr>
+        <tr><td><code>*</code></td><td>Умножение</td><td><code>3 * 4 → 12</code></td></tr>
+        <tr><td><code>/</code></td><td>Деление</td><td><code>7 / 2 → 3.5</code></td></tr>
+        <tr><td><code>//</code></td><td>Целочисленное деление</td><td><code>7 // 2 → 3</code></td></tr>
+        <tr><td><code>%</code></td><td>Остаток</td><td><code>7 % 2 → 1</code></td></tr>
+        <tr><td><code>**</code></td><td>Возведение в степень</td><td><code>2 ** 3 → 8</code></td></tr>
+      </table>
+
+      <h3>Порядок операций</h3>
+      <p>Как в математике: сначала <code>**</code>, потом <code>*</code> <code>/</code> <code>//</code> <code>%</code>, потом <code>+</code> <code>-</code>. Скобки меняют порядок.</p>
+      <div class="code"><span class="num">2</span> + <span class="num">3</span> * <span class="num">4</span>        <span class="com"># 14</span>
+(<span class="num">2</span> + <span class="num">3</span>) * <span class="num">4</span>      <span class="com"># 20</span></div>
+    </div>
+
+    <!-- СТРОКИ -->
+    <div class="section" id="strings">
+      <h2>📝 Строки</h2>
+      <p>Строка — это текст в кавычках. Бывают двойные <code>"..."</code> и одинарные <code>'...'</code> — оба варианта работают.</p>
+      <div class="code">name = <span class="str">"Аня"</span>
+greeting = <span class="str">"Привет, "</span> + name      <span class="com"># склеивание</span>
+<span class="fn">print</span>(greeting)                    <span class="com"># Привет, Аня</span>
+
+<span class="com"># Умножение строки</span>
+<span class="fn">print</span>(<span class="str">"="</span> * <span class="num">10</span>)                <span class="com"># ==========</span></div>
+    </div>
+
+    <!-- УСЛОВИЯ -->
+    <div class="section" id="conditions">
+      <h2>🔀 Условия (if / elif / else)</h2>
+      <p>Позволяют выполнять разный код в зависимости от условия.</p>
+      <div class="code"><span class="kw">if</span> age >= <span class="num">18</span>:
+    <span class="fn">print</span>(<span class="str">"Совершеннолетний"</span>)
+<span class="kw">elif</span> age >= <span class="num">14</span>:
+    <span class="fn">print</span>(<span class="str">"Подросток"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Ребёнок"</span>)</div>
+
+      <h3>Операции сравнения</h3>
+      <table>
+        <tr><td><code>==</code></td><td>равно</td></tr>
+        <tr><td><code>!=</code></td><td>не равно</td></tr>
+        <tr><td><code>&gt;</code>, <code>&lt;</code></td><td>больше, меньше</td></tr>
+        <tr><td><code>&gt;=</code>, <code>&lt;=</code></td><td>больше или равно, меньше или равно</td></tr>
+      </table>
+
+      <div class="note idea">
+        <div class="icon">💡</div>
+        <div>После <code>if</code>, <code>elif</code>, <code>else</code> — <b>двоеточие</b>, а тело — с <b>отступом</b> (4 пробела).</div>
+      </div>
+    </div>
+
+    <!-- ЦИКЛЫ -->
+    <div class="section" id="loops">
+      <h2>🔁 Циклы (for / while)</h2>
+
+      <h3>Цикл for — когда знаем количество</h3>
+      <div class="code"><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
+    <span class="fn">print</span>(i)          <span class="com"># 0 1 2 3 4</span>
+
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">6</span>):
+    <span class="fn">print</span>(i)          <span class="com"># 1 2 3 4 5</span></div>
+
+      <h3>Цикл while — пока условие истинно</h3>
+      <div class="code">count = <span class="num">0</span>
+<span class="kw">while</span> count < <span class="num">3</span>:
+    <span class="fn">print</span>(<span class="str">"Шаг"</span>, count)
+    count = count + <span class="num">1</span></div>
+
+      <div class="note warn">
+        <div class="icon">⚠️</div>
+        <div>В цикле <code>while</code> нужно <b>менять условие</b> внутри, иначе он будет бесконечным.</div>
+      </div>
+    </div>
+
+    <!-- ПОДПРОГРАММЫ -->
+    <div class="section" id="subprograms">
+      <h2>🧩 Подпрограммы</h2>
+      <p><b>Подпрограмма</b> — именованный блок кода. В Python объявляется словом <code>def</code>. Бывает двух видов:</p>
+
+      <h3>📋 Процедура — не возвращает значение</h3>
+      <div class="code"><span class="kw">def</span> <span class="fn">greet</span>(name):
+    <span class="fn">print</span>(<span class="str">"Привет,"</span>, name)
+
+<span class="fn">greet</span>(<span class="str">"Аня"</span>)      <span class="com"># Привет, Аня</span></div>
+
+      <h3>🧮 Функция — возвращает значение через return</h3>
+      <div class="code"><span class="kw">def</span> <span class="fn">add</span>(a, b):
+    <span class="kw">return</span> a + b
+
+result = <span class="fn">add</span>(<span class="num">2</span>, <span class="num">3</span>)    <span class="com"># result = 5</span>
+<span class="fn">print</span>(<span class="fn">add</span>(<span class="num">10</span>, <span class="num">20</span>) * <span class="num">2</span>)   <span class="com"># 60</span></div>
+
+      <h3>Как определить вид</h3>
+      <table>
+        <tr><th>Признак</th><th>Вид</th></tr>
+        <tr><td>Есть <code>return</code> с результатом</td><td>Функция</td></tr>
+        <tr><td>Нет <code>return</code></td><td>Процедура</td></tr>
+      </table>
+
+      <div class="note idea">
+        <div class="icon">💡</div>
+        <div>Описание подпрограммы <b>не выполняет</b> её. Нужен <b>вызов</b> — имя со скобками.</div>
+      </div>
+
+      <h3>Встроенные подпрограммы</h3>
+      <table>
+        <tr><th>Название</th><th>Вид</th><th>Что делает</th></tr>
+        <tr><td><code>print()</code></td><td>процедура</td><td>печатает на экран</td></tr>
+        <tr><td><code>input()</code></td><td>функция</td><td>возвращает введённую строку</td></tr>
+        <tr><td><code>int()</code></td><td>функция</td><td>возвращает целое число</td></tr>
+        <tr><td><code>float()</code></td><td>функция</td><td>возвращает дробное число</td></tr>
+        <tr><td><code>len()</code></td><td>функция</td><td>возвращает длину строки</td></tr>
+      </table>
+    </div>
+
+    <!-- ОШИБКИ -->
+    <div class="section" id="errors">
+      <h2>🐛 Частые ошибки</h2>
+
+      <h3>SyntaxError — ошибка синтаксиса</h3>
+      <div class="code"><span class="kw">def</span> <span class="fn">greet</span>(name)         <span class="com"># забыли :</span>
+    <span class="fn">print</span>(<span class="str">"Привет"</span>)</div>
+      <p>→ Python ждёт <b>двоеточие</b> после заголовка.</p>
+
+      <h3>IndentationError — ошибка отступа</h3>
+      <div class="code"><span class="kw">def</span> <span class="fn">greet</span>():
+<span class="fn">print</span>(<span class="str">"Привет"</span>)         <span class="com"># нет отступа</span></div>
+      <p>→ Тело подпрограммы должно быть с <b>отступом</b> (4 пробела).</p>
+
+      <h3>NameError — неизвестное имя</h3>
+      <div class="code"><span class="fn">greet</span>()                    <span class="com"># вызвали до описания</span>
+<span class="kw">def</span> <span class="fn">greet</span>():
+    <span class="fn">print</span>(<span class="str">"Привет"</span>)</div>
+      <p>→ Подпрограмма должна быть <b>описана раньше</b>, чем вызвана.</p>
+
+      <h3>ValueError — неправильное значение</h3>
+      <div class="code">x = <span class="fn">int</span>(<span class="str">"привет"</span>)        <span class="com"># нельзя превратить в число</span></div>
+      <p>→ <code>int()</code> работает только со строками из цифр.</p>
+    </div>
+
+  </main>
+
+  <footer>
+    Учебник по Python · 11 класс<br>
+    <a href="index.html">← Вернуться на главную</a>
+  </footer>
+</div>
+
+</body>
+</html>
