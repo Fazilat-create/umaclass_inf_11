@@ -1,0 +1,2143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тема 2 · Подпрограммы · Python 11 класс</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    user-select: none; -webkit-user-select: none;
+    font-family: 'Comfortaa', 'Segoe UI', 'Verdana', sans-serif;
+    background: linear-gradient(135deg, #fef6e4 0%, #f0f9ff 50%, #fef3f8 100%);
+    background-attachment: fixed; color: #3a3a5a; min-height: 100vh;
+    padding: 14px 10px; line-height: 1.55;
+  }
+  textarea { user-select: text !important; -webkit-user-select: text !important; }
+
+  .container {
+    max-width: 1050px; margin: 0 auto;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(160,120,60,0.15);
+    overflow: clip; min-height: 92vh;
+    display: flex; flex-direction: column;
+  }
+  header {
+    background: linear-gradient(135deg, #fed7aa 0%, #fbcfe8 50%, #bae6fd 100%);
+    padding: 12px 22px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+  }
+  header .left { display: flex; align-items: center; gap: 10px; }
+  header .logo { font-size: 1.6em; }
+  header h1 { font-size: 1.05em; color: #9a3412; font-weight: 700; }
+  header .subtitle { font-size: 0.75em; color: #7c2d12; opacity: 0.7; }
+  header .right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .nav-home {
+    text-decoration: none; padding: 5px 12px;
+    background: rgba(255,255,255,0.9); color: #9a3412;
+    border-radius: 18px; font-size: 0.78em; font-weight: 600;
+  }
+  .teacher-badge {
+    display: none;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 18px;
+    font-size: 0.78em;
+    font-weight: 700;
+    align-items: center;
+    gap: 6px;
+  }
+  .teacher-badge.visible { display: inline-flex; }
+  .student-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.9); padding: 5px 12px;
+    border-radius: 18px; font-size: 0.8em; font-weight: 600;
+    color: #9a3412; cursor: pointer; max-width: 180px;
+  }
+  .student-badge .avatar {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ec4899);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 0.8em; font-weight: 700; flex-shrink: 0;
+  }
+  .student-badge span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .stars {
+    display: flex; align-items: center; gap: 4px;
+    background: rgba(255,255,255,0.9); padding: 5px 12px;
+    border-radius: 18px; font-size: 0.9em;
+  }
+  .stars .count { color: #7c2d12; font-size: 0.75em; font-weight: 600; margin-left: 4px; opacity: 0.7; }
+  .progress-wrap {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.78em; color: #7c2d12; opacity: 0.7;
+  }
+  .progress-bar {
+    width: 90px; height: 8px; background: rgba(255,255,255,0.75);
+    border-radius: 8px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, #f97316, #ec4899);
+    transition: width 0.4s; width: 0%;
+  }
+
+  /* Скрываем служебное в режиме ученика */
+  body:not(.teacher-mode-active) .student-badge,
+  body:not(.teacher-mode-active) .stars,
+  body:not(.teacher-mode-active) .progress-wrap { display: none; }
+
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, rgba(254,246,228,0.96), rgba(240,249,255,0.96));
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+  }
+  .modal-bg.hidden { display: none; }
+  .modal {
+    background: #fff; border-radius: 24px; padding: 32px 36px;
+    max-width: 420px; width: 100%; text-align: center;
+    box-shadow: 0 25px 70px rgba(160,120,60,0.2);
+    border: 2px solid #fed7aa;
+  }
+  .modal .flower-deco { font-size: 2.6em; margin-bottom: 10px; }
+  .modal h2 {
+    font-size: 1.35em; margin-bottom: 8px;
+    background: linear-gradient(135deg, #f97316, #ec4899);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .modal p { color: #6b6b8a; margin-bottom: 18px; font-size: 0.9em; }
+  .modal input {
+    width: 100%; padding: 12px 16px;
+    border: 2px solid #fed7aa; border-radius: 12px;
+    font-family: inherit; font-size: 1em;
+    text-align: center; color: #3a3a5a; outline: none;
+    background: #fffbf5;
+  }
+  .modal input:focus { border-color: #f97316; }
+  .modal .btn-start {
+    margin-top: 14px; width: 100%; padding: 12px;
+    background: linear-gradient(135deg, #f97316, #ec4899);
+    color: #fff; border: none; border-radius: 12px;
+    font-family: inherit; font-size: 1em; font-weight: 700;
+    cursor: pointer;
+  }
+  .modal .btn-start:disabled { background: #e5d5c0; cursor: not-allowed; }
+
+  .slide-viewport { flex: 1; padding: 22px 32px; }
+  .slide { display: none; }
+  .slide.active { display: block; animation: slideIn 0.35s ease; }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .slide-num {
+    display: inline-block;
+    background: linear-gradient(135deg, #f97316, #fb923c);
+    color: #fff; padding: 3px 12px; border-radius: 16px;
+    font-size: 0.68em; font-weight: 700; margin-bottom: 8px;
+  }
+  h2 { color: #9a3412; font-size: 1.35em; margin-bottom: 8px; line-height: 1.2; font-weight: 700; }
+  h3 { color: #c2410c; margin: 12px 0 6px; font-size: 1em; font-weight: 700; }
+  p { line-height: 1.6; margin-bottom: 10px; color: #4a4a6a; font-size: 0.95em; }
+
+  .code-block {
+    background: #fffbf5; border: 2px solid #fed7aa;
+    border-radius: 14px; padding: 12px 18px;
+    font-family: 'Consolas','Menlo',monospace;
+    font-size: 0.85em; line-height: 1.7; color: #3a3a5a;
+    margin: 10px 0; overflow-x: auto;
+  }
+  .code-block .line { display: block; white-space: pre; }
+  .code-block .line.blank { height: 0.4em; }
+  .code-block .kw  { color: #9333ea; font-weight: 600; }
+  .code-block .fn  { color: #2563eb; }
+  .code-block .num { color: #ea580c; }
+  .code-block .str { color: #16a34a; }
+  .code-block .com { color: #94a3b8; font-style: italic; }
+  .code-block .def { color: #db2777; font-weight: 700; }
+
+  .syntax-demo {
+    background: linear-gradient(135deg, #fffbf5, #fff);
+    border: 2px solid #fed7aa;
+    border-radius: 18px;
+    padding: 18px;
+    margin: 14px 0;
+  }
+  .syntax-demo-title {
+    font-size: 0.82em; color: #c2410c; font-weight: 700;
+    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; flex-wrap: wrap;
+  }
+  .syntax-demo-title .legend {
+    display: flex; gap: 8px; font-size: 0.78em; font-weight: 600;
+  }
+  .syntax-demo-title .legend span { padding: 2px 10px; border-radius: 8px; }
+  .legend-head { background: #fef3c7; color: #92400e; }
+  .legend-body { background: #dbeafe; color: #1e40af; }
+  .legend-call { background: #dcfce7; color: #166534; }
+
+  .syntax-line {
+    font-family: 'Consolas', 'Menlo', monospace;
+    font-size: 0.95em; padding: 8px 12px;
+    border-radius: 8px; cursor: pointer;
+    transition: 0.2s; position: relative;
+    display: block; line-height: 1.7;
+  }
+  .syntax-line:hover { background: rgba(0,0,0,0.03); }
+  .syntax-line .indent { display: inline; white-space: pre; user-select: none; }
+  .syntax-line[data-part="head"] {
+    background: linear-gradient(90deg, #fef3c7 0%, transparent 95%);
+    border-left: 4px solid #f59e0b;
+  }
+  .syntax-line[data-part="body"] {
+    background: linear-gradient(90deg, #dbeafe 0%, transparent 95%);
+    border-left: 4px solid #3b82f6;
+  }
+  .syntax-line[data-part="call"] {
+    background: linear-gradient(90deg, #dcfce7 0%, transparent 95%);
+    border-left: 4px solid #22c55e;
+    margin-top: 6px;
+  }
+  .syntax-line .tag {
+    position: absolute; right: 10px; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Comfortaa', sans-serif;
+    font-size: 0.72em; font-weight: 700;
+    padding: 2px 10px; border-radius: 8px;
+    opacity: 0; transition: 0.2s;
+    pointer-events: none; white-space: nowrap;
+  }
+  .syntax-line:hover .tag { opacity: 1; }
+  .syntax-line[data-part="head"] .tag { background: #f59e0b; color: #fff; }
+  .syntax-line[data-part="body"] .tag { background: #3b82f6; color: #fff; }
+  .syntax-line[data-part="call"] .tag { background: #22c55e; color: #fff; }
+
+  .syntax-broken {
+    background: linear-gradient(90deg, #fff0f0 0%, transparent 95%) !important;
+    border-left-color: #fca5a5 !important;
+  }
+  .break-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .break-btn {
+    background: #fff; color: #b91c1c;
+    border: 2px solid #fca5a5;
+    padding: 7px 14px; border-radius: 18px;
+    font-family: inherit; font-size: 0.82em; font-weight: 600;
+    cursor: pointer; transition: 0.2s;
+  }
+  .break-btn:hover { background: #fee2e2; }
+  .break-btn.active { background: #fca5a5; color: #fff; }
+  .break-result {
+    display: none; margin-top: 10px;
+    background: #fff0f0; border-left: 4px solid #f87171;
+    border-radius: 10px; padding: 10px 14px;
+    color: #991b1b; font-size: 0.85em;
+    font-family: 'Consolas', monospace; line-height: 1.55;
+  }
+  .break-result.visible { display: block; }
+
+  .viz-stage {
+    background: linear-gradient(135deg, #fffbf5, #fff);
+    border: 2px solid #fed7aa;
+    border-radius: 18px; padding: 20px; margin: 14px 0;
+  }
+  .viz-phase {
+    font-size: 0.82em; font-weight: 700; color: #c2410c;
+    background: #fef3c7; padding: 6px 12px;
+    border-radius: 8px; margin: 10px 0 8px;
+    text-align: center; letter-spacing: 0.3px;
+  }
+  .viz-phase:first-child { margin-top: 0; }
+  .viz-block {
+    background: #fff; border: 2px solid #e5d5c0;
+    border-radius: 12px; padding: 10px 14px;
+    margin-bottom: 6px; transition: 0.4s;
+    position: relative;
+  }
+  .viz-block.active {
+    border-color: #f97316;
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    transform: translateX(6px);
+    box-shadow: 0 8px 20px rgba(249,115,22,0.2);
+  }
+  .viz-block.done {
+    border-color: #34d399;
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  }
+  .viz-block .viz-code {
+    font-family: 'Consolas', monospace;
+    font-size: 0.9em; white-space: pre; color: #3a3a5a;
+  }
+  .viz-block .viz-label {
+    position: absolute; top: -10px; left: 10px;
+    background: #f97316; color: #fff;
+    font-size: 0.68em; padding: 2px 8px;
+    border-radius: 8px; font-weight: 700;
+    opacity: 0; transition: 0.3s;
+  }
+  .viz-block.active .viz-label,
+  .viz-block.done .viz-label { opacity: 1; }
+  .viz-block.done .viz-label { background: #34d399; }
+  .viz-arrow {
+    text-align: center; font-size: 1.4em;
+    color: #f97316; margin: 4px 0;
+    transition: 0.3s; line-height: 1;
+  }
+  .viz-arrow.active { color: #ec4899; transform: scale(1.3); }
+  .viz-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .viz-log {
+    margin-top: 12px; background: #f0fdf4;
+    border: 2px solid #a7f3d0; border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.85em; color: #065f46;
+    min-height: 44px; line-height: 1.5;
+  }
+
+  .naming-rules {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-left: 4px solid #0ea5e9;
+    border-radius: 14px; padding: 14px 18px; margin: 12px 0;
+  }
+  .naming-rules h4 { color: #0c4a6e; margin-bottom: 8px; font-size: 0.95em; }
+  .naming-rules ul { list-style: none; padding: 0; display: grid; gap: 4px; }
+  .naming-rules li {
+    color: #0c4a6e; font-size: 0.88em;
+    padding-left: 22px; position: relative; line-height: 1.5;
+  }
+  .naming-rules li::before { content: "✓"; position: absolute; left: 0; color: #10b981; font-weight: 700; }
+  .naming-rules li.bad::before { content: "✗"; color: #ef4444; }
+  .naming-rules code {
+    background: rgba(255,255,255,0.8); padding: 1px 6px;
+    border-radius: 5px; font-family: 'Consolas', monospace; font-size: 0.9em;
+  }
+
+  .problem-box {
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    border-left: 5px solid #f97316;
+    border-radius: 14px; padding: 14px 18px; margin: 12px 0;
+  }
+  .problem-box h3 { color: #9a3412; margin: 0 0 6px; font-size: 1em; }
+  .problem-box p { color: #7c2d12; margin-bottom: 6px; font-size: 0.9em; }
+  .problem-box ul { margin-left: 18px; color: #7c2d12; font-size: 0.9em; }
+
+  .task-desc {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-left: 4px solid #3b82f6;
+    border-radius: 12px; padding: 12px 16px; margin: 10px 0;
+    font-size: 0.92em; color: #1e3a8a; line-height: 1.6;
+  }
+  .task-desc b { color: #1e40af; }
+  .task-desc .example {
+    background: rgba(255,255,255,0.8);
+    border-radius: 8px; padding: 8px 12px; margin-top: 8px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.88em; color: #334155;
+  }
+
+  .test-data {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-left: 4px solid #22c55e;
+    border-radius: 10px; padding: 10px 14px; margin-top: 10px;
+    font-size: 0.86em; color: #14532d;
+  }
+  .test-data b { color: #166534; }
+  .test-data table { border-collapse: collapse; margin: 8px 0; width: 100%; }
+  .test-data td {
+    padding: 3px 10px;
+    border-bottom: 1px dashed rgba(34,197,94,0.3);
+    font-family: 'Consolas', monospace; font-size: 0.95em;
+  }
+  .test-data td:first-child { color: #166534; }
+  .test-data td:last-child { text-align: right; font-weight: 700; color: #065f46; }
+  .test-data p { margin: 6px 0 0; font-size: 0.9em; }
+  .test-data code {
+    background: rgba(255,255,255,0.7); padding: 1px 6px; border-radius: 4px;
+  }
+
+  .editor-box {
+    background: #fff; border: 2px dashed #fb923c;
+    border-radius: 16px; padding: 14px; margin: 12px 0;
+    position: relative;
+  }
+  .editor-box.completed {
+    border-style: solid; border-color: #34d399;
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  }
+  .editor-box.completed::after {
+    content: "✓";
+    position: absolute; top: 10px; left: 10px;
+    width: 24px; height: 24px;
+    background: linear-gradient(135deg, #34d399, #10b981);
+    color: #fff; font-weight: 700; font-size: 0.95em;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  }
+  .editor-title {
+    display: flex; align-items: center; gap: 6px;
+    font-weight: 700; color: #c2410c; margin-bottom: 8px;
+    font-size: 0.9em; flex-wrap: wrap; padding-left: 32px;
+    padding-right: 40px;
+  }
+  .editor-title .task-badge {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e; padding: 2px 10px; border-radius: 10px;
+    font-size: 0.7em; font-weight: 700;
+  }
+  .editor-title .done-badge {
+    background: linear-gradient(135deg, #34d399, #10b981);
+    color: #fff; padding: 2px 10px; border-radius: 10px;
+    font-size: 0.7em; font-weight: 700; display: none;
+  }
+  .editor-box.completed .done-badge { display: inline-block; }
+  .editor-box.completed .task-badge { display: none; }
+
+  .editor-hint {
+    position: absolute; top: 10px; right: 10px;
+    background: linear-gradient(135deg, #fff8e6, #ffefcc);
+    color: #8a6020; width: 28px; height: 28px;
+    border-radius: 50%; border: 2px solid #fde68a;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 0.9em; font-weight: 700; z-index: 10;
+    font-family: inherit;
+  }
+  .editor-hint.opened {
+    background: linear-gradient(135deg, #fde68a, #fbbf24);
+    color: #fff;
+  }
+  .hint-popup {
+    display: none;
+    background: linear-gradient(135deg, #fff8e6, #ffefcc);
+    border-left: 4px solid #fbbf24;
+    color: #7a5a1a; padding: 10px 14px;
+    border-radius: 12px; margin: 8px 0;
+    font-size: 0.85em; line-height: 1.6;
+  }
+  .hint-popup.visible { display: block; }
+  .hint-popup code {
+    background: rgba(255,255,255,0.8); padding: 1px 6px;
+    border-radius: 4px; font-family: 'Consolas', monospace;
+  }
+
+  /* === БЛОК ОТВЕТА (виден только учителю) === */
+  .answer-block {
+    display: none;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-left: 4px solid #10b981;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 0.9em;
+  }
+  .answer-block.visible { display: block; }
+  .answer-block .answer-title {
+    color: #065f46; font-weight: 700;
+    font-size: 0.92em; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .answer-block pre {
+    background: rgba(255,255,255,0.8);
+    border-radius: 8px; padding: 10px 12px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.85em; color: #065f46;
+    white-space: pre-wrap; line-height: 1.55;
+    margin: 0;
+  }
+
+  /* === КНОПКА АВТОЗАПОЛНЕНИЯ === */
+  .autofill-btn {
+    display: none;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff; border: none;
+    padding: 6px 14px;
+    border-radius: 18px;
+    font-family: inherit; font-size: 0.8em; font-weight: 600;
+    cursor: pointer; margin-left: 6px;
+  }
+  .autofill-btn.visible { display: inline-block; }
+  .autofill-btn:hover { transform: translateY(-1px); }
+
+  textarea {
+    width: 100%; min-height: 130px;
+    padding: 10px 14px; border: 2px solid #fed7aa;
+    border-radius: 10px; font-family: 'Consolas','Menlo',monospace;
+    font-size: 13px; resize: vertical;
+    background: #fffbf5; color: #3a3a5a; line-height: 1.6;
+  }
+  textarea:focus { outline: none; border-color: #f97316; }
+  .output {
+    background: #f0fdf4; border: 2px solid #a7f3d0;
+    color: #065f46; padding: 10px 14px;
+    border-radius: 10px; font-family: 'Consolas',monospace;
+    font-size: 12px; min-height: 38px; margin-top: 8px;
+    white-space: pre-wrap; word-break: break-word; line-height: 1.55;
+  }
+  .output.error { background: #fff0f0; border-color: #fca5a5; color: #c04a4a; }
+  .output.hint { background: #fff8e6; border-color: #fde68a; color: #7a5a1a; }
+  .output.success {
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    border-color: #34d399; color: #065f46;
+    font-weight: 600;
+  }
+
+  .compare {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0;
+  }
+  .compare-col {
+    background: #fff; border-radius: 14px; padding: 14px;
+    border: 2px solid #fed7aa;
+  }
+  .compare-col.proc { border-color: #fb923c; background: linear-gradient(135deg, #fff7ed, #fffbf5); }
+  .compare-col.func { border-color: #f472b6; background: linear-gradient(135deg, #fdf2f8, #fff); }
+  .compare-col h4 { color: #c2410c; margin-bottom: 8px; font-size: 0.95em; }
+  .compare-col.func h4 { color: #be185d; }
+  .compare-col ul { list-style: none; padding: 0; }
+  .compare-col li {
+    padding: 3px 0; font-size: 0.83em; color: #4a4a6a;
+    padding-left: 16px; position: relative; line-height: 1.5;
+  }
+  .compare-col.proc li::before { content: "▸"; position: absolute; left: 0; color: #f97316; font-weight: 700; }
+  .compare-col.func li::before { content: "▸"; position: absolute; left: 0; color: #ec4899; font-weight: 700; }
+
+  .cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px; margin: 14px 0;
+  }
+  .flip-card { perspective: 1000px; height: 130px; cursor: pointer; }
+  .flip-inner {
+    position: relative; width: 100%; height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+  .flip-front, .flip-back {
+    position: absolute; width: 100%; height: 100%;
+    backface-visibility: hidden; border-radius: 16px;
+    padding: 14px; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center;
+    box-shadow: 0 6px 16px rgba(160,120,60,0.12);
+  }
+  .flip-front {
+    background: linear-gradient(135deg, #fff, #fffbf5);
+    border: 2px solid #fed7aa;
+  }
+  .flip-front .emoji { font-size: 2em; margin-bottom: 6px; }
+  .flip-front .label { font-weight: 700; color: #9a3412; font-size: 0.92em; }
+  .flip-front .hint { font-size: 0.7em; color: #a8a29e; margin-top: 4px; }
+  .flip-back {
+    background: linear-gradient(135deg, #fed7aa, #fbcfe8);
+    transform: rotateY(180deg); color: #7c2d12;
+    font-size: 0.85em; font-weight: 600; padding: 14px; line-height: 1.5;
+  }
+  .flip-back code {
+    background: rgba(255,255,255,0.7); padding: 2px 6px;
+    border-radius: 6px; font-family: 'Consolas',monospace;
+    color: #6a4a9a; margin-top: 4px; display: inline-block;
+    font-size: 0.85em;
+  }
+
+  .quiz {
+    background: linear-gradient(135deg, #fff7ed, #fef6ff);
+    border: 2px solid #fbcfe8; border-radius: 14px;
+    padding: 14px; margin: 12px 0;
+  }
+  .quiz .question {
+    font-weight: 700; color: #9a3412;
+    margin-bottom: 10px; font-size: 0.92em;
+  }
+  .quiz .options { display: grid; gap: 6px; }
+  .quiz-option {
+    background: #fff; border: 2px solid #fed7aa;
+    border-radius: 10px; padding: 8px 14px;
+    cursor: pointer; text-align: left;
+    font-family: inherit; font-size: 0.88em; color: #4a4a6a;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .quiz-option:hover { border-color: #fb923c; }
+  .quiz-option.correct {
+    background: linear-gradient(135deg, #e0fff0, #c8f5dd);
+    border-color: #34d399; color: #065f46;
+  }
+  .quiz-option.wrong {
+    background: linear-gradient(135deg, #ffe8e8, #ffd6d6);
+    border-color: #fca5a5; color: #a04a4a;
+  }
+  .quiz-option .letter {
+    background: linear-gradient(135deg, #fed7aa, #fb923c);
+    color: #fff; width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.75em; flex-shrink: 0;
+  }
+  .quiz-option.correct .letter { background: linear-gradient(135deg, #34d399, #10b981); }
+  .quiz-option.wrong .letter { background: linear-gradient(135deg, #fca5a5, #f87171); }
+
+  .error-hunt {
+    background: #fff; border: 2px solid #fca5a5;
+    border-radius: 14px; padding: 14px; margin: 12px 0;
+  }
+  .error-hunt-title {
+    color: #b91c1c; font-weight: 700; font-size: 0.92em;
+    margin-bottom: 8px;
+  }
+  .error-options { display: grid; gap: 6px; margin-top: 10px; }
+  .error-option {
+    background: #fff; border: 2px solid #fed7aa;
+    border-radius: 10px; padding: 10px 14px;
+    cursor: pointer; text-align: left;
+    font-family: inherit; font-size: 0.88em; color: #4a4a6a;
+    transition: 0.2s;
+  }
+  .error-option:hover { border-color: #fb923c; background: #fffbf5; }
+  .error-option.correct {
+    background: linear-gradient(135deg, #e0fff0, #c8f5dd);
+    border-color: #34d399; color: #065f46; font-weight: 600;
+  }
+  .error-option.wrong {
+    background: linear-gradient(135deg, #ffe8e8, #ffd6d6);
+    border-color: #fca5a5; color: #a04a4a;
+  }
+
+  .predict {
+    background: #fff; border: 2px solid #a5b4fc;
+    border-radius: 14px; padding: 14px; margin: 12px 0;
+  }
+  .predict-title {
+    color: #4f46e5; font-weight: 700; font-size: 0.92em;
+    margin-bottom: 8px;
+  }
+
+  .note {
+    padding: 10px 14px; border-radius: 12px; margin: 10px 0;
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 0.88em; line-height: 1.55;
+  }
+  .note .icon { font-size: 1.2em; flex-shrink: 0; line-height: 1.3; }
+  .note.tip  { background: linear-gradient(135deg, #e8fff5, #d0f5e4); border-left: 4px solid #34d399; color: #065f46; }
+  .note.warn { background: linear-gradient(135deg, #fff8e6, #ffefcc); border-left: 4px solid #fbbf24; color: #7a5a1a; }
+  .note.idea { background: linear-gradient(135deg, #eef2ff, #e0e7ff); border-left: 4px solid #6366f1; color: #4f46e5; }
+  .note code {
+    background: rgba(255,255,255,0.7); padding: 1px 6px;
+    border-radius: 4px; font-family: 'Consolas',monospace;
+  }
+
+  .btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff; border: none;
+    padding: 9px 18px; border-radius: 18px;
+    cursor: pointer; font-size: 0.88em; font-weight: 600;
+    font-family: inherit; margin: 6px 6px 0 0;
+  }
+  .btn.rose { background: linear-gradient(135deg, #ec4899, #db2777); }
+  .btn.ghost { background: #fff; color: #c2410c; border: 2px solid #fed7aa; }
+
+  .bouquet {
+    text-align: center; padding: 24px;
+    background: linear-gradient(135deg, #fff7ed, #fef6ff);
+    border-radius: 18px; margin: 16px 0;
+    border: 2px solid #fed7aa;
+  }
+  .bouquet .stars-big { font-size: 2.2em; line-height: 1.3; margin: 10px 0; }
+  .bouquet .score-big {
+    font-size: 2em; font-weight: 800; margin: 8px 0 2px;
+    background: linear-gradient(135deg, #f97316, #ec4899);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .bouquet .score-label { color: #7c2d12; font-size: 0.85em; opacity: 0.7; }
+  .bouquet h2 {
+    background: linear-gradient(135deg, #f97316, #ec4899);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; font-size: 1.3em;
+  }
+
+  .nav-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 22px;
+    background: linear-gradient(135deg, #fff7ed, #f0f8ff);
+    border-top: 1px solid rgba(160,120,60,0.15);
+    gap: 10px; flex-wrap: wrap;
+  }
+  .nav-btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff; border: none;
+    padding: 9px 22px; border-radius: 22px;
+    font-size: 0.9em; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-btn:disabled { background: #e5d5c0; cursor: not-allowed; }
+  .nav-btn.next { background: linear-gradient(135deg, #ec4899, #db2777); }
+  .dots { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #e5d5c0; cursor: pointer;
+    transition: 0.2s; border: none; padding: 0;
+  }
+  .dot.active { width: 20px; border-radius: 5px; background: linear-gradient(90deg, #f97316, #ec4899); }
+
+  /* Если учитель заблокировал навигацию — скрываем кнопки и точки */
+  body.nav-locked .nav-bar { justify-content: center; }
+  body.nav-locked #prev-btn,
+  body.nav-locked #next-btn,
+  body.nav-locked .dots { display: none; }
+  body.nav-locked .nav-bar::after {
+    content: "🔒 Навигация заблокирована учителем";
+    color: #9a3412;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+
+  @media (max-width: 700px) {
+    .slide-viewport { padding: 16px; }
+    h2 { font-size: 1.15em; }
+    .compare { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="modal-bg hidden" id="nameModal">
+  <div class="modal">
+    <div class="flower-deco">☕</div>
+    <h2 id="modalTitle">Добро пожаловать!</h2>
+    <p id="modalText">Введи имя, чтобы начать. За каждое задание — звёздочка ✦</p>
+    <input type="text" id="nameInput" placeholder="Твоё имя" maxlength="30" autocomplete="off">
+    <button class="btn-start" id="startBtn" disabled onclick="startLesson()">Начать</button>
+  </div>
+</div>
+
+<div class="container">
+  <header>
+    <div class="left">
+      <a href="index.html" class="nav-home">← Главная</a>
+      <div class="logo">☕</div>
+      <div>
+        <h1>Тема 2 · Подпрограммы</h1>
+        <div class="subtitle">Процедуры и функции</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="teacher-badge" id="teacherBadge">👩‍🏫 Режим учителя</div>
+      <div class="student-badge" onclick="openNameModal()" title="Сменить имя">
+        <div class="avatar" id="avatarLetter">?</div>
+        <span id="studentName">—</span>
+      </div>
+      <div class="stars">
+        <span id="starsIcons">—</span>
+        <span class="count" id="starsCount">0 / 10</span>
+      </div>
+      <div class="progress-wrap">
+        <span id="slide-counter">1 / 16</span>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="slide-viewport" id="viewport">
+
+    <!-- СЛАЙД 1 -->
+    <div class="slide active" data-slide="1">
+      <div class="slide-num">Слайд 1 · Проблема</div>
+      <h2>☕ Три заказа в кафе</h2>
+
+      <div class="problem-box">
+        <h3>💼 Что нужно сделать</h3>
+        <p>Ты работаешь в кафе. Нужно посчитать стоимость <b>трёх заказов</b>.</p>
+        <ul>
+          <li>Каждый заказ = цена блюда + цена напитка</li>
+          <li>Сверху добавляется 10% за обслуживание</li>
+        </ul>
+      </div>
+
+      <div class="task-desc">
+        <b>Задание 1.</b> Напиши код, который обрабатывает 3 заказа <b>«в лоб»</b> — три раза подряд, копируя одинаковые строки.
+        <div class="example">
+          Пример результата:<br>
+          Итого 1: 385.0<br>
+          Итого 2: 297.0<br>
+          Итого 3: 462.0
+        </div>
+        <div class="test-data">
+          <b>📋 Тестовые данные для запуска:</b>
+          <table>
+            <tr><td>Блюдо 1</td><td>250</td></tr>
+            <tr><td>Напиток 1</td><td>100</td></tr>
+            <tr><td>Блюдо 2</td><td>180</td></tr>
+            <tr><td>Напиток 2</td><td>90</td></tr>
+            <tr><td>Блюдо 3</td><td>300</td></tr>
+            <tr><td>Напиток 3</td><td>120</td></tr>
+          </table>
+          <p>При нажатии «Запустить» эти числа будут автоматически подставлены в <code>input()</code>.</p>
+        </div>
+      </div>
+
+      <div class="editor-box" id="box-task-1">
+        <button class="editor-hint" onclick="toggleHint('hint-task-1', event)">?</button>
+        <div class="editor-title">
+          Задание 1
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(1)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-1">
+          Ввод: <code>float(input())</code><br>
+          Расчёт: <code>total = (food + drink) * 1.10</code><br>
+          Вывод: <code>print("Итого:", total)</code><br>
+          Повтори три раза с разными номерами переменных.
+        </div>
+        <textarea id="code-task-1" spellcheck="false"># Заказ 1
+food1 = float(input("Блюдо 1: "))
+drink1 = float(input("Напиток 1: "))
+total1 = (food1 + drink1) * 1.10
+print("Итого 1:", total1)
+
+# Заказ 2
+?
+
+# Заказ 3
+?</textarea>
+        <button class="btn" onclick='runTask("task-1", 1, checkTask1, {"1": 250, "2": 100, "3": 180, "4": 90, "5": 300, "6": 120})'>▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-1')">↺ Сбросить</button>
+        <div class="output" id="out-task-1">Здесь появится результат</div>
+        <div class="answer-block" data-answer="1">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>food1 = float(input("Блюдо 1: "))
+drink1 = float(input("Напиток 1: "))
+total1 = (food1 + drink1) * 1.10
+print("Итого 1:", total1)
+
+food2 = float(input("Блюдо 2: "))
+drink2 = float(input("Напиток 2: "))
+total2 = (food2 + drink2) * 1.10
+print("Итого 2:", total2)
+
+food3 = float(input("Блюдо 3: "))
+drink3 = float(input("Напиток 3: "))
+total3 = (food3 + drink3) * 1.10
+print("Итого 3:", total3)</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 2 -->
+    <div class="slide" data-slide="2">
+      <div class="slide-num">Слайд 2 · Анализ</div>
+      <h2>🤔 Что не так с кодом?</h2>
+
+      <p>Код работает, но <b>одна и та же формула повторяется 3 раза</b>. Переверни карточки — увидишь проблемы:</p>
+
+      <div class="cards">
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">📏</div><div class="label">Длинно</div><div class="hint">нажми →</div></div>
+            <div class="flip-back">18 строк вместо 6<br><small>чем больше заказов — тем хуже</small></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🔁</div><div class="label">Дублирование</div><div class="hint">нажми →</div></div>
+            <div class="flip-back">Формула <code>(food+drink)*1.10</code> повторяется 3 раза</div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🐢</div><div class="label">Тяжело менять</div><div class="hint">нажми →</div></div>
+            <div class="flip-back">Процент изменился — правим в <b>3 местах</b>. А если 100 заказов?</div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🐛</div><div class="label">Легко ошибиться</div><div class="hint">нажми →</div></div>
+            <div class="flip-back">Опечатка в одной копии — и результат неверный</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note idea">
+        <div class="icon">💡</div>
+        <div>Хочется <b>написать формулу 1 раз</b> и вызывать её по имени. Такой именованный блок называется <b>подпрограммой</b>.</div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 3 -->
+    <div class="slide" data-slide="3">
+      <div class="slide-num">Слайд 3 · Теория</div>
+      <h2>📘 Подпрограммы: два вида</h2>
+
+      <p>В Python <b>любая подпрограмма</b> объявляется словом <code>def</code>. Вид определяется наличием <code>return</code>.</p>
+
+      <div class="compare">
+        <div class="compare-col proc">
+          <h4>📋 Процедура</h4>
+          <ul>
+            <li>Выполняет действие</li>
+            <li><b>Не возвращает</b> значение</li>
+            <li>Нет <code>return</code></li>
+            <li>Пример: <code>print()</code></li>
+          </ul>
+        </div>
+        <div class="compare-col func">
+          <h4>🧮 Функция</h4>
+          <ul>
+            <li>Вычисляет значение</li>
+            <li><b>Возвращает</b> через <code>return</code></li>
+            <li>Есть <code>return</code> с результатом</li>
+            <li>Пример: <code>int()</code></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="note tip">
+        <div class="icon">✅</div>
+        <div>Смотрим на тело: есть <code>return</code> → функция. Нет → процедура.</div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 4 -->
+    <div class="slide" data-slide="4">
+      <div class="slide-num">Слайд 4 · Синтаксис</div>
+      <h2>🎁 Процедура без параметров</h2>
+
+      <p>Наведи мышкой на <b>строки кода</b> — увидишь, где заголовок, где тело, а где вызов.</p>
+
+      <div class="syntax-demo">
+        <div class="syntax-demo-title">
+          <span>🔍 Схема синтаксиса</span>
+          <span class="legend">
+            <span class="legend-head">заголовок</span>
+            <span class="legend-body">тело</span>
+            <span class="legend-call">вызов</span>
+          </span>
+        </div>
+        <div id="syntax-lines">
+          <span class="syntax-line" data-part="head">
+            <span class="indent"></span>def имя_функции():
+            <span class="tag">заголовок</span>
+          </span>
+          <span class="syntax-line" data-part="body">
+            <span class="indent">    </span>команда 1
+            <span class="tag">тело</span>
+          </span>
+          <span class="syntax-line" data-part="body">
+            <span class="indent">    </span>команда 2
+            <span class="tag">тело</span>
+          </span>
+          <span class="syntax-line" data-part="call">
+            <span class="indent"></span>имя_функции()
+            <span class="tag">вызов</span>
+          </span>
+        </div>
+
+        <div class="break-btns">
+          <button class="break-btn" onclick="breakCode('colon')">🐛 Убрать «:»</button>
+          <button class="break-btn" onclick="breakCode('indent')">🐛 Убрать отступ</button>
+          <button class="break-btn" onclick="breakCode('call')">🐛 Убрать вызов</button>
+          <button class="break-btn" onclick="breakCode('reset')">↺ Вернуть</button>
+        </div>
+
+        <div class="break-result" id="break-result"></div>
+      </div>
+
+      <div class="naming-rules">
+        <h4>📛 Правила именования</h4>
+        <ul>
+          <li>Можно буквы, цифры и <code>_</code>: <code>my_func</code>, <code>func2</code></li>
+          <li class="bad">Нельзя начинать с цифры: <code>2func</code> — ошибка</li>
+          <li class="bad">Нельзя пробелы: <code>my func</code> — ошибка</li>
+          <li>Имя должно быть понятным: <code>print_receipt</code>, а не <code>f1</code></li>
+        </ul>
+      </div>
+
+      <div class="note warn">
+        <div class="icon">⚠️</div>
+        <div>Описание подпрограммы <b>не выполняет</b> её. Нужен <b>вызов</b> — имя со скобками.</div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 5 -->
+    <div class="slide" data-slide="5">
+      <div class="slide-num">Слайд 5 · Как это работает</div>
+      <h2>🎬 Сначала описание, потом вызов</h2>
+
+      <p>Нажми «Шаг» — увидишь, что <b>описание подпрограммы не выполняется</b>, пока её не вызовут.</p>
+
+      <div class="viz-stage">
+        <div class="viz-phase">📝 Этап 1: описание подпрограммы</div>
+        <div class="viz-block" id="viz-head">
+          <div class="viz-label">заголовок</div>
+          <div class="viz-code">def имя_функции():</div>
+        </div>
+        <div class="viz-block" id="viz-body1">
+          <div class="viz-label">тело</div>
+          <div class="viz-code">    команда 1</div>
+        </div>
+        <div class="viz-block" id="viz-body2">
+          <div class="viz-label">тело</div>
+          <div class="viz-code">    команда 2</div>
+        </div>
+
+        <div class="viz-phase">▶ Этап 2: вызов подпрограммы</div>
+        <div class="viz-block" id="viz-call">
+          <div class="viz-label">вызов</div>
+          <div class="viz-code">имя_функции()</div>
+        </div>
+        <div class="viz-arrow" id="viz-arrow">↓</div>
+        <div class="viz-block" id="viz-head-run">
+          <div class="viz-label">заголовок</div>
+          <div class="viz-code">def имя_функции():</div>
+        </div>
+        <div class="viz-block" id="viz-body1-run">
+          <div class="viz-label">тело</div>
+          <div class="viz-code">    команда 1</div>
+        </div>
+        <div class="viz-block" id="viz-body2-run">
+          <div class="viz-label">тело</div>
+          <div class="viz-code">    команда 2</div>
+        </div>
+        <div class="viz-arrow" id="viz-arrow-back">↑</div>
+        <div class="viz-block" id="viz-back">
+          <div class="viz-label">возврат</div>
+          <div class="viz-code">продолжаем после вызова</div>
+        </div>
+      </div>
+
+      <div class="viz-controls">
+        <button class="btn" onclick="vizStep()">▶ Шаг</button>
+        <button class="btn ghost" onclick="vizReset()">↺ Сначала</button>
+      </div>
+
+      <div class="viz-log" id="viz-log">Нажми «Шаг», чтобы начать</div>
+    </div>
+
+    <!-- СЛАЙД 6: ЗАДАНИЕ 2 -->
+    <div class="slide" data-slide="6">
+      <div class="slide-num">Слайд 6 · Отработка</div>
+      <h2>✍️ Задание 2</h2>
+
+      <div class="task-desc">
+        <b>Что сделать:</b> объяви процедуру <code>say_hello()</code>, которая печатает две строки: «Привет!» и «Как дела?». Вызови её <b>два раза</b>.
+        <div class="example">
+          Ожидаемый результат:<br>
+          Привет!<br>
+          Как дела?<br>
+          Привет!<br>
+          Как дела?
+        </div>
+      </div>
+
+      <div class="editor-box" id="box-task-2">
+        <button class="editor-hint" onclick="toggleHint('hint-task-2', event)">?</button>
+        <div class="editor-title">
+          Задание 2
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(2)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-2">
+          Объяви через <code>def имя():</code><br>
+          Внутри — команды с отступом.<br>
+          Вызови её дважды: <code>имя()</code>.
+        </div>
+        <textarea id="code-task-2" spellcheck="false">def say_hello():
+    print(?)
+    print(?)
+
+say_hello()
+?</textarea>
+        <button class="btn" onclick="runTask('task-2', 2, checkTask2)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-2')">↺ Сбросить</button>
+        <div class="output" id="out-task-2">Здесь появится результат</div>
+        <div class="answer-block" data-answer="2">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>def say_hello():
+    print("Привет!")
+    print("Как дела?")
+
+say_hello()
+say_hello()</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 7: ЗАДАНИЕ 3 -->
+    <div class="slide" data-slide="7">
+      <div class="slide-num">Слайд 7 · Сложнее</div>
+      <h2>✍️ Задание 3</h2>
+
+      <div class="task-desc">
+        <b>Что сделать:</b> объяви процедуру <code>menu()</code>, которая печатает меню кафе из <b>четырёх</b> строк:
+        <br>«=== МЕНЮ ===», «1. Кофе», «2. Чай», «============»
+        <br>Вызови её <b>три раза</b>.
+      </div>
+
+      <div class="editor-box" id="box-task-3">
+        <button class="editor-hint" onclick="toggleHint('hint-task-3', event)">?</button>
+        <div class="editor-title">
+          Задание 3
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(3)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-3">
+          Один <code>print()</code> на каждую строку. Не забудь вызов трижды.
+        </div>
+        <textarea id="code-task-3" spellcheck="false">def menu():
+    print("=== МЕНЮ ===")
+    print(?)
+    print(?)
+    print("============")
+
+menu()
+?
+?</textarea>
+        <button class="btn" onclick="runTask('task-3', 3, checkTask3)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-3')">↺ Сбросить</button>
+        <div class="output" id="out-task-3">Здесь появится результат</div>
+        <div class="answer-block" data-answer="3">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>def menu():
+    print("=== МЕНЮ ===")
+    print("1. Кофе")
+    print("2. Чай")
+    print("============")
+
+menu()
+menu()
+menu()</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 8 -->
+    <div class="slide" data-slide="8">
+      <div class="slide-num">Слайд 8 · Параметры</div>
+      <h2>📦 Процедура с параметром</h2>
+
+      <p>Процедура выше всегда печатает одно и то же. А если нужно <b>по-разному</b>? Добавим параметр — «окошко» для значения.</p>
+
+      <div class="syntax-demo">
+        <div class="syntax-demo-title">
+          <span>🔍 Схема синтаксиса</span>
+          <span class="legend">
+            <span class="legend-head">заголовок</span>
+            <span class="legend-body">тело</span>
+            <span class="legend-call">вызов</span>
+          </span>
+        </div>
+        <div id="syntax-lines-2">
+          <span class="syntax-line" data-part="head">
+            <span class="indent"></span>def имя_функции(параметр):
+            <span class="tag">заголовок с параметром</span>
+          </span>
+          <span class="syntax-line" data-part="body">
+            <span class="indent">    </span>команда 1 (использует параметр)
+            <span class="tag">тело</span>
+          </span>
+          <span class="syntax-line" data-part="body">
+            <span class="indent">    </span>команда 2
+            <span class="tag">тело</span>
+          </span>
+          <span class="syntax-line" data-part="call">
+            <span class="indent"></span>имя_функции(значение)
+            <span class="tag">вызов с аргументом</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="note idea">
+        <div class="icon">💡</div>
+        <div><b>Параметр</b> — переменная в заголовке. <b>Аргумент</b> — значение при вызове.</div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 9: ЗАДАНИЕ 4 -->
+    <div class="slide" data-slide="9">
+      <div class="slide-num">Слайд 9 · Отработка</div>
+      <h2>✍️ Задание 4</h2>
+
+      <div class="task-desc">
+        <b>Что сделать:</b> объяви <b>процедуру</b> <code>greet(name)</code>, которая печатает «Привет, &lt;имя&gt;!». Вызови её для <b>трёх</b> разных имён.
+      </div>
+
+      <div class="editor-box" id="box-task-4">
+        <button class="editor-hint" onclick="toggleHint('hint-task-4', event)">?</button>
+        <div class="editor-title">
+          Задание 4
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(4)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-4">
+          В заголовке — имя параметра в скобках.<br>
+          Внутри — используй параметр в <code>print</code>.<br>
+          Вызови трижды с разными значениями.
+        </div>
+        <textarea id="code-task-4" spellcheck="false">def greet(?):
+    print("Привет,", ?, "!")
+
+greet("Аня")
+greet(?)
+greet(?)</textarea>
+        <button class="btn" onclick="runTask('task-4', 4, checkTask4)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-4')">↺ Сбросить</button>
+        <div class="output" id="out-task-4">Здесь появится результат</div>
+        <div class="answer-block" data-answer="4">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>def greet(name):
+    print("Привет,", name, "!")
+
+greet("Аня")
+greet("Дима")
+greet("Маша")</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 10: ЗАДАНИЕ 5 -->
+    <div class="slide" data-slide="10">
+      <div class="slide-num">Слайд 10 · Сложнее</div>
+      <h2>✍️ Задание 5</h2>
+
+      <div class="task-desc">
+        <b>Что сделать:</b> объяви процедуру <code>order(dish, drink)</code> с двумя параметрами. Печатает «Заказ: &lt;блюдо&gt; + &lt;напиток&gt;». Вызови для трёх пар.
+      </div>
+
+      <div class="editor-box" id="box-task-5">
+        <button class="editor-hint" onclick="toggleHint('hint-task-5', event)">?</button>
+        <div class="editor-title">
+          Задание 5
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(5)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-5">
+          Два параметра через запятую: <code>def order(dish, drink):</code><br>
+          Внутри — оба параметра в одном <code>print</code>.
+        </div>
+        <textarea id="code-task-5" spellcheck="false">def order(dish, drink):
+    print("Заказ:", ?, "+", ?)
+
+order("кофе", "круассан")
+order(?, ?)
+order(?, ?)</textarea>
+        <button class="btn" onclick="runTask('task-5', 5, checkTask5)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-5')">↺ Сбросить</button>
+        <div class="output" id="out-task-5">Здесь появится результат</div>
+        <div class="answer-block" data-answer="5">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>def order(dish, drink):
+    print("Заказ:", dish, "+", drink)
+
+order("кофе", "круассан")
+order("чай", "пирожное")
+order("сок", "сэндвич")</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 11 -->
+    <div class="slide" data-slide="11">
+      <div class="slide-num">Слайд 11 · Различаем</div>
+      <h2>🔍 Процедура или функция?</h2>
+
+      <p>Определи вид по коду. Есть <code>return</code> → функция, нет → процедура.</p>
+
+      <div class="quiz" data-correct="1">
+        <div class="question">Что это?</div>
+        <div class="code-block" style="margin:6px 0;padding:8px 14px;font-size:0.82em;">
+          <span class="line"><span class="def">def</span> <span class="fn">show</span>(<span class="var">a</span>, <span class="var">b</span>):</span>
+          <span class="line">    <span class="fn">print</span>(<span class="var">a</span> + <span class="var">b</span>)</span>
+        </div>
+        <div class="options">
+          <button class="quiz-option" data-i="0"><span class="letter">A</span> Функция</button>
+          <button class="quiz-option" data-i="1"><span class="letter">B</span> Процедура</button>
+        </div>
+      </div>
+
+      <div class="quiz" data-correct="0">
+        <div class="question">А это?</div>
+        <div class="code-block" style="margin:6px 0;padding:8px 14px;font-size:0.82em;">
+          <span class="line"><span class="def">def</span> <span class="fn">get</span>(<span class="var">a</span>, <span class="var">b</span>):</span>
+          <span class="line">    <span class="kw">return</span> <span class="var">a</span> + <span class="var">b</span></span>
+        </div>
+        <div class="options">
+          <button class="quiz-option" data-i="0"><span class="letter">A</span> Функция</button>
+          <button class="quiz-option" data-i="1"><span class="letter">B</span> Процедура</button>
+        </div>
+      </div>
+
+      <div class="quiz" data-correct="0">
+        <div class="question">И это?</div>
+        <div class="code-block" style="margin:6px 0;padding:8px 14px;font-size:0.82em;">
+          <span class="line"><span class="def">def</span> <span class="fn">double</span>(<span class="var">x</span>):</span>
+          <span class="line">    <span class="kw">return</span> <span class="var">x</span> * <span class="num">2</span></span>
+        </div>
+        <div class="options">
+          <button class="quiz-option" data-i="0"><span class="letter">A</span> Функция</button>
+          <button class="quiz-option" data-i="1"><span class="letter">B</span> Процедура</button>
+        </div>
+      </div>
+
+      <div class="quiz" data-correct="1">
+        <div class="question">А это?</div>
+        <div class="code-block" style="margin:6px 0;padding:8px 14px;font-size:0.82em;">
+          <span class="line"><span class="def">def</span> <span class="fn">line</span>():</span>
+          <span class="line">    <span class="fn">print</span>(<span class="str">"-----"</span>)</span>
+        </div>
+        <div class="options">
+          <button class="quiz-option" data-i="0"><span class="letter">A</span> Функция</button>
+          <button class="quiz-option" data-i="1"><span class="letter">B</span> Процедура</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 12 -->
+    <div class="slide" data-slide="12">
+      <div class="slide-num">Слайд 12 · Функция</div>
+      <h2>↩️ Функция возвращает результат</h2>
+
+      <p>Функция — та же подпрограмма, но она <b>возвращает значение</b> через <code>return</code>.</p>
+
+      <div class="code-block">
+        <span class="line"><span class="def">def</span> <span class="fn">add</span>(<span class="var">a</span>, <span class="var">b</span>):</span>
+        <span class="line">    <span class="kw">return</span> <span class="var">a</span> + <span class="var">b</span></span>
+        <span class="line blank">&nbsp;</span>
+        <span class="line"><span class="var">r</span> = <span class="fn">add</span>(<span class="num">2</span>, <span class="num">3</span>)   <span class="com"># r = 5</span></span>
+        <span class="line"><span class="fn">print</span>(<span class="fn">add</span>(<span class="num">10</span>, <span class="num">20</span>) * <span class="num">2</span>)  <span class="com"># 60</span></span>
+      </div>
+
+      <div class="note tip">
+        <div class="icon">✅</div>
+        <div><b>Процедура</b> напечатала и забыла. <b>Функция</b> вернула результат — используй в формулах, сравнивай, складывай.</div>
+      </div>
+
+      <div class="note warn">
+        <div class="icon">⚠️</div>
+        <div>После <code>return</code> функция <b>завершается</b>.</div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 13 -->
+    <div class="slide" data-slide="13">
+      <div class="slide-num">Слайд 13 · Предскажи</div>
+      <h2>🎯 Что выведет программа?</h2>
+
+      <div class="predict">
+        <div class="predict-title">📺 Код № 1</div>
+        <div class="code-block">
+          <span class="line"><span class="def">def</span> <span class="fn">square</span>(<span class="var">x</span>):</span>
+          <span class="line">    <span class="kw">return</span> <span class="var">x</span> * <span class="var">x</span></span>
+          <span class="line blank">&nbsp;</span>
+          <span class="line"><span class="fn">print</span>(<span class="fn">square</span>(<span class="num">4</span>) + <span class="num">1</span>)</span>
+        </div>
+        <div class="quiz" data-correct="2">
+          <div class="options">
+            <button class="quiz-option" data-i="0"><span class="letter">A</span> 4</button>
+            <button class="quiz-option" data-i="1"><span class="letter">B</span> 8</button>
+            <button class="quiz-option" data-i="2"><span class="letter">C</span> 17</button>
+            <button class="quiz-option" data-i="3"><span class="letter">D</span> Ошибка</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="predict">
+        <div class="predict-title">📺 Код № 2</div>
+        <div class="code-block">
+          <span class="line"><span class="def">def</span> <span class="fn">f</span>(<span class="var">a</span>):</span>
+          <span class="line">    <span class="fn">print</span>(<span class="str">"внутри"</span>)</span>
+          <span class="line">    <span class="kw">return</span> <span class="var">a</span> + <span class="num">10</span></span>
+          <span class="line blank">&nbsp;</span>
+          <span class="line"><span class="var">r</span> = <span class="fn">f</span>(<span class="num">5</span>)</span>
+          <span class="line"><span class="fn">print</span>(<span class="var">r</span>)</span>
+        </div>
+        <div class="quiz" data-correct="1">
+          <div class="options">
+            <button class="quiz-option" data-i="0"><span class="letter">A</span> Только 15</button>
+            <button class="quiz-option" data-i="1"><span class="letter">B</span> «внутри» и 15</button>
+            <button class="quiz-option" data-i="2"><span class="letter">C</span> Только «внутри»</button>
+            <button class="quiz-option" data-i="3"><span class="letter">D</span> Ошибка</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 14 -->
+    <div class="slide" data-slide="14">
+      <div class="slide-num">Слайд 14 · Найди ошибку</div>
+      <h2>🐛 Что не так с кодом?</h2>
+
+      <div class="error-hunt">
+        <div class="error-hunt-title">⚠️ Код № 1</div>
+        <div class="code-block">
+          <span class="line"><span class="def">def</span> <span class="fn">greet</span>(<span class="var">name</span>)</span>
+          <span class="line">    <span class="fn">print</span>(<span class="str">"Привет,"</span>, <span class="var">name</span>)</span>
+        </div>
+        <div class="error-options">
+          <button class="error-option" data-correct="1">A. Неправильное имя параметра</button>
+          <button class="error-option" data-correct="1">B. Пропущено двоеточие после скобок</button>
+          <button class="error-option" data-correct="0">C. Нет вызова процедуры</button>
+          <button class="error-option" data-correct="0">D. Ошибка в print</button>
+        </div>
+      </div>
+
+      <div class="error-hunt">
+        <div class="error-hunt-title">⚠️ Код № 2</div>
+        <div class="code-block">
+          <span class="line"><span class="def">def</span> <span class="fn">add</span>(<span class="var">a</span>, <span class="var">b</span>):</span>
+          <span class="line">    <span class="fn">print</span>(<span class="var">a</span> + <span class="var">b</span>)</span>
+        </div>
+        <div class="error-options">
+          <button class="error-option" data-correct="0">A. Нет return — это процедура, а не функция</button>
+          <button class="error-option" data-correct="1">B. Ошибка в print</button>
+          <button class="error-option" data-correct="1">C. Пропущено двоеточие</button>
+          <button class="error-option" data-correct="1">D. Нет параметров</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 15 -->
+    <div class="slide" data-slide="15">
+      <div class="slide-num">Слайд 15 · Напоминание</div>
+      <h2>📌 Вспомним схему</h2>
+
+      <p>Перед финальным заданием — короткое напоминание структуры функции с <code>return</code>.</p>
+
+      <div class="syntax-demo">
+        <div class="syntax-demo-title">
+          <span>🔍 Схема функции</span>
+          <span class="legend">
+            <span class="legend-head">заголовок</span>
+            <span class="legend-body">тело</span>
+          </span>
+        </div>
+        <div>
+          <span class="syntax-line" data-part="head">
+            <span class="indent"></span>def имя_функции(параметры):
+            <span class="tag">заголовок</span>
+          </span>
+          <span class="syntax-line" data-part="body">
+            <span class="indent">    </span>команда 1
+            <span class="tag">тело</span>
+          </span>
+          <span class="syntax-line" data-part="body">
+            <span class="indent">    </span>return результат
+            <span class="tag">возврат значения</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 16 -->
+    <div class="slide" data-slide="16">
+      <div class="slide-num">Слайд 16 · Финал</div>
+      <h2>🏆 Возвращаемся в кафе</h2>
+
+      <p>Помнишь Слайд 1? Теперь напиши <b>функцию</b> по описанию — самостоятельно.</p>
+
+      <div class="task-desc">
+        <b>Спецификация функции <code>calculate_total</code>:</b>
+        <ul style="margin: 6px 0 6px 18px;">
+          <li><b>Имя:</b> <code>calculate_total</code></li>
+          <li><b>Параметры:</b> <code>food</code>, <code>drink</code>, <code>service</code></li>
+          <li><b>Что делает:</b> считает итоговую стоимость заказа</li>
+          <li><b>Формула:</b> <code>(food + drink) * (1 + service / 100)</code></li>
+          <li><b>Возвращает:</b> число — итоговую стоимость</li>
+        </ul>
+        <div class="example">
+          Проверь свою функцию:<br>
+          <code>print(calculate_total(250, 100, 10))</code> → 385.0<br>
+          <code>print(calculate_total(200, 50, 15))</code> → 287.5
+        </div>
+      </div>
+
+      <div class="editor-box" id="box-task-6">
+        <button class="editor-hint" onclick="toggleHint('hint-task-6', event)">?</button>
+        <div class="editor-title">
+          Задание 6
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(6)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-6">
+          Это <b>функция</b> — значит, нужен <code>return</code>.<br>
+          В заголовке — три параметра.<br>
+          Внутри — формула.
+        </div>
+        <textarea id="code-task-6" spellcheck="false" style="min-height: 180px;"># Напиши функцию calculate_total по спецификации
+
+
+# Проверь её (должно получиться 385.0 и 287.5)
+print(calculate_total(250, 100, 10))
+print(calculate_total(200, 50, 15))</textarea>
+        <button class="btn" onclick="runTask('task-6', 6, checkTask6)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-6')">↺ Сбросить</button>
+        <div class="output" id="out-task-6">Здесь появится результат</div>
+        <div class="answer-block" data-answer="6">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>def calculate_total(food, drink, service):
+    return (food + drink) * (1 + service / 100)
+
+print(calculate_total(250, 100, 10))
+print(calculate_total(200, 50, 15))</pre>
+        </div>
+      </div>
+
+      <div class="bouquet">
+        <div class="stars-big" id="end-stars">✦</div>
+        <div class="score-big" id="end-score">0 / 10</div>
+        <div class="score-label">выполнено</div>
+        <h2 id="end-message" style="margin-top:14px;">Молодец!</h2>
+      </div>
+
+      <div style="text-align:center;margin-top:12px;">
+        <a href="tema3.html" class="btn rose" id="btn-next" style="text-decoration:none;display:inline-block;">К теме 3 →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-bar">
+    <button class="nav-btn" id="prev-btn" onclick="prevSlide()">← Назад</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn next" id="next-btn" onclick="nextSlide()">Вперёд →</button>
+  </div>
+</div>
+
+<script>
+/* === ОПРЕДЕЛЯЕМ РЕЖИМ === */
+const isInIframe = (() => {
+  try { return window.self !== window.top; } catch(e) { return true; }
+})();
+const urlParams = new URLSearchParams(window.location.search);
+const isTeacher = isInIframe || urlParams.get('teacher') === '1';
+
+if (isTeacher) {
+  document.body.classList.add('teacher-mode-active');
+  document.getElementById('teacherBadge').classList.add('visible');
+}
+
+/* === ЗАГРУЗКА НАСТРОЕК УЧИТЕЛЯ === */
+const TEACHER_SETTINGS_KEY = 'python_11_teacher_settings';
+function loadTeacherSettings() {
+  try {
+    const s = localStorage.getItem(TEACHER_SETTINGS_KEY);
+    return s ? JSON.parse(s) : { locked: false, answers: false, autofill: false, currentSlide: 1 };
+  } catch(e) {
+    return { locked: false, answers: false, autofill: false, currentSlide: 1 };
+  }
+}
+
+let teacherSettings = loadTeacherSettings();
+
+/* === ПРИМЕНЕНИЕ НАСТРОЕК === */
+function applyTeacherSettings() {
+  teacherSettings = loadTeacherSettings();
+
+  // Ответы — только для учителя
+  document.querySelectorAll('.answer-block').forEach(el => {
+    el.classList.toggle('visible', isTeacher && teacherSettings.answers);
+  });
+
+  // Кнопки автозаполнения — только для учителя
+  document.querySelectorAll('.autofill-btn').forEach(el => {
+    el.classList.toggle('visible', isTeacher && teacherSettings.autofill);
+  });
+
+  // Блокировка навигации — только для ученика
+  if (teacherSettings.locked && !isTeacher) {
+    document.body.classList.add('nav-locked');
+  } else {
+    document.body.classList.remove('nav-locked');
+  }
+}
+
+/* === ЗАЩИТА === */
+document.addEventListener('copy', e => { e.preventDefault(); });
+document.addEventListener('cut', e => { e.preventDefault(); });
+document.addEventListener('contextmenu', e => { e.preventDefault(); });
+document.addEventListener('selectstart', e => { e.preventDefault(); });
+document.addEventListener('keydown', e => {
+  const m = e.ctrlKey || e.metaKey;
+  if (m && ['c','C','a','A','x','X'].includes(e.key)) { e.preventDefault(); }
+});
+
+function attachPasteGuards() {
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('paste', e => { e.preventDefault(); return false; });
+    ta.addEventListener('drop', e => { e.preventDefault(); return false; });
+    ta.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
+    ta.addEventListener('selectstart', e => { e.stopPropagation(); });
+    ta.addEventListener('mousedown', e => { e.stopPropagation(); });
+  });
+}
+
+/* === ИНТЕРАКТИВНАЯ СХЕМА === */
+const syntaxOriginals = {};
+function saveSyntaxOriginals() {
+  ['syntax-lines', 'syntax-lines-2'].forEach(id => {
+    const container = document.getElementById(id);
+    if (!container) return;
+    syntaxOriginals[id] = [];
+    container.querySelectorAll('.syntax-line').forEach((line, i) => {
+      syntaxOriginals[id][i] = line.outerHTML;
+    });
+  });
+}
+
+let currentBreakType = null;
+function breakCode(type) {
+  const container = document.getElementById('syntax-lines');
+  const lines = container.querySelectorAll('.syntax-line');
+  const result = document.getElementById('break-result');
+
+  lines.forEach(l => l.classList.remove('syntax-broken'));
+  result.classList.remove('visible');
+  document.querySelectorAll('.break-btn').forEach(b => b.classList.remove('active'));
+
+  if (type === 'reset' || type === currentBreakType) {
+    currentBreakType = null;
+    const originals = syntaxOriginals['syntax-lines'];
+    if (originals) container.innerHTML = originals.join('');
+    return;
+  }
+  currentBreakType = type;
+
+  if (type === 'colon') {
+    lines[0].classList.add('syntax-broken');
+    lines[0].innerHTML = '<span class="indent"></span>def имя_функции()<span class="tag">заголовок</span>';
+    result.innerHTML = '❌ <b>SyntaxError: expected \':\'</b><br>Python ждёт двоеточие в конце заголовка.';
+    result.classList.add('visible');
+    document.querySelectorAll('.break-btn')[0].classList.add('active');
+  }
+  else if (type === 'indent') {
+    lines[1].classList.add('syntax-broken');
+    lines[1].innerHTML = '<span class="indent"></span>команда 1<span class="tag">тело</span>';
+    lines[2].classList.add('syntax-broken');
+    lines[2].innerHTML = '<span class="indent"></span>команда 2<span class="tag">тело</span>';
+    result.innerHTML = '❌ <b>IndentationError</b><br>Тело должно быть с отступом.';
+    result.classList.add('visible');
+    document.querySelectorAll('.break-btn')[1].classList.add('active');
+  }
+  else if (type === 'call') {
+    lines[3].classList.add('syntax-broken');
+    lines[3].innerHTML = '<span class="indent"></span><s>имя_функции()</s><span class="tag">вызов</span>';
+    result.innerHTML = '⚠️ <b>Без вызова программа ничего не сделает.</b>';
+    result.classList.add('visible');
+    document.querySelectorAll('.break-btn')[2].classList.add('active');
+  }
+}
+
+/* === ВИЗУАЛИЗАЦИЯ === */
+let vizStep_i = 0;
+const vizSteps = [
+  { id: 'viz-head',      log: '📝 Шаг 1. Заголовок def — программа запоминает имя.' },
+  { id: 'viz-body1',     log: '📝 Шаг 2. Видит тело — команды внутри.' },
+  { id: 'viz-body2',     log: '📝 Шаг 3. Тело запомнено целиком.' },
+  { id: 'viz-call',      log: '▶ Шаг 4. Программа дошла до вызова — теперь функция сработает!' },
+  { id: 'viz-head-run',  log: '▶ Шаг 5. Прыгаем в заголовок.' },
+  { id: 'viz-body1-run', log: '▶ Шаг 6. Выполняем команду 1.' },
+  { id: 'viz-body2-run', log: '▶ Шаг 7. Выполняем команду 2.' },
+  { id: 'viz-back',      log: '▶ Шаг 8. Возврат к тому месту, откуда вызвали.' }
+];
+function vizReset() {
+  vizStep_i = 0;
+  vizSteps.forEach(s => {
+    const el = document.getElementById(s.id);
+    if (el) el.classList.remove('active','done');
+  });
+  const a = document.getElementById('viz-arrow');
+  const b = document.getElementById('viz-arrow-back');
+  if (a) a.classList.remove('active');
+  if (b) b.classList.remove('active');
+  document.getElementById('viz-log').textContent = 'Нажми «Шаг», чтобы начать';
+}
+function vizStep() {
+  if (vizStep_i >= vizSteps.length) {
+    document.getElementById('viz-log').textContent = '✅ Функция выполнена.';
+    return;
+  }
+  const step = vizSteps[vizStep_i];
+  const el = document.getElementById(step.id);
+  if (vizStep_i > 0) {
+    const prevEl = document.getElementById(vizSteps[vizStep_i - 1].id);
+    if (prevEl) { prevEl.classList.remove('active'); prevEl.classList.add('done'); }
+  }
+  if (el) el.classList.add('active');
+  const arrow = document.getElementById('viz-arrow');
+  const arrowBack = document.getElementById('viz-arrow-back');
+  if (step.id === 'viz-call' && arrow) arrow.classList.add('active');
+  if (step.id === 'viz-back') {
+    if (arrowBack) arrowBack.classList.add('active');
+    if (arrow) arrow.classList.remove('active');
+  }
+  document.getElementById('viz-log').textContent = step.log;
+  vizStep_i++;
+}
+
+/* === ПРОГРЕСС === */
+const STORAGE_KEY = 'python_11_progress';
+let progress = {
+  name: '',
+  t2_1: false, t2_2: false, t2_3: false,
+  t2_4: false, t2_5: false, t2_6: false
+};
+
+function loadProgress() {
+  if (isTeacher) return;
+  try { const s = localStorage.getItem(STORAGE_KEY); if (s) Object.assign(progress, JSON.parse(s)); } catch(e) {}
+}
+function saveProgress() {
+  if (isTeacher) return;
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch(e) {}
+}
+function countStars() {
+  return ['t2_1','t2_2','t2_3','t2_4','t2_5','t2_6'].filter(k => progress[k]).length;
+}
+function updateStarUI() {
+  const n = countStars();
+  document.getElementById('starsIcons').textContent = n ? '✦'.repeat(n) : '—';
+  document.getElementById('starsCount').textContent = `${n} / 10`;
+  document.getElementById('avatarLetter').textContent = progress.name ? progress.name.charAt(0).toUpperCase() : '?';
+  document.getElementById('studentName').textContent = progress.name || '—';
+  document.querySelectorAll('.editor-box[id^="box-task-"]').forEach(el => {
+    const m = el.id.match(/task-(\d+)/);
+    if (m && progress['t2_' + m[1]]) el.classList.add('completed');
+  });
+}
+function markTask(n) {
+  if (isTeacher) return;
+  const key = 't2_' + n;
+  if (progress[key]) return;
+  progress[key] = true;
+  saveProgress();
+  updateStarUI();
+}
+
+/* === МОДАЛКА === */
+function startLesson() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) return;
+  progress.name = name;
+  saveProgress();
+  updateStarUI();
+  closeNameModal();
+}
+function openNameModal() {
+  if (isTeacher) return;
+  const modal = document.getElementById('nameModal');
+  const input = document.getElementById('nameInput');
+  const btn = document.getElementById('startBtn');
+  input.value = progress.name || '';
+  btn.disabled = !input.value.trim();
+  if (progress.name) {
+    document.getElementById('modalTitle').textContent = 'Смена имени';
+    btn.textContent = 'Сохранить';
+  } else {
+    document.getElementById('modalTitle').textContent = 'Добро пожаловать!';
+    btn.textContent = 'Начать';
+  }
+  modal.classList.remove('hidden');
+  setTimeout(() => input.focus(), 100);
+}
+function closeNameModal() {
+  document.getElementById('nameModal').classList.add('hidden');
+}
+document.getElementById('nameInput').addEventListener('input', e => {
+  document.getElementById('startBtn').disabled = !e.target.value.trim();
+});
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.value.trim()) startLesson();
+});
+
+loadProgress();
+if (isTeacher) { closeNameModal(); }
+else if (progress.name) { updateStarUI(); closeNameModal(); }
+else { openNameModal(); }
+
+/* === НАВИГАЦИЯ === */
+let currentSlide = 1;
+const totalSlides = document.querySelectorAll('.slide').length;
+
+function buildDots() {
+  const dots = document.getElementById('dots');
+  dots.innerHTML = '';
+  for (let i = 1; i <= totalSlides; i++) {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === currentSlide ? ' active' : '');
+    d.onclick = () => goToSlide(i);
+    dots.appendChild(d);
+  }
+}
+function updateNav() {
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.slide[data-slide="${currentSlide}"]`).classList.add('active');
+  document.getElementById('prev-btn').disabled = currentSlide === 1;
+  document.getElementById('next-btn').disabled = currentSlide === totalSlides;
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i + 1 === currentSlide));
+  document.getElementById('slide-counter').textContent = `${currentSlide} / ${totalSlides}`;
+  document.getElementById('progress-fill').style.width = ((currentSlide / totalSlides) * 100) + '%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (currentSlide === totalSlides) updateFinalSlide();
+}
+function nextSlide() {
+  // Ученик не может листать при блокировке
+  if (teacherSettings.locked && !isTeacher) return;
+  if (currentSlide < totalSlides) { currentSlide++; updateNav(); }
+}
+function prevSlide() {
+  if (teacherSettings.locked && !isTeacher) return;
+  if (currentSlide > 1) { currentSlide--; updateNav(); }
+}
+function goToSlide(n) {
+  if (teacherSettings.locked && !isTeacher) return;
+  currentSlide = n;
+  updateNav();
+}
+
+function updateFinalSlide() {
+  const n = ['t2_1','t2_2','t2_3','t2_4','t2_5','t2_6'].filter(k => progress[k]).length;
+  document.getElementById('end-stars').textContent = '✦'.repeat(Math.max(n,1));
+  document.getElementById('end-score').textContent = `${n} / 6`;
+  const name = progress.name || 'Умница';
+  let msg = `${name}, хорошее начало!`;
+  if (n >= 6) msg = `${name}, все 6 заданий! Отлично! 🏆`;
+  else if (n >= 4) msg = `${name}, почти всё!`;
+  else if (n >= 2) msg = `${name}, неплохо! Продолжай.`;
+  document.getElementById('end-message').textContent = msg;
+}
+
+/* === ПОДСКАЗКИ === */
+function toggleHint(id, ev) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('visible');
+  if (ev && ev.currentTarget) ev.currentTarget.classList.toggle('opened');
+}
+
+/* === АВТОЗАПОЛНЕНИЕ (только учитель) === */
+const examples = {
+  1: `food1 = float(input("Блюдо 1: "))
+drink1 = float(input("Напиток 1: "))
+total1 = (food1 + drink1) * 1.10
+print("Итого 1:", total1)
+
+food2 = float(input("Блюдо 2: "))
+drink2 = float(input("Напиток 2: "))
+total2 = (food2 + drink2) * 1.10
+print("Итого 2:", total2)
+
+food3 = float(input("Блюдо 3: "))
+drink3 = float(input("Напиток 3: "))
+total3 = (food3 + drink3) * 1.10
+print("Итого 3:", total3)`,
+  2: `def say_hello():
+    print("Привет!")
+    print("Как дела?")
+
+say_hello()
+say_hello()`,
+  3: `def menu():
+    print("=== МЕНЮ ===")
+    print("1. Кофе")
+    print("2. Чай")
+    print("============")
+
+menu()
+menu()
+menu()`,
+  4: `def greet(name):
+    print("Привет,", name, "!")
+
+greet("Аня")
+greet("Дима")
+greet("Маша")`,
+  5: `def order(dish, drink):
+    print("Заказ:", dish, "+", drink)
+
+order("кофе", "круассан")
+order("чай", "пирожное")
+order("сок", "сэндвич")`,
+  6: `def calculate_total(food, drink, service):
+    return (food + drink) * (1 + service / 100)
+
+print(calculate_total(250, 100, 10))
+print(calculate_total(200, 50, 15))`
+};
+
+function fillExample(n) {
+  const el = document.getElementById('code-task-' + n);
+  if (el && examples[n]) {
+    el.value = examples[n];
+  }
+}
+
+/* === QUIZ + ERROR HUNT === */
+document.querySelectorAll('.quiz').forEach(quiz => {
+  const correct = parseInt(quiz.dataset.correct);
+  quiz.querySelectorAll('.quiz-option').forEach(opt => {
+    opt.onclick = () => {
+      const i = parseInt(opt.dataset.i);
+      quiz.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('correct','wrong'));
+      opt.classList.add(i === correct ? 'correct' : 'wrong');
+      if (i !== correct) quiz.querySelector(`.quiz-option[data-i="${correct}"]`).classList.add('correct');
+    };
+  });
+});
+
+document.querySelectorAll('.error-hunt').forEach(hunt => {
+  hunt.querySelectorAll('.error-option').forEach(opt => {
+    opt.onclick = () => {
+      const isCorrect = opt.dataset.correct === '1';
+      hunt.querySelectorAll('.error-option').forEach(o => o.classList.remove('correct','wrong'));
+      opt.classList.add(isCorrect ? 'correct' : 'wrong');
+      if (!isCorrect) {
+        hunt.querySelectorAll('.error-option[data-correct="1"]').forEach(o => o.classList.add('correct'));
+      }
+    };
+  });
+});
+
+/* === ИНТЕРПРЕТАТОР === */
+function fmt(v) {
+  if (Array.isArray(v)) return '[' + v.map(x => typeof x === 'string' ? `'${x}'` : fmt(x)).join(', ') + ']';
+  if (typeof v === 'number' && !Number.isInteger(v)) return Math.round(v * 1000) / 1000;
+  if (typeof v === 'boolean') return v ? 'True' : 'False';
+  if (v === null || v === undefined) return 'None';
+  return String(v);
+}
+
+function runCodeRaw(code) {
+  let buffer = '';
+  const __out = (...args) => { buffer += args.map(fmt).join(' ') + '\n'; };
+
+  const lines = code.split('\n');
+  let problemLine = -1;
+  for (let i = 0; i < lines.length; i++) {
+    const noComment = lines[i].split('#')[0];
+    const noStrings = noComment.replace(/"[^"]*"/g, '""').replace(/'[^']*'/g, "''");
+    if (noStrings.includes('?')) { problemLine = i; break; }
+  }
+  if (problemLine >= 0) {
+    return { output: buffer, error: `В строке ${problemLine + 1} остался «?». Впиши значение.` };
+  }
+
+  const codeStripped = code.split('\n').map(l => l.split('#')[0]).join('').trim();
+  if (!codeStripped) { return { output: '', error: null, empty: true }; }
+
+  try {
+    const js = translatePython(code);
+    const wrapped = `
+      const __print = (...a) => __out(...a);
+      const __len = x => (Array.isArray(x) || typeof x === 'string') ? x.length : Object.keys(x).length;
+      const __sum = x => Array.isArray(x) ? x.reduce((a,b)=>a+b, 0) : 0;
+      const __range = (...a) => {
+        let start=0, stop, step=1;
+        if (a.length===1) stop=a[0];
+        else if (a.length===2) [start, stop]=a;
+        else [start, stop, step]=a;
+        const r=[]; if (step>0) for(let i=start;i<stop;i+=step) r.push(i); else for(let i=start;i>stop;i+=step) r.push(i);
+        return r;
+      };
+      const __iter = x => Array.isArray(x) ? x : (typeof x==='string' ? x.split('') : Object.values(x));
+      const __truthy = x => Array.isArray(x) ? x.length>0 : (typeof x==='string' ? x.length>0 : !!x);
+      const __int = x => { const n = parseInt(x, 10); if (isNaN(n)) throw new Error("ValueError: invalid int: '" + x + "'"); return n; };
+      const __float = x => { const n = parseFloat(x); if (isNaN(n)) throw new Error("ValueError: invalid float: '" + x + "'"); return n; };
+      const __str = x => String(x);
+
+      const __testData = window.__testData || {};
+      let __testKeys = Object.keys(__testData);
+      let __testIndex = 0;
+      const __input = (promptText) => {
+        if (__testIndex < __testKeys.length) {
+          const val = __testData[__testKeys[__testIndex]];
+          __testIndex++;
+          __out('(ввод: ' + val + ')');
+          return String(val);
+        }
+        return prompt(promptText || '');
+      };
+
+      ${js}
+    `;
+    const fn = new Function('__out', wrapped);
+    fn(__out);
+    return { output: buffer || '(нет вывода)', error: null };
+  } catch (e) {
+    return { output: buffer, error: e.message };
+  }
+}
+
+function translatePython(code) {
+  const lines = code.split('\n'); let js = ''; const stack = [];
+
+  for (let raw of lines) {
+    const ci = raw.indexOf('#'); let line = ci >= 0 ? raw.slice(0, ci) : raw;
+    if (line.trim() === '') continue;
+    const indent = line.match(/^\s*/)[0].length; let t = line.trim();
+
+    while (stack.length && indent <= stack[stack.length-1].indent) {
+      js += ' '.repeat(stack[stack.length-1].indent) + '}\n';
+      stack.pop();
+    }
+
+    let mDef = t.match(/^def\s+([A-Za-z_]\w*)\s*\(([^)]*)\)\s*:$/);
+    if (mDef) {
+      js += ' '.repeat(indent) + `function ${mDef[1]}(${mDef[2].trim()}) {\n`;
+      stack.push({ type: 'def', indent });
+      continue;
+    }
+    if (t.startsWith('return ')) {
+      js += ' '.repeat(indent) + `return ${t.slice(7).trim()};\n`;
+      continue;
+    }
+
+    t = t.replace(/\bprint\s*\(/g, '__print(');
+    t = t.replace(/\blen\s*\(/g, '__len(');
+    t = t.replace(/\bsum\s*\(/g, '__sum(');
+    t = t.replace(/\brange\s*\(/g, '__range(');
+    t = t.replace(/\bint\s*\(/g, '__int(');
+    t = t.replace(/\bfloat\s*\(/g, '__float(');
+    t = t.replace(/\bstr\s*\(/g, '__str(');
+    t = t.replace(/\binput\s*\(/g, '__input(');
+    t = t.replace(/\bTrue\b/g, 'true');
+    t = t.replace(/\bFalse\b/g, 'false');
+    t = t.replace(/\bNone\b/g, 'null');
+    t = t.replace(/\band\b/g, '&&');
+    t = t.replace(/\bor\b/g, '||');
+
+    let mFor = t.match(/^for\s+([A-Za-z_]\w*)\s+in\s+(.+):$/);
+    if (mFor) {
+      js += ' '.repeat(indent) + `for (let ${mFor[1]} of __iter(${mFor[2]})) {\n`;
+      stack.push({ type: 'for', indent });
+      continue;
+    }
+    let mIf = t.match(/^if\s+(.+):$/);
+    if (mIf) { js += ' '.repeat(indent) + `if (__truthy(${mIf[1]})) {\n`; stack.push({type:'if',indent}); continue; }
+    if (t === 'else:') { js += ' '.repeat(indent) + `} else {\n`; continue; }
+
+    js += ' '.repeat(indent) + t + ';\n';
+  }
+  while (stack.length) { js += ' '.repeat(stack[stack.length-1].indent) + '}\n'; stack.pop(); }
+  return js;
+}
+
+/* === ЗАПУСК === */
+const taskDefaults = {};
+function saveDefaults() {
+  for (let i = 1; i <= 6; i++) {
+    const el = document.getElementById('code-task-' + i);
+    if (el) taskDefaults[i] = el.value;
+  }
+}
+saveDefaults();
+
+function runTask(taskId, taskNum, checker, testData) {
+  const code = document.getElementById('code-' + taskId).value;
+  const out = document.getElementById('out-' + taskId);
+  const box = document.getElementById('box-' + taskId);
+
+  if (testData) window.__testData = testData;
+  else window.__testData = {};
+
+  const result = runCodeRaw(code);
+
+  if (result.empty) { out.textContent = 'Напиши код ✍️'; out.classList.remove('error','success','hint'); return; }
+  if (result.error) { out.textContent = '❌ ' + result.error; out.classList.add('error'); out.classList.remove('success','hint'); return; }
+  out.textContent = result.output;
+  out.classList.remove('error','hint');
+  if (isTeacher) { window.__testData = {}; return; }
+  if (checker) {
+    const ok = checker(code, result.output);
+    if (ok) {
+      out.classList.add('success');
+      out.textContent += '\n\n✦ Задание выполнено!';
+      box.classList.add('completed');
+      markTask(taskNum);
+    } else { out.classList.remove('success'); }
+  }
+  window.__testData = {};
+}
+function resetTask(taskId) {
+  const num = taskId.split('-')[1];
+  const el = document.getElementById('code-' + taskId);
+  if (taskDefaults[num]) el.value = taskDefaults[num];
+  const out = document.getElementById('out-' + taskId);
+  out.textContent = 'Здесь появится результат';
+  out.classList.remove('error','success','hint');
+}
+
+/* === ПРОВЕРКИ === */
+function outputLines(output) { return output.trim().split('\n').map(l => l.trim()).filter(l => l); }
+
+function checkTask1(code, output) {
+  if (/=\s*\?/.test(code)) return false;
+  return /total1/.test(code) && /total2/.test(code) && /total3/.test(code) &&
+         /1\.10|1\.1\b/.test(code) && outputLines(output).length >= 3 &&
+         /385/.test(output) && /297/.test(output) && /462/.test(output);
+}
+function checkTask2(code, output) {
+  if (/print\s*\(\s*\?\s*\)/.test(code)) return false;
+  return /def\s+say_hello\s*\(\s*\)\s*:/.test(code) &&
+         (code.match(/print\s*\(/g) || []).length >= 2 &&
+         (code.match(/say_hello\s*\(\s*\)/g) || []).length >= 2 &&
+         outputLines(output).length >= 4;
+}
+function checkTask3(code, output) {
+  if (/print\s*\(\s*\?\s*\)/.test(code) || /=\s*\?/.test(code)) return false;
+  return /def\s+menu\s*\(\s*\)\s*:/.test(code) &&
+         (code.match(/menu\s*\(\s*\)/g) || []).length >= 3 &&
+         outputLines(output).length >= 12 && /МЕНЮ/.test(output);
+}
+function checkTask4(code, output) {
+  if (/def\s+greet\s*\(\s*\?\s*\)/.test(code) || /greet\s*\(\s*\?\s*\)/.test(code)) return false;
+  return /def\s+greet\s*\(\s*\w+\s*\)\s*:/.test(code) &&
+         (code.match(/greet\s*\(\s*["'][^"']+["']\s*\)/g) || []).length >= 3 &&
+         (output.match(/Привет,/g) || []).length >= 3;
+}
+function checkTask5(code, output) {
+  if (/def\s+order\s*\(\s*\w+\s*,\s*\?\s*\)/.test(code)) return false;
+  return /def\s+order\s*\(\s*\w+\s*,\s*\w+\s*\)\s*:/.test(code) &&
+         (code.match(/order\s*\(\s*["'][^"']+["']\s*,\s*["'][^"']+["']\s*\)/g) || []).length >= 3 &&
+         (output.match(/Заказ:/g) || []).length >= 3;
+}
+function checkTask6(code, output) {
+  const hasDef = /def\s+calculate_total\s*\(\s*food\s*,\s*drink\s*,\s*service\s*\)\s*:/.test(code);
+  const hasReturn = /return\s*\(food\s*\+\s*drink\)\s*\*\s*\(\s*1\s*\+\s*service\s*\/\s*100\s*\)/.test(code) ||
+                    /return\s*\(food\s*\+\s*drink\)\s*\*\s*\(\s*service\s*\/\s*100\s*\+\s*1\s*\)/.test(code);
+  return hasDef && hasReturn && /385/.test(output) && /287\.5/.test(output);
+}
+
+/* === СИНХРОНИЗАЦИЯ С TEACHER.HTML === */
+window.addEventListener('storage', (e) => {
+  if (e.key === TEACHER_SETTINGS_KEY) {
+    const newSettings = loadTeacherSettings();
+    // Если учитель переключил слайд — переходим
+    if (isTeacher && newSettings.currentSlide !== currentSlide) {
+      currentSlide = newSettings.currentSlide;
+      updateNav();
+    }
+    applyTeacherSettings();
+  }
+});
+
+/* === ИНИЦИАЛИЗАЦИЯ === */
+buildDots();
+updateNav();
+attachPasteGuards();
+saveSyntaxOriginals();
+applyTeacherSettings();
+
+// Если учитель — сразу переходим на его текущий слайд
+if (isTeacher && teacherSettings.currentSlide) {
+  currentSlide = teacherSettings.currentSlide;
+  updateNav();
+}
+</script>
+
+</body>
+</html>
