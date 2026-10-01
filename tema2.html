@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Тема 2 · Подпрограммы · Python 11 класс</title>
+<title>Подпрограммы · Python</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -85,7 +85,6 @@
     transition: width 0.4s; width: 0%;
   }
 
-  /* Скрываем служебное в режиме ученика */
   body:not(.teacher-mode-active) .student-badge,
   body:not(.teacher-mode-active) .stars,
   body:not(.teacher-mode-active) .progress-wrap { display: none; }
@@ -165,9 +164,7 @@
   .syntax-demo {
     background: linear-gradient(135deg, #fffbf5, #fff);
     border: 2px solid #fed7aa;
-    border-radius: 18px;
-    padding: 18px;
-    margin: 14px 0;
+    border-radius: 18px; padding: 18px; margin: 14px 0;
   }
   .syntax-demo-title {
     font-size: 0.82em; color: #c2410c; font-weight: 700;
@@ -424,7 +421,6 @@
     border-radius: 4px; font-family: 'Consolas', monospace;
   }
 
-  /* === БЛОК ОТВЕТА (виден только учителю) === */
   .answer-block {
     display: none;
     background: linear-gradient(135deg, #f0fdf4, #dcfce7);
@@ -449,7 +445,6 @@
     margin: 0;
   }
 
-  /* === КНОПКА АВТОЗАПОЛНЕНИЯ === */
   .autofill-btn {
     display: none;
     background: linear-gradient(135deg, #6366f1, #4f46e5);
@@ -620,6 +615,7 @@
   .note.tip  { background: linear-gradient(135deg, #e8fff5, #d0f5e4); border-left: 4px solid #34d399; color: #065f46; }
   .note.warn { background: linear-gradient(135deg, #fff8e6, #ffefcc); border-left: 4px solid #fbbf24; color: #7a5a1a; }
   .note.idea { background: linear-gradient(135deg, #eef2ff, #e0e7ff); border-left: 4px solid #6366f1; color: #4f46e5; }
+  .note.moon { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-left: 4px solid #10b981; color: #065f46; }
   .note code {
     background: rgba(255,255,255,0.7); padding: 1px 6px;
     border-radius: 4px; font-family: 'Consolas',monospace;
@@ -680,7 +676,6 @@
   }
   .dot.active { width: 20px; border-radius: 5px; background: linear-gradient(90deg, #f97316, #ec4899); }
 
-  /* Если учитель заблокировал навигацию — скрываем кнопки и точки */
   body.nav-locked .nav-bar { justify-content: center; }
   body.nav-locked #prev-btn,
   body.nav-locked #next-btn,
@@ -703,9 +698,9 @@
 
 <div class="modal-bg hidden" id="nameModal">
   <div class="modal">
-    <div class="flower-deco">☕</div>
-    <h2 id="modalTitle">Добро пожаловать!</h2>
-    <p id="modalText">Введи имя, чтобы начать. За каждое задание — звёздочка ✦</p>
+    <div class="flower-deco">🌙</div>
+    <h2 id="modalTitle">Ассаляму алейкум!</h2>
+    <p id="modalText">Введи имя, чтобы начать урок. За каждое задание — звёздочка ✦</p>
     <input type="text" id="nameInput" placeholder="Твоё имя" maxlength="30" autocomplete="off">
     <button class="btn-start" id="startBtn" disabled onclick="startLesson()">Начать</button>
   </div>
@@ -717,8 +712,8 @@
       <a href="index.html" class="nav-home">← Главная</a>
       <div class="logo">☕</div>
       <div>
-        <h1>Тема 2 · Подпрограммы</h1>
-        <div class="subtitle">Процедуры и функции</div>
+        <h1>Ассаляму алейкум!</h1>
+        <div class="subtitle">Подпрограммы · Процедуры и функции</div>
       </div>
     </div>
     <div class="right">
@@ -744,6 +739,11 @@
     <div class="slide active" data-slide="1">
       <div class="slide-num">Слайд 1 · Проблема</div>
       <h2>☕ Три заказа в кафе</h2>
+
+      <div class="note moon">
+        <div class="icon">🌙</div>
+        <div><b>Ассаляму алейкум!</b> Начнём урок с небольшой задачи.</div>
+      </div>
 
       <div class="problem-box">
         <h3>💼 Что нужно сделать</h3>
@@ -1250,8 +1250,8 @@ order("сок", "сэндвич")</pre>
       <div class="quiz" data-correct="1">
         <div class="question">Что это?</div>
         <div class="code-block" style="margin:6px 0;padding:8px 14px;font-size:0.82em;">
-          <span class="line"><span class="def">def</span> <span class="fn">show</span>(<span class="var">a</span>, <span class="var">b</span>):</span>
-          <span class="line">    <span class="fn">print</span>(<span class="var">a</span> + <span class="var">b</span>)</span>
+          <span class="line"><span class="def">def</span> <span class="fn">show</span>(a, b):</span>
+          <span class="line">    <span class="fn">print</span>(a + b)</span>
         </div>
         <div class="options">
           <button class="quiz-option" data-i="0"><span class="letter">A</span> Функция</button>
@@ -1262,8 +1262,8 @@ order("сок", "сэндвич")</pre>
       <div class="quiz" data-correct="0">
         <div class="question">А это?</div>
         <div class="code-block" style="margin:6px 0;padding:8px 14px;font-size:0.82em;">
-          <span class="line"><span class="def">def</span> <span class="fn">get</span>(<span class="var">a</span>, <span class="var">b</span>):</span>
-          <span class="line">    <span class="kw">return</span> <span class="var">a</span> + <span class="var">b</span></span>
+          <span class="line"><span class="def">def</span> <span class="fn">get</span>(a, b):</span>
+          <span class="line">    <span class="kw">return</span> a + b</span>
         </div>
         <div class="options">
           <button class="quiz-option" data-i="0"><span class="letter">A</span> Функция</button>
@@ -1274,8 +1274,8 @@ order("сок", "сэндвич")</pre>
       <div class="quiz" data-correct="0">
         <div class="question">И это?</div>
         <div class="code-block" style="margin:6px 0;padding:8px 14px;font-size:0.82em;">
-          <span class="line"><span class="def">def</span> <span class="fn">double</span>(<span class="var">x</span>):</span>
-          <span class="line">    <span class="kw">return</span> <span class="var">x</span> * <span class="num">2</span></span>
+          <span class="line"><span class="def">def</span> <span class="fn">double</span>(x):</span>
+          <span class="line">    <span class="kw">return</span> x * <span class="num">2</span></span>
         </div>
         <div class="options">
           <button class="quiz-option" data-i="0"><span class="letter">A</span> Функция</button>
@@ -1304,10 +1304,10 @@ order("сок", "сэндвич")</pre>
       <p>Функция — та же подпрограмма, но она <b>возвращает значение</b> через <code>return</code>.</p>
 
       <div class="code-block">
-        <span class="line"><span class="def">def</span> <span class="fn">add</span>(<span class="var">a</span>, <span class="var">b</span>):</span>
-        <span class="line">    <span class="kw">return</span> <span class="var">a</span> + <span class="var">b</span></span>
+        <span class="line"><span class="def">def</span> <span class="fn">add</span>(a, b):</span>
+        <span class="line">    <span class="kw">return</span> a + b</span>
         <span class="line blank">&nbsp;</span>
-        <span class="line"><span class="var">r</span> = <span class="fn">add</span>(<span class="num">2</span>, <span class="num">3</span>)   <span class="com"># r = 5</span></span>
+        <span class="line">r = <span class="fn">add</span>(<span class="num">2</span>, <span class="num">3</span>)   <span class="com"># r = 5</span></span>
         <span class="line"><span class="fn">print</span>(<span class="fn">add</span>(<span class="num">10</span>, <span class="num">20</span>) * <span class="num">2</span>)  <span class="com"># 60</span></span>
       </div>
 
@@ -1330,8 +1330,8 @@ order("сок", "сэндвич")</pre>
       <div class="predict">
         <div class="predict-title">📺 Код № 1</div>
         <div class="code-block">
-          <span class="line"><span class="def">def</span> <span class="fn">square</span>(<span class="var">x</span>):</span>
-          <span class="line">    <span class="kw">return</span> <span class="var">x</span> * <span class="var">x</span></span>
+          <span class="line"><span class="def">def</span> <span class="fn">square</span>(x):</span>
+          <span class="line">    <span class="kw">return</span> x * x</span>
           <span class="line blank">&nbsp;</span>
           <span class="line"><span class="fn">print</span>(<span class="fn">square</span>(<span class="num">4</span>) + <span class="num">1</span>)</span>
         </div>
@@ -1348,12 +1348,12 @@ order("сок", "сэндвич")</pre>
       <div class="predict">
         <div class="predict-title">📺 Код № 2</div>
         <div class="code-block">
-          <span class="line"><span class="def">def</span> <span class="fn">f</span>(<span class="var">a</span>):</span>
+          <span class="line"><span class="def">def</span> <span class="fn">f</span>(a):</span>
           <span class="line">    <span class="fn">print</span>(<span class="str">"внутри"</span>)</span>
-          <span class="line">    <span class="kw">return</span> <span class="var">a</span> + <span class="num">10</span></span>
+          <span class="line">    <span class="kw">return</span> a + <span class="num">10</span></span>
           <span class="line blank">&nbsp;</span>
-          <span class="line"><span class="var">r</span> = <span class="fn">f</span>(<span class="num">5</span>)</span>
-          <span class="line"><span class="fn">print</span>(<span class="var">r</span>)</span>
+          <span class="line">r = <span class="fn">f</span>(<span class="num">5</span>)</span>
+          <span class="line"><span class="fn">print</span>(r)</span>
         </div>
         <div class="quiz" data-correct="1">
           <div class="options">
@@ -1374,8 +1374,8 @@ order("сок", "сэндвич")</pre>
       <div class="error-hunt">
         <div class="error-hunt-title">⚠️ Код № 1</div>
         <div class="code-block">
-          <span class="line"><span class="def">def</span> <span class="fn">greet</span>(<span class="var">name</span>)</span>
-          <span class="line">    <span class="fn">print</span>(<span class="str">"Привет,"</span>, <span class="var">name</span>)</span>
+          <span class="line"><span class="def">def</span> <span class="fn">greet</span>(name)</span>
+          <span class="line">    <span class="fn">print</span>(<span class="str">"Привет,"</span>, name)</span>
         </div>
         <div class="error-options">
           <button class="error-option" data-correct="1">A. Неправильное имя параметра</button>
@@ -1388,8 +1388,8 @@ order("сок", "сэндвич")</pre>
       <div class="error-hunt">
         <div class="error-hunt-title">⚠️ Код № 2</div>
         <div class="code-block">
-          <span class="line"><span class="def">def</span> <span class="fn">add</span>(<span class="var">a</span>, <span class="var">b</span>):</span>
-          <span class="line">    <span class="fn">print</span>(<span class="var">a</span> + <span class="var">b</span>)</span>
+          <span class="line"><span class="def">def</span> <span class="fn">add</span>(a, b):</span>
+          <span class="line">    <span class="fn">print</span>(a + b)</span>
         </div>
         <div class="error-options">
           <button class="error-option" data-correct="0">A. Нет return — это процедура, а не функция</button>
@@ -1493,10 +1493,6 @@ print(calculate_total(200, 50, 15))</pre>
         <div class="score-label">выполнено</div>
         <h2 id="end-message" style="margin-top:14px;">Молодец!</h2>
       </div>
-
-      <div style="text-align:center;margin-top:12px;">
-        <a href="tema3.html" class="btn rose" id="btn-next" style="text-decoration:none;display:inline-block;">К теме 3 →</a>
-      </div>
     </div>
 
   </div>
@@ -1521,7 +1517,7 @@ if (isTeacher) {
   document.getElementById('teacherBadge').classList.add('visible');
 }
 
-/* === ЗАГРУЗКА НАСТРОЕК УЧИТЕЛЯ === */
+/* === НАСТРОЙКИ УЧИТЕЛЯ === */
 const TEACHER_SETTINGS_KEY = 'python_11_teacher_settings';
 function loadTeacherSettings() {
   try {
@@ -1531,24 +1527,18 @@ function loadTeacherSettings() {
     return { locked: false, answers: false, autofill: false, currentSlide: 1 };
   }
 }
-
 let teacherSettings = loadTeacherSettings();
 
-/* === ПРИМЕНЕНИЕ НАСТРОЕК === */
 function applyTeacherSettings() {
   teacherSettings = loadTeacherSettings();
 
-  // Ответы — только для учителя
   document.querySelectorAll('.answer-block').forEach(el => {
     el.classList.toggle('visible', isTeacher && teacherSettings.answers);
   });
-
-  // Кнопки автозаполнения — только для учителя
   document.querySelectorAll('.autofill-btn').forEach(el => {
     el.classList.toggle('visible', isTeacher && teacherSettings.autofill);
   });
 
-  // Блокировка навигации — только для ученика
   if (teacherSettings.locked && !isTeacher) {
     document.body.classList.add('nav-locked');
   } else {
@@ -1576,7 +1566,7 @@ function attachPasteGuards() {
   });
 }
 
-/* === ИНТЕРАКТИВНАЯ СХЕМА === */
+/* === СИНТАКСИС: «СЛОМАТЬ КОД» === */
 const syntaxOriginals = {};
 function saveSyntaxOriginals() {
   ['syntax-lines', 'syntax-lines-2'].forEach(id => {
@@ -1738,7 +1728,7 @@ function openNameModal() {
     document.getElementById('modalTitle').textContent = 'Смена имени';
     btn.textContent = 'Сохранить';
   } else {
-    document.getElementById('modalTitle').textContent = 'Добро пожаловать!';
+    document.getElementById('modalTitle').textContent = 'Ассаляму алейкум!';
     btn.textContent = 'Начать';
   }
   modal.classList.remove('hidden');
@@ -1785,7 +1775,6 @@ function updateNav() {
   if (currentSlide === totalSlides) updateFinalSlide();
 }
 function nextSlide() {
-  // Ученик не может листать при блокировке
   if (teacherSettings.locked && !isTeacher) return;
   if (currentSlide < totalSlides) { currentSlide++; updateNav(); }
 }
@@ -1819,7 +1808,7 @@ function toggleHint(id, ev) {
   if (ev && ev.currentTarget) ev.currentTarget.classList.toggle('opened');
 }
 
-/* === АВТОЗАПОЛНЕНИЕ (только учитель) === */
+/* === АВТОЗАПОЛНЕНИЕ === */
 const examples = {
   1: `food1 = float(input("Блюдо 1: "))
 drink1 = float(input("Напиток 1: "))
@@ -1871,9 +1860,7 @@ print(calculate_total(200, 50, 15))`
 
 function fillExample(n) {
   const el = document.getElementById('code-task-' + n);
-  if (el && examples[n]) {
-    el.value = examples[n];
-  }
+  if (el && examples[n]) el.value = examples[n];
 }
 
 /* === QUIZ + ERROR HUNT === */
@@ -1933,18 +1920,6 @@ function runCodeRaw(code) {
     const js = translatePython(code);
     const wrapped = `
       const __print = (...a) => __out(...a);
-      const __len = x => (Array.isArray(x) || typeof x === 'string') ? x.length : Object.keys(x).length;
-      const __sum = x => Array.isArray(x) ? x.reduce((a,b)=>a+b, 0) : 0;
-      const __range = (...a) => {
-        let start=0, stop, step=1;
-        if (a.length===1) stop=a[0];
-        else if (a.length===2) [start, stop]=a;
-        else [start, stop, step]=a;
-        const r=[]; if (step>0) for(let i=start;i<stop;i+=step) r.push(i); else for(let i=start;i>stop;i+=step) r.push(i);
-        return r;
-      };
-      const __iter = x => Array.isArray(x) ? x : (typeof x==='string' ? x.split('') : Object.values(x));
-      const __truthy = x => Array.isArray(x) ? x.length>0 : (typeof x==='string' ? x.length>0 : !!x);
       const __int = x => { const n = parseInt(x, 10); if (isNaN(n)) throw new Error("ValueError: invalid int: '" + x + "'"); return n; };
       const __float = x => { const n = parseFloat(x); if (isNaN(n)) throw new Error("ValueError: invalid float: '" + x + "'"); return n; };
       const __str = x => String(x);
@@ -1997,9 +1972,6 @@ function translatePython(code) {
     }
 
     t = t.replace(/\bprint\s*\(/g, '__print(');
-    t = t.replace(/\blen\s*\(/g, '__len(');
-    t = t.replace(/\bsum\s*\(/g, '__sum(');
-    t = t.replace(/\brange\s*\(/g, '__range(');
     t = t.replace(/\bint\s*\(/g, '__int(');
     t = t.replace(/\bfloat\s*\(/g, '__float(');
     t = t.replace(/\bstr\s*\(/g, '__str(');
@@ -2009,16 +1981,6 @@ function translatePython(code) {
     t = t.replace(/\bNone\b/g, 'null');
     t = t.replace(/\band\b/g, '&&');
     t = t.replace(/\bor\b/g, '||');
-
-    let mFor = t.match(/^for\s+([A-Za-z_]\w*)\s+in\s+(.+):$/);
-    if (mFor) {
-      js += ' '.repeat(indent) + `for (let ${mFor[1]} of __iter(${mFor[2]})) {\n`;
-      stack.push({ type: 'for', indent });
-      continue;
-    }
-    let mIf = t.match(/^if\s+(.+):$/);
-    if (mIf) { js += ' '.repeat(indent) + `if (__truthy(${mIf[1]})) {\n`; stack.push({type:'if',indent}); continue; }
-    if (t === 'else:') { js += ' '.repeat(indent) + `} else {\n`; continue; }
 
     js += ' '.repeat(indent) + t + ';\n';
   }
@@ -2112,11 +2074,10 @@ function checkTask6(code, output) {
   return hasDef && hasReturn && /385/.test(output) && /287\.5/.test(output);
 }
 
-/* === СИНХРОНИЗАЦИЯ С TEACHER.HTML === */
+/* === СИНХРОНИЗАЦИЯ === */
 window.addEventListener('storage', (e) => {
   if (e.key === TEACHER_SETTINGS_KEY) {
     const newSettings = loadTeacherSettings();
-    // Если учитель переключил слайд — переходим
     if (isTeacher && newSettings.currentSlide !== currentSlide) {
       currentSlide = newSettings.currentSlide;
       updateNav();
@@ -2132,7 +2093,6 @@ attachPasteGuards();
 saveSyntaxOriginals();
 applyTeacherSettings();
 
-// Если учитель — сразу переходим на его текущий слайд
 if (isTeacher && teacherSettings.currentSlide) {
   currentSlide = teacherSettings.currentSlide;
   updateNav();
