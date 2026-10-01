@@ -48,7 +48,6 @@
     border-radius: 20px; font-size: 0.82em; font-weight: 600;
   }
 
-  /* Навигация по разделам */
   .toc {
     padding: 16px 28px;
     background: linear-gradient(135deg, #f0fdf4, #eef2ff);
@@ -160,6 +159,7 @@
   .note.tip  { background: linear-gradient(135deg, #e8fff5, #d0f5e4); border-left: 4px solid #34d399; color: #065f46; }
   .note.warn { background: linear-gradient(135deg, #fff8e6, #ffefcc); border-left: 4px solid #fbbf24; color: #7a5a1a; }
   .note.idea { background: linear-gradient(135deg, #eef2ff, #e0e7ff); border-left: 4px solid #6366f1; color: #4f46e5; }
+  .note.moon { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-left: 4px solid #10b981; color: #065f46; }
 
   footer {
     text-align: center;
@@ -210,6 +210,11 @@
   </div>
 
   <main>
+
+    <div class="note moon" style="margin-top:0;">
+      <div class="icon">🌙</div>
+      <div><b>Ассаляму алейкум!</b> Это справочник — сюда можно заглядывать, если что-то забыл.</div>
+    </div>
 
     <!-- ВЫВОД -->
     <div class="section" id="output">
@@ -406,7 +411,7 @@ result = <span class="fn">add</span>(<span class="num">2</span>, <span class="nu
   </main>
 
   <footer>
-    Учебник по Python · 11 класс<br>
+    Учебник по Python<br>
     <a href="index.html">← Вернуться на главную</a>
   </footer>
 </div>
