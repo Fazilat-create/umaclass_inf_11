@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Массивы · Python</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    user-select: none; -webkit-user-select: none;
+    font-family: 'Comfortaa', 'Segoe UI', 'Verdana', sans-serif;
+    background: linear-gradient(135deg, #fef6e4 0%, #f0f9ff 50%, #fef3f8 100%);
+    background-attachment: fixed; color: #3a3a5a; min-height: 100vh;
+    padding: 14px 10px; line-height: 1.55;
+  }
+  textarea { user-select: text !important; -webkit-user-select: text !important; }
+
+  .container {
+    max-width: 1050px; margin: 0 auto;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(160,120,60,0.15);
+    overflow: clip; min-height: 92vh;
+    display: flex; flex-direction: column;
+  }
+  header {
+    background: linear-gradient(135deg, #fed7aa 0%, #fbcfe8 50%, #bae6fd 100%);
+    padding: 12px 22px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+  }
+  header .left { display: flex; align-items: center; gap: 10px; }
+  header .logo { font-size: 1.6em; }
+  header h1 { font-size: 1.05em; color: #9a3412; font-weight: 700; }
+  header .subtitle { font-size: 0.75em; color: #7c2d12; opacity: 0.7; }
+  header .right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .nav-home {
+    text-decoration: none; padding: 5px 12px;
+    background: rgba(255,255,255,0.9); color: #9a3412;
+    border-radius: 18px; font-size: 0.78em; font-weight: 600;
+  }
+  .teacher-badge {
+    display: none;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    color: #fff; padding: 5px 12px;
+    border-radius: 18px; font-size: 0.78em; font-weight: 700;
+    align-items: center; gap: 6px;
+  }
+  .teacher-badge.visible { display: inline-flex; }
+  .student-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.9); padding: 5px 12px;
+    border-radius: 18px; font-size: 0.8em; font-weight: 600;
+    color: #9a3412; cursor: pointer; max-width: 180px;
+  }
+  .student-badge .avatar {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ec4899);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 0.8em; font-weight: 700; flex-shrink: 0;
+  }
+  .student-badge span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .stars {
+    display: flex; align-items: center; gap: 4px;
+    background: rgba(255,255,255,0.9); padding: 5px 12px;
+    border-radius: 18px; font-size: 0.9em;
+  }
+  .stars .count { color: #7c2d12; font-size: 0.75em; font-weight: 600; margin-left: 4px; opacity: 0.7; }
+  .progress-wrap {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.78em; color: #7c2d12; opacity: 0.7;
+  }
+  .progress-bar {
+    width: 90px; height: 8px; background: rgba(255,255,255,0.75);
+    border-radius: 8px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, #f97316, #ec4899);
+    transition: width 0.4s; width: 0%;
+  }
+
+  body:not(.teacher-mode-active) .student-badge,
+  body:not(.teacher-mode-active) .stars,
+  body:not(.teacher-mode-active) .progress-wrap { display: none; }
+
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, rgba(254,246,228,0.96), rgba(240,249,255,0.96));
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+  }
+  .modal-bg.hidden { display: none; }
+  .modal {
+    background: #fff; border-radius: 24px; padding: 32px 36px;
+    max-width: 420px; width: 100%; text-align: center;
+    box-shadow: 0 25px 70px rgba(160,120,60,0.2);
+    border: 2px solid #fed7aa;
+  }
+  .modal .flower-deco { font-size: 2.6em; margin-bottom: 10px; }
+  .modal h2 {
+    font-size: 1.35em; margin-bottom: 8px;
+    background: linear-gradient(135deg, #f97316, #ec4899);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .modal p { color: #6b6b8a; margin-bottom: 18px; font-size: 0.9em; }
+  .modal input {
+    width: 100%; padding: 12px 16px;
+    border: 2px solid #fed7aa; border-radius: 12px;
+    font-family: inherit; font-size: 1em;
+    text-align: center; color: #3a3a5a; outline: none;
+    background: #fffbf5;
+  }
+  .modal input:focus { border-color: #f97316; }
+  .modal .btn-start {
+    margin-top: 14px; width: 100%; padding: 12px;
+    background: linear-gradient(135deg, #f97316, #ec4899);
+    color: #fff; border: none; border-radius: 12px;
+    font-family: inherit; font-size: 1em; font-weight: 700;
+    cursor: pointer;
+  }
+  .modal .btn-start:disabled { background: #e5d5c0; cursor: not-allowed; }
+
+  .slide-viewport { flex: 1; padding: 22px 32px; }
+  .slide { display: none; }
+  .slide.active { display: block; animation: slideIn 0.35s ease; }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .slide-num {
+    display: inline-block;
+    background: linear-gradient(135deg, #f97316, #fb923c);
+    color: #fff; padding: 3px 12px; border-radius: 16px;
+    font-size: 0.68em; font-weight: 700; margin-bottom: 8px;
+  }
+  h2 { color: #9a3412; font-size: 1.35em; margin-bottom: 8px; line-height: 1.2; font-weight: 700; }
+  h3 { color: #c2410c; margin: 12px 0 6px; font-size: 1em; font-weight: 700; }
+  p { line-height: 1.6; margin-bottom: 10px; color: #4a4a6a; font-size: 0.95em; }
+
+  .code-block {
+    background: #fffbf5; border: 2px solid #fed7aa;
+    border-radius: 14px; padding: 12px 18px;
+    font-family: 'Consolas','Menlo',monospace;
+    font-size: 0.85em; line-height: 1.7; color: #3a3a5a;
+    margin: 10px 0; overflow-x: auto;
+  }
+  .code-block .line { display: block; white-space: pre; }
+  .code-block .line.blank { height: 0.4em; }
+  .code-block .kw  { color: #9333ea; font-weight: 600; }
+  .code-block .fn  { color: #2563eb; }
+  .code-block .num { color: #ea580c; }
+  .code-block .str { color: #16a34a; }
+  .code-block .com { color: #94a3b8; font-style: italic; }
+  .code-block .def { color: #db2777; font-weight: 700; }
+
+  .problem-box {
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    border-left: 5px solid #f97316;
+    border-radius: 14px; padding: 14px 18px; margin: 12px 0;
+  }
+  .problem-box h3 { color: #9a3412; margin: 0 0 6px; font-size: 1em; }
+  .problem-box p { color: #7c2d12; margin-bottom: 6px; font-size: 0.9em; }
+  .problem-box ul { margin-left: 18px; color: #7c2d12; font-size: 0.9em; }
+
+  .task-desc {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-left: 4px solid #3b82f6;
+    border-radius: 12px; padding: 12px 16px; margin: 10px 0;
+    font-size: 0.92em; color: #1e3a8a; line-height: 1.6;
+  }
+  .task-desc b { color: #1e40af; }
+  .task-desc .example {
+    background: rgba(255,255,255,0.8);
+    border-radius: 8px; padding: 8px 12px; margin-top: 8px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.88em; color: #334155;
+  }
+
+  .editor-box {
+    background: #fff; border: 2px dashed #fb923c;
+    border-radius: 16px; padding: 14px; margin: 12px 0;
+    position: relative;
+  }
+  .editor-box.completed {
+    border-style: solid; border-color: #34d399;
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  }
+  .editor-box.completed::after {
+    content: "✓";
+    position: absolute; top: 10px; left: 10px;
+    width: 24px; height: 24px;
+    background: linear-gradient(135deg, #34d399, #10b981);
+    color: #fff; font-weight: 700; font-size: 0.95em;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  }
+  .editor-title {
+    display: flex; align-items: center; gap: 6px;
+    font-weight: 700; color: #c2410c; margin-bottom: 8px;
+    font-size: 0.9em; flex-wrap: wrap; padding-left: 32px;
+    padding-right: 40px;
+  }
+  .editor-title .task-badge {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e; padding: 2px 10px; border-radius: 10px;
+    font-size: 0.7em; font-weight: 700;
+  }
+  .editor-title .done-badge {
+    background: linear-gradient(135deg, #34d399, #10b981);
+    color: #fff; padding: 2px 10px; border-radius: 10px;
+    font-size: 0.7em; font-weight: 700; display: none;
+  }
+  .editor-box.completed .done-badge { display: inline-block; }
+  .editor-box.completed .task-badge { display: none; }
+
+  .editor-hint {
+    position: absolute; top: 10px; right: 10px;
+    background: linear-gradient(135deg, #fff8e6, #ffefcc);
+    color: #8a6020; width: 28px; height: 28px;
+    border-radius: 50%; border: 2px solid #fde68a;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 0.9em; font-weight: 700; z-index: 10;
+    font-family: inherit;
+  }
+  .editor-hint.opened {
+    background: linear-gradient(135deg, #fde68a, #fbbf24);
+    color: #fff;
+  }
+  .hint-popup {
+    display: none;
+    background: linear-gradient(135deg, #fff8e6, #ffefcc);
+    border-left: 4px solid #fbbf24;
+    color: #7a5a1a; padding: 10px 14px;
+    border-radius: 12px; margin: 8px 0;
+    font-size: 0.85em; line-height: 1.6;
+  }
+  .hint-popup.visible { display: block; }
+  .hint-popup code {
+    background: rgba(255,255,255,0.8); padding: 1px 6px;
+    border-radius: 4px; font-family: 'Consolas', monospace;
+  }
+
+  .answer-block {
+    display: none;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-left: 4px solid #10b981;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 0.9em;
+  }
+  .answer-block.visible { display: block; }
+  .answer-block .answer-title {
+    color: #065f46; font-weight: 700;
+    font-size: 0.92em; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .answer-block pre {
+    background: rgba(255,255,255,0.8);
+    border-radius: 8px; padding: 10px 12px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.85em; color: #065f46;
+    white-space: pre-wrap; line-height: 1.55;
+    margin: 0;
+  }
+
+  .autofill-btn {
+    display: none;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff; border: none;
+    padding: 6px 14px;
+    border-radius: 18px;
+    font-family: inherit; font-size: 0.8em; font-weight: 600;
+    cursor: pointer; margin-left: 6px;
+  }
+  .autofill-btn.visible { display: inline-block; }
+  .autofill-btn:hover { transform: translateY(-1px); }
+
+  textarea {
+    width: 100%; min-height: 130px;
+    padding: 10px 14px; border: 2px solid #fed7aa;
+    border-radius: 10px; font-family: 'Consolas','Menlo',monospace;
+    font-size: 13px; resize: vertical;
+    background: #fffbf5; color: #3a3a5a; line-height: 1.6;
+  }
+  textarea:focus { outline: none; border-color: #f97316; }
+  .output {
+    background: #f0fdf4; border: 2px solid #a7f3d0;
+    color: #065f46; padding: 10px 14px;
+    border-radius: 10px; font-family: 'Consolas',monospace;
+    font-size: 12px; min-height: 38px; margin-top: 8px;
+    white-space: pre-wrap; word-break: break-word; line-height: 1.55;
+  }
+  .output.error { background: #fff0f0; border-color: #fca5a5; color: #c04a4a; }
+  .output.hint { background: #fff8e6; border-color: #fde68a; color: #7a5a1a; }
+  .output.success {
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    border-color: #34d399; color: #065f46;
+    font-weight: 600;
+  }
+
+  /* ===== КАРТОЧКИ-ПЕРЕВЁРТЫШИ ===== */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin: 14px 0;
+    align-items: stretch;
+  }
+  .flip-card {
+    perspective: 1000px;
+    min-height: 160px;
+    height: auto;
+    cursor: pointer;
+    position: relative;
+  }
+  .flip-inner {
+    position: relative;
+    width: 100%;
+    min-height: 160px;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+  .flip-front, .flip-back {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 160px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 6px 16px rgba(160,120,60,0.12);
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .flip-front {
+    background: linear-gradient(135deg, #fff, #fffbf5);
+    border: 2px solid #fed7aa;
+  }
+  .flip-front .emoji { font-size: 2em; margin-bottom: 6px; }
+  .flip-front .label {
+    font-weight: 700; color: #9a3412; font-size: 0.92em;
+    font-family: 'Consolas', monospace;
+    word-break: break-word;
+  }
+  .flip-front .hint { font-size: 0.7em; color: #a8a29e; margin-top: 4px; }
+  .flip-back {
+    background: linear-gradient(135deg, #fed7aa, #fbcfe8);
+    transform: rotateY(180deg);
+    color: #7c2d12;
+    font-size: 0.78em;
+    font-weight: 600;
+    padding: 12px 14px;
+    line-height: 1.45;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  .flip-back code {
+    background: rgba(255,255,255,0.75);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-family: 'Consolas', monospace;
+    color: #6a4a9a;
+    display: inline;
+    font-size: 0.9em;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .quiz {
+    background: linear-gradient(135deg, #fff7ed, #fef6ff);
+    border: 2px solid #fbcfe8; border-radius: 14px;
+    padding: 14px; margin: 12px 0;
+  }
+  .quiz .question {
+    font-weight: 700; color: #9a3412;
+    margin-bottom: 10px; font-size: 0.92em;
+  }
+  .quiz .options { display: grid; gap: 6px; }
+  .quiz-option {
+    background: #fff; border: 2px solid #fed7aa;
+    border-radius: 10px; padding: 8px 14px;
+    cursor: pointer; text-align: left;
+    font-family: inherit; font-size: 0.88em; color: #4a4a6a;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .quiz-option:hover { border-color: #fb923c; }
+  .quiz-option.correct {
+    background: linear-gradient(135deg, #e0fff0, #c8f5dd);
+    border-color: #34d399; color: #065f46;
+  }
+  .quiz-option.wrong {
+    background: linear-gradient(135deg, #ffe8e8, #ffd6d6);
+    border-color: #fca5a5; color: #a04a4a;
+  }
+  .quiz-option .letter {
+    background: linear-gradient(135deg, #fed7aa, #fb923c);
+    color: #fff; width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.75em; flex-shrink: 0;
+  }
+  .quiz-option.correct .letter { background: linear-gradient(135deg, #34d399, #10b981); }
+  .quiz-option.wrong .letter { background: linear-gradient(135deg, #fca5a5, #f87171); }
+
+  .note {
+    padding: 10px 14px; border-radius: 12px; margin: 10px 0;
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 0.88em; line-height: 1.55;
+  }
+  .note .icon { font-size: 1.2em; flex-shrink: 0; line-height: 1.3; }
+  .note.tip  { background: linear-gradient(135deg, #e8fff5, #d0f5e4); border-left: 4px solid #34d399; color: #065f46; }
+  .note.warn { background: linear-gradient(135deg, #fff8e6, #ffefcc); border-left: 4px solid #fbbf24; color: #7a5a1a; }
+  .note.idea { background: linear-gradient(135deg, #eef2ff, #e0e7ff); border-left: 4px solid #6366f1; color: #4f46e5; }
+  .note.moon { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-left: 4px solid #10b981; color: #065f46; }
+  .note code {
+    background: rgba(255,255,255,0.7); padding: 1px 6px;
+    border-radius: 4px; font-family: 'Consolas',monospace;
+  }
+
+  .array-viz {
+    display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0;
+    justify-content: center; padding: 18px;
+    background: linear-gradient(135deg, #fffbf5, #fff);
+    border-radius: 18px; border: 2px dashed #fed7aa;
+  }
+  .cell {
+    width: 72px; height: 80px; display: flex; flex-direction: column;
+    background: #fff; border: 2.5px solid #fb923c; border-radius: 14px;
+    overflow: hidden; transition: 0.35s cubic-bezier(0.4, 1.6, 0.6, 1);
+    box-shadow: 0 4px 10px rgba(251,146,60,0.2); cursor: pointer;
+  }
+  .cell:hover { transform: translateY(-4px) scale(1.05); }
+  .cell .idx {
+    background: linear-gradient(135deg, #fed7aa, #fb923c);
+    color: #fff; font-size: 10px; text-align: center;
+    padding: 3px 2px; font-weight: 700; line-height: 1.3;
+  }
+  .cell .idx .neg { display: block; font-size: 9px; color: #fff; opacity: 0.85; }
+  .cell .val {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: #9a3412;
+    padding: 2px; text-align: center;
+    word-break: break-word; line-height: 1.2;
+  }
+  .cell.highlight {
+    transform: translateY(-8px) scale(1.15);
+    border-color: #ec4899;
+    box-shadow: 0 0 0 4px rgba(236,72,153,0.25), 0 8px 20px rgba(236,72,153,0.35);
+  }
+  .cell.highlight .idx { background: linear-gradient(135deg, #ec4899, #db2777); }
+
+  .btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff; border: none;
+    padding: 9px 18px; border-radius: 18px;
+    cursor: pointer; font-size: 0.88em; font-weight: 600;
+    font-family: inherit; margin: 6px 6px 0 0;
+  }
+  .btn.rose { background: linear-gradient(135deg, #ec4899, #db2777); }
+  .btn.mint { background: linear-gradient(135deg, #34d399, #10b981); }
+  .btn.ghost { background: #fff; color: #c2410c; border: 2px solid #fed7aa; }
+
+  .bouquet {
+    text-align: center; padding: 24px;
+    background: linear-gradient(135deg, #fff7ed, #fef6ff);
+    border-radius: 18px; margin: 16px 0;
+    border: 2px solid #fed7aa;
+  }
+  .bouquet .stars-big { font-size: 2.2em; line-height: 1.3; margin: 10px 0; }
+  .bouquet .score-big {
+    font-size: 2em; font-weight: 800; margin: 8px 0 2px;
+    background: linear-gradient(135deg, #f97316, #ec4899);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .bouquet .score-label { color: #7c2d12; font-size: 0.85em; opacity: 0.7; }
+  .bouquet h2 {
+    background: linear-gradient(135deg, #f97316, #ec4899);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; font-size: 1.3em;
+  }
+
+  .nav-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 22px;
+    background: linear-gradient(135deg, #fff7ed, #f0f8ff);
+    border-top: 1px solid rgba(160,120,60,0.15);
+    gap: 10px; flex-wrap: wrap;
+  }
+  .nav-btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff; border: none;
+    padding: 9px 22px; border-radius: 22px;
+    font-size: 0.9em; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-btn:disabled { background: #e5d5c0; cursor: not-allowed; }
+  .nav-btn.next { background: linear-gradient(135deg, #ec4899, #db2777); }
+  .dots { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #e5d5c0; cursor: pointer;
+    transition: 0.2s; border: none; padding: 0;
+  }
+  .dot.active { width: 20px; border-radius: 5px; background: linear-gradient(90deg, #f97316, #ec4899); }
+
+  body.nav-locked .nav-bar { justify-content: center; }
+  body.nav-locked #prev-btn,
+  body.nav-locked #next-btn,
+  body.nav-locked .dots { display: none; }
+  body.nav-locked .nav-bar::after {
+    content: "🔒 Навигация заблокирована учителем";
+    color: #9a3412;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+
+  @media (max-width: 700px) {
+    .slide-viewport { padding: 16px; }
+    h2 { font-size: 1.15em; }
+    .cell { width: 60px; height: 68px; }
+    .cell .val { font-size: 12px; }
+    .flip-card { min-height: 180px; }
+    .flip-inner, .flip-front, .flip-back { min-height: 180px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="modal-bg hidden" id="nameModal">
+  <div class="modal">
+    <div class="flower-deco">🌙</div>
+    <h2 id="modalTitle">Ассаляму алейкум!</h2>
+    <p id="modalText">Введи имя, чтобы начать урок. За каждое задание — звёздочка ✦</p>
+    <input type="text" id="nameInput" placeholder="Твоё имя" maxlength="30" autocomplete="off">
+    <button class="btn-start" id="startBtn" disabled onclick="startLesson()">Начать</button>
+  </div>
+</div>
+
+<div class="container">
+  <header>
+    <div class="left">
+      <a href="index.html" class="nav-home">← Главная</a>
+      <div class="logo">📊</div>
+      <div>
+        <h1>Ассаляму алейкум!</h1>
+        <div class="subtitle">Структурированные типы данных · Массивы</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="teacher-badge" id="teacherBadge">👩‍🏫 Режим учителя</div>
+      <div class="student-badge" onclick="openNameModal()" title="Сменить имя">
+        <div class="avatar" id="avatarLetter">?</div>
+        <span id="studentName">—</span>
+      </div>
+      <div class="stars">
+        <span id="starsIcons">—</span>
+        <span class="count" id="starsCount">0 / 10</span>
+      </div>
+      <div class="progress-wrap">
+        <span id="slide-counter">1 / 13</span>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="slide-viewport" id="viewport">
+
+    <!-- СЛАЙД 1: ПОВТОР -->
+    <div class="slide active" data-slide="1">
+      <div class="slide-num">Слайд 1 · Повтор</div>
+      <h2>🌙 Ассаляму алейкум! Вспомним прошлую тему</h2>
+
+      <div class="note moon">
+        <div class="icon">💭</div>
+        <div>На прошлом уроке мы писали подпрограммы. Проверим, что ты помнишь.</div>
+      </div>
+
+      <div class="cards">
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="emoji">📋</div>
+              <div class="label">Процедура</div>
+              <div class="hint">нажми →</div>
+            </div>
+            <div class="flip-back">
+              <b>Не возвращает</b> значение.<br>
+              <code>def greet():</code>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="emoji">🧮</div>
+              <div class="label">Функция</div>
+              <div class="hint">нажми →</div>
+            </div>
+            <div class="flip-back">
+              <b>Возвращает</b> значение через <code>return</code>.
+            </div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="emoji">🖨️</div>
+              <div class="label">print()</div>
+              <div class="hint">нажми →</div>
+            </div>
+            <div class="flip-back">
+              <b>Процедура</b> — печатает, но ничего не возвращает.
+            </div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front">
+              <div class="emoji">🔢</div>
+              <div class="label">int()</div>
+              <div class="hint">нажми →</div>
+            </div>
+            <div class="flip-back">
+              <b>Функция</b> — возвращает целое число.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>🎯 Быстрая проверка</h3>
+
+      <div class="quiz" data-correct="1">
+        <div class="question">Что это?</div>
+        <div class="code-block" style="margin:6px 0;padding:8px 14px;font-size:0.82em;">
+          <span class="line"><span class="def">def</span> <span class="fn">show</span>(a, b):</span>
+          <span class="line">    <span class="fn">print</span>(a + b)</span>
+        </div>
+        <div class="options">
+          <button class="quiz-option" data-i="0"><span class="letter">A</span> Функция</button>
+          <button class="quiz-option" data-i="1"><span class="letter">B</span> Процедура</button>
+        </div>
+      </div>
+
+      <div class="quiz" data-correct="0">
+        <div class="question">А это?</div>
+        <div class="code-block" style="margin:6px 0;padding:8px 14px;font-size:0.82em;">
+          <span class="line"><span class="def">def</span> <span class="fn">get</span>(a, b):</span>
+          <span class="line">    <span class="kw">return</span> a + b</span>
+        </div>
+        <div class="options">
+          <button class="quiz-option" data-i="0"><span class="letter">A</span> Функция</button>
+          <button class="quiz-option" data-i="1"><span class="letter">B</span> Процедура</button>
+        </div>
+      </div>
+
+      <div class="note idea">
+        <div class="icon">💡</div>
+        <div>Помним: <b>есть <code>return</code> с результатом → функция, нет → процедура</b>.</div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 2: ПРОБЛЕМА -->
+    <div class="slide" data-slide="2">
+      <div class="slide-num">Слайд 2 · Проблема</div>
+      <h2>☕ Сколько чашек кофе?</h2>
+
+      <div class="problem-box">
+        <h3>💼 Задача</h3>
+        <p>В кафе за день продали <b>5 чашек кофе</b>. Нужно посчитать, сколько денег за них выручили, и найти средний чек.</p>
+        <ul>
+          <li>Цены: 150, 180, 120, 200, 160</li>
+          <li>Нужно: <b>сумма</b> и <b>средняя цена</b></li>
+        </ul>
+      </div>
+
+      <div class="task-desc">
+        <b>Задание 1.</b> Посчитай сумму и среднее через отдельные переменные.
+        <div class="example">
+          Сумма: 810<br>
+          Среднее: 162
+        </div>
+      </div>
+
+      <div class="editor-box" id="box-task-1">
+        <button class="editor-hint" onclick="toggleHint('hint-task-1', event)">?</button>
+        <div class="editor-title">
+          Задание 1
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(1)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-1">
+          <code>total = p1 + p2 + p3 + p4 + p5</code><br>
+          <code>avg = total / 5</code>
+        </div>
+        <textarea id="code-task-1" spellcheck="false"># Пять отдельных переменных — «в лоб»
+p1 = 150
+p2 = 180
+p3 = 120
+p4 = 200
+p5 = 160
+
+# Посчитай сумму и среднее
+total = ?
+avg = ?
+print("Сумма:", total)
+print("Среднее:", avg)
+</textarea>
+        <button class="btn" onclick="runTask('task-1', 1, checkTask1)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-1')">↺ Сбросить</button>
+        <div class="output" id="out-task-1">Здесь появится результат</div>
+        <div class="answer-block" data-answer="1">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>p1 = 150
+p2 = 180
+p3 = 120
+p4 = 200
+p5 = 160
+
+total = p1 + p2 + p3 + p4 + p5
+avg = total / 5
+print("Сумма:", total)
+print("Среднее:", avg)</pre>
+        </div>
+      </div>
+
+      <div class="note warn">
+        <div class="icon">⚠️</div>
+        <div>А если чашек будет <b>100</b>? А если <b>1000</b>?</div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 3: АНАЛИЗ -->
+    <div class="slide" data-slide="3">
+      <div class="slide-num">Слайд 3 · Анализ</div>
+      <h2>🤔 Что не так с кодом?</h2>
+
+      <p>Мы создали <b>5 отдельных переменных</b> для одной и той же сущности — «цены».</p>
+
+      <div class="cards">
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">📏</div><div class="label">Длинно</div><div class="hint">нажми →</div></div>
+            <div class="flip-back">5 переменных, а если 100 — 100 переменных?</div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🔁</div><div class="label">Повторение</div><div class="hint">нажми →</div></div>
+            <div class="flip-back">Каждое значение — новая строка</div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🐢</div><div class="label">Сложно менять</div><div class="hint">нажми →</div></div>
+            <div class="flip-back">Удалить одну цену — пересчитывать всё вручную</div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🐛</div><div class="label">Легко ошибиться</div><div class="hint">нажми →</div></div>
+            <div class="flip-back">Одна переменная потерялась — результат неверный</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note idea">
+        <div class="icon">💡</div>
+        <div>Хочется <b>хранить много значений вместе</b> под одним именем.</div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 4: ЧТО ТАКОЕ МАССИВ -->
+    <div class="slide" data-slide="4">
+      <div class="slide-num">Слайд 4 · Что такое массив</div>
+      <h2>📘 Примеры массивов вокруг нас</h2>
+
+      <p>Нажми на карточку, чтобы перевернуть.</p>
+
+      <div class="cards">
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">📊</div><div class="label">Оценки</div><div class="hint">нажми →</div></div>
+            <div class="flip-back">Массив чисел:<br><code>[5, 4, 3, 5, 2]</code></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🌡️</div><div class="label">Температура</div><div class="hint">нажми →</div></div>
+            <div class="flip-back">Массив чисел:<br><code>[18, 20, 17, 22, 19]</code></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">📚</div><div class="label">Предметы</div><div class="hint">нажми →</div></div>
+            <div class="flip-back">Массив строк:<br><code>["математика", "физика"]</code></div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🐾</div><div class="label">Питомцы</div><div class="hint">нажми →</div></div>
+            <div class="flip-back">Массив строк:<br><code>["кошка", "собака"]</code></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note tip">
+        <div class="icon">✅</div>
+        <div><b>Массив</b> — это упорядоченный набор значений под одним именем. В Python массив записывают в квадратных скобках.</div>
+      </div>
+
+      <div class="code-block">
+        <span class="line"><span class="com"># Массив чисел</span></span>
+        <span class="line"><span class="var">prices</span> = [<span class="num">150</span>, <span class="num">180</span>, <span class="num">120</span>, <span class="num">200</span>, <span class="num">160</span>]</span>
+        <span class="line blank">&nbsp;</span>
+        <span class="line"><span class="com"># Массив строк</span></span>
+        <span class="line"><span class="var">pets</span> = [<span class="str">"кошка"</span>, <span class="str">"собака"</span>, <span class="str">"хомяк"</span>]</span>
+        <span class="line blank">&nbsp;</span>
+        <span class="line"><span class="com"># Пустой массив</span></span>
+        <span class="line"><span class="var">empty</span> = []</span>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 5: ЗАДАНИЕ 2 — СВОЙ МАССИВ -->
+    <div class="slide" data-slide="5">
+      <div class="slide-num">Слайд 5 · Твой массив</div>
+      <h2>✍️ Создай свой массив</h2>
+
+      <div class="task-desc">
+        <b>Задание 2.</b> Придумай массив на любую тему: цены, имена, города, любимые фильмы — что хочешь. Создай его и выведи на экран.
+      </div>
+
+      <div class="editor-box" id="box-task-2">
+        <button class="editor-hint" onclick="toggleHint('hint-task-2', event)">?</button>
+        <div class="editor-title">
+          Задание 2
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(2)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-2">
+          Массив — <code>[значение1, значение2, ...]</code>
+        </div>
+        <textarea id="code-task-2" spellcheck="false"># Придумай свой массив минимум из 4 элементов
+my_array = ?
+
+# Выведи его
+print(my_array)
+</textarea>
+        <button class="btn" onclick="runTask('task-2', 2, checkTask2)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-2')">↺ Сбросить</button>
+        <div class="output" id="out-task-2">Здесь появится результат</div>
+        <div class="answer-block" data-answer="2">
+          <div class="answer-title">💡 Пример решения</div>
+<pre># Например, любимые города
+cities = ["Москва", "Казань", "Уфа", "Грозный"]
+print(cities)</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 6: ИНДЕКСЫ (пример — имена) -->
+    <div class="slide" data-slide="6">
+      <div class="slide-num">Слайд 6 · Индексы</div>
+      <h2>🔢 Индексы — номер каждой ячейки</h2>
+
+      <p>У каждого элемента массива есть номер — <b>индекс</b>. Первый элемент — индекс <code>0</code>.</p>
+
+      <div class="code-block">
+        <span class="line"><span class="var">names</span> = [<span class="str">"Али"</span>, <span class="str">"Марьям"</span>, <span class="str">"Юсуф"</span>, <span class="str">"Хадиджа"</span>]</span>
+        <span class="line blank">&nbsp;</span>
+        <span class="line"><span class="com"># Индексы:       0         1          2           3</span></span>
+        <span class="line blank">&nbsp;</span>
+        <span class="line"><span class="fn">print</span>(<span class="var">names</span>[<span class="num">0</span>])   <span class="com"># Али — первый</span></span>
+        <span class="line"><span class="fn">print</span>(<span class="var">names</span>[<span class="num">2</span>])   <span class="com"># Юсуф — третий</span></span>
+      </div>
+
+      <h3>Нажми на ячейку — увидишь её индекс 👇</h3>
+      <div class="array-viz" id="idx-demo"></div>
+      <div class="output" id="idx-output">Кликни на ячейку</div>
+
+      <h3>Задание 3. Достань элементы по индексам</h3>
+      <div class="editor-box" id="box-task-3">
+        <button class="editor-hint" onclick="toggleHint('hint-task-3', event)">?</button>
+        <div class="editor-title">
+          Задание 3
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(3)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-3">
+          Первый — <code>0</code>, третий — <code>2</code>, последний — <code>4</code>
+        </div>
+        <textarea id="code-task-3" spellcheck="false">fruits = ["яблоко", "банан", "вишня", "груша", "слива"]
+
+# 1. Первый элемент (индекс 0)
+print("Первый:", fruits[0])
+
+# 2. Третий элемент
+print("Третий:", fruits[?])
+
+# 3. Пятый элемент
+print("Пятый:", fruits[?])
+</textarea>
+        <button class="btn" onclick="runTask('task-3', 3, checkTask3)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-3')">↺ Сбросить</button>
+        <div class="output" id="out-task-3">Здесь появится результат</div>
+        <div class="answer-block" data-answer="3">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>fruits = ["яблоко", "банан", "вишня", "груша", "слива"]
+print("Первый:", fruits[0])
+print("Третий:", fruits[2])
+print("Пятый:", fruits[4])</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 7: ОТРИЦАТЕЛЬНЫЕ ИНДЕКСЫ -->
+    <div class="slide" data-slide="7">
+      <div class="slide-num">Слайд 7 · С конца</div>
+      <h2>🔄 Отрицательные индексы</h2>
+
+      <p>Можно считать не только с начала, но и <b>с конца</b>.</p>
+
+      <div class="code-block">
+        <span class="line"><span class="var">names</span> = [<span class="str">"Али"</span>, <span class="str">"Марьям"</span>, <span class="str">"Юсуф"</span>, <span class="str">"Хадиджа"</span>]</span>
+        <span class="line blank">&nbsp;</span>
+        <span class="line"><span class="com"># Обычные:    0       1        2        3</span></span>
+        <span class="line"><span class="com"># С конца:   -4      -3       -2       -1</span></span>
+        <span class="line blank">&nbsp;</span>
+        <span class="line"><span class="fn">print</span>(<span class="var">names</span>[<span class="num">-1</span>])  <span class="com"># Хадиджа — последняя</span></span>
+        <span class="line"><span class="fn">print</span>(<span class="var">names</span>[<span class="num">-2</span>])  <span class="com"># Юсуф — предпоследний</span></span>
+      </div>
+
+      <h3>Нажми на ячейку — увидишь <b>оба</b> индекса 👇</h3>
+      <div class="array-viz" id="idx-demo-2"></div>
+      <div class="output" id="idx-output-2">Обычный индекс сверху, отрицательный — под ним</div>
+
+      <h3>Задание 4. Отрицательные индексы</h3>
+      <div class="editor-box" id="box-task-4">
+        <button class="editor-hint" onclick="toggleHint('hint-task-4', event)">?</button>
+        <div class="editor-title">
+          Задание 4
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(4)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-4">
+          Последний — <code>-1</code>, предпоследний — <code>-2</code>
+        </div>
+        <textarea id="code-task-4" spellcheck="false">numbers = [10, 25, 40, 55, 70]
+
+# 1. Последний элемент
+print("Последний:", numbers[?])
+
+# 2. Предпоследний элемент
+print("Предпоследний:", numbers[?])
+
+# 3. Второй с начала
+print("Второй:", numbers[?])
+</textarea>
+        <button class="btn" onclick="runTask('task-4', 4, checkTask4)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-4')">↺ Сбросить</button>
+        <div class="output" id="out-task-4">Здесь появится результат</div>
+        <div class="answer-block" data-answer="4">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>numbers = [10, 25, 40, 55, 70]
+print("Последний:", numbers[-1])
+print("Предпоследний:", numbers[-2])
+print("Второй:", numbers[1])</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 8: ИЗМЕНЕНИЕ -->
+    <div class="slide" data-slide="8">
+      <div class="slide-num">Слайд 8 · Изменение</div>
+      <h2>🔄 Меняем элементы</h2>
+
+      <p>По индексу можно не только читать, но и <b>записывать</b> новое значение.</p>
+
+      <div class="code-block">
+        <span class="line"><span class="var">names</span> = [<span class="str">"Али"</span>, <span class="str">"Марьям"</span>, <span class="str">"Юсуф"</span>]</span>
+        <span class="line blank">&nbsp;</span>
+        <span class="line"><span class="com"># Заменяем Юсуфа на Ибрагима</span></span>
+        <span class="line"><span class="var">names</span>[<span class="num">2</span>] = <span class="str">"Ибрагим"</span></span>
+        <span class="line blank">&nbsp;</span>
+        <span class="line"><span class="fn">print</span>(<span class="var">names</span>)   <span class="com"># ['Али', 'Марьям', 'Ибрагим']</span></span>
+      </div>
+
+      <h3>Задание 5. Измени оценки</h3>
+      <div class="editor-box" id="box-task-5">
+        <button class="editor-hint" onclick="toggleHint('hint-task-5', event)">?</button>
+        <div class="editor-title">
+          Задание 5
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(5)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-5">
+          Последний — <code>grades[-1] = 5</code><br>
+          Второй — <code>grades[1] = 3</code>
+        </div>
+        <textarea id="code-task-5" spellcheck="false">grades = [4, 2, 5, 3, 4]
+print("Было:", grades)
+
+# 1. Замени последний элемент на 5
+grades[?] = ?
+
+# 2. Замени второй элемент (индекс 1) на 3
+grades[?] = ?
+
+print("Стало:", grades)
+</textarea>
+        <button class="btn" onclick="runTask('task-5', 5, checkTask5)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-5')">↺ Сбросить</button>
+        <div class="output" id="out-task-5">Здесь появится результат</div>
+        <div class="answer-block" data-answer="5">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>grades = [4, 2, 5, 3, 4]
+print("Было:", grades)
+grades[-1] = 5
+grades[1] = 3
+print("Стало:", grades)</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 9: МЕТОДЫ -->
+    <div class="slide" data-slide="9">
+      <div class="slide-num">Слайд 9 · Методы</div>
+      <h2>🛠️ Полезные команды</h2>
+
+      <p>Нажми на карточку — она перевернётся и покажет пример.</p>
+
+      <div class="cards">
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">📏</div><div class="label">len(arr)</div><div class="hint">длина</div></div>
+            <div class="flip-back"><code>len([1,2,3])</code> → 3</div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">➕</div><div class="label">.append(x)</div><div class="hint">в конец</div></div>
+            <div class="flip-back"><code>[1,2].append(3)</code> → [1,2,3]</div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">➖</div><div class="label">.pop(i)</div><div class="hint">удалить</div></div>
+            <div class="flip-back"><code>[1,2,3].pop(0)</code> → [2,3]</div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">🔢</div><div class="label">.count(x)</div><div class="hint">посчитать</div></div>
+            <div class="flip-back"><code>[1,2,1,1].count(1)</code> → 3</div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-inner">
+            <div class="flip-front"><div class="emoji">➕</div><div class="label">sum(arr)</div><div class="hint">сумма</div></div>
+            <div class="flip-back"><code>sum([10,20,30])</code> → 60</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Задание 6. Примени методы</h3>
+      <div class="editor-box" id="box-task-6">
+        <button class="editor-hint" onclick="toggleHint('hint-task-6', event)">?</button>
+        <div class="editor-title">
+          Задание 6
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(6)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-6">
+          Добавить — <code>cities.append("Стамбул")</code><br>
+          Количество — <code>len(cities)</code>
+        </div>
+        <textarea id="code-task-6" spellcheck="false">cities = ["Москва", "Казань", "Уфа"]
+
+# 1. Добавь "Стамбул" в конец
+cities.?
+
+# 2. Выведи массив
+print(cities)
+
+# 3. Выведи количество элементов
+print("Всего:", ?)
+</textarea>
+        <button class="btn" onclick="runTask('task-6', 6, checkTask6)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-6')">↺ Сбросить</button>
+        <div class="output" id="out-task-6">Здесь появится результат</div>
+        <div class="answer-block" data-answer="6">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>cities = ["Москва", "Казань", "Уфа"]
+cities.append("Стамбул")
+print(cities)
+print("Всего:", len(cities))</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 10: ПЕРЕБОР ЭЛЕМЕНТОВ МАССИВА -->
+    <div class="slide" data-slide="10">
+      <div class="slide-num">Слайд 10 · Перебор элементов массива</div>
+      <h2>🚶 Перебор элементов массива</h2>
+
+      <p>Цикл <b>for</b> позволяет применить одну и ту же команду ко <b>всем элементам</b> массива. Не нужно повторять код — пишем один раз, работает для каждого.</p>
+
+      <div class="code-block">
+        <span class="line"><span class="var">nums</span> = [<span class="num">3</span>, <span class="num">7</span>, <span class="num">2</span>]</span>
+        <span class="line blank">&nbsp;</span>
+        <span class="line"><span class="kw">for</span> <span class="var">x</span> <span class="kw">in</span> <span class="var">nums</span>:</span>
+        <span class="line">    <span class="fn">print</span>(<span class="var">x</span> * <span class="num">10</span>)   <span class="com"># 30, 70, 20</span></span>
+      </div>
+
+      <div class="note idea">
+        <div class="icon">💡</div>
+        <div>Если нужен <b>новый массив</b> — создай пустой и добавь результаты через <code>.append()</code>.</div>
+      </div>
+
+      <div class="code-block">
+        <span class="line"><span class="var">nums</span> = [<span class="num">3</span>, <span class="num">7</span>, <span class="num">2</span>]</span>
+        <span class="line"><span class="var">result</span> = []</span>
+        <span class="line"><span class="kw">for</span> <span class="var">x</span> <span class="kw">in</span> <span class="var">nums</span>:</span>
+        <span class="line">    <span class="var">result</span>.<span class="fn">append</span>(<span class="var">x</span> * <span class="num">10</span>)</span>
+        <span class="line"><span class="fn">print</span>(<span class="var">result</span>)   <span class="com"># [30, 70, 20]</span></span>
+      </div>
+
+      <h3>🎬 Пошаговое выполнение</h3>
+      <div class="array-viz" id="loop-viz"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn mint" onclick="loopStep()">▶ Следующий шаг</button>
+        <button class="btn ghost" onclick="loopReset()">↺ Сначала</button>
+      </div>
+      <div class="output" id="loop-output">Нажми «Следующий шаг»</div>
+
+      <h3>Задание 7. Перебери массив имён</h3>
+      <div class="editor-box" id="box-task-7">
+        <button class="editor-hint" onclick="toggleHint('hint-task-7', event)">?</button>
+        <div class="editor-title">
+          Задание 7
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(7)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-7">
+          <code>for name in students:</code><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<code>print(name)</code>
+        </div>
+        <textarea id="code-task-7" spellcheck="false">students = ["Али", "Марьям", "Юсуф", "Хадиджа"]
+
+# Перебери массив и выведи каждое имя
+for name in ?:
+    print(?)
+</textarea>
+        <button class="btn" onclick="runTask('task-7', 7, checkTask7)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-7')">↺ Сбросить</button>
+        <div class="output" id="out-task-7">Здесь появится результат</div>
+        <div class="answer-block" data-answer="7">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>students = ["Али", "Марьям", "Юсуф", "Хадиджа"]
+for name in students:
+    print(name)</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 11: ПЕРЕБОР С ИЗМЕНЕНИЕМ -->
+    <div class="slide" data-slide="11">
+      <div class="slide-num">Слайд 11 · Изменяем элементы</div>
+      <h2>🔟 Умножаем каждый элемент на 10</h2>
+
+      <p>Используем цикл <b>for</b>, чтобы получить новый массив — каждый элемент умножен на 10.</p>
+
+      <div class="code-block">
+        <span class="line"><span class="var">numbers</span> = [<span class="num">4</span>, <span class="num">6</span>, <span class="num">9</span>]</span>
+        <span class="line"><span class="var">big</span> = []</span>
+        <span class="line"><span class="kw">for</span> <span class="var">n</span> <span class="kw">in</span> <span class="var">numbers</span>:</span>
+        <span class="line">    <span class="var">big</span>.<span class="fn">append</span>(<span class="var">n</span> * <span class="num">10</span>)</span>
+        <span class="line"><span class="fn">print</span>(<span class="var">big</span>)   <span class="com"># [40, 60, 90]</span></span>
+      </div>
+
+      <h3>Задание 8. Умножь на 10</h3>
+      <div class="editor-box" id="box-task-8">
+        <button class="editor-hint" onclick="toggleHint('hint-task-8', event)">?</button>
+        <div class="editor-title">
+          Задание 8
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(8)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-8">
+          <code>for x in prices:</code><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<code>big.append(x * 10)</code>
+        </div>
+        <textarea id="code-task-8" spellcheck="false">prices = [5, 8, 12, 3]
+big = []
+
+# Пройдись по prices и добавь в big каждый элемент * 10
+for x in ?:
+    big.append(? * 10)
+
+print(big)
+</textarea>
+        <button class="btn" onclick="runTask('task-8', 8, checkTask8)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-8')">↺ Сбросить</button>
+        <div class="output" id="out-task-8">Здесь появится результат</div>
+        <div class="answer-block" data-answer="8">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>prices = [5, 8, 12, 3]
+big = []
+for x in prices:
+    big.append(x * 10)
+print(big)</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 12: САМОСТОЯТЕЛЬНО -->
+    <div class="slide" data-slide="12">
+      <div class="slide-num">Слайд 12 · Самостоятельно</div>
+      <h2>✍️ Напиши код сама</h2>
+
+      <h3>Задание 9. Работа с оценками</h3>
+      <div class="editor-box" id="box-task-9">
+        <button class="editor-hint" onclick="toggleHint('hint-task-9', event)">?</button>
+        <div class="editor-title">
+          Задание 9
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(9)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-9">
+          <code>total = sum(grades)</code><br>
+          <code>avg = sum(grades) / len(grades)</code><br>
+          <code>fives = grades.count(5)</code>
+        </div>
+        <p style="font-size:0.9em;color:#5a5a7a;">Дан массив оценок. Найди и выведи сумму, средний балл и количество пятёрок.</p>
+        <textarea id="code-task-9" spellcheck="false" style="min-height: 180px;">grades = [5, 4, 3, 5, 2, 4, 5, 3, 4, 5]
+
+# 1. Сумма
+# 2. Средний балл
+# 3. Количество пятёрок
+</textarea>
+        <button class="btn" onclick="runTask('task-9', 9, checkTask9)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-9')">↺ Сбросить</button>
+        <div class="output" id="out-task-9">Здесь появится результат</div>
+        <div class="answer-block" data-answer="9">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>grades = [5, 4, 3, 5, 2, 4, 5, 3, 4, 5]
+print("Сумма:", sum(grades))
+print("Средний балл:", sum(grades) / len(grades))
+print("Пятёрок:", grades.count(5))</pre>
+        </div>
+      </div>
+
+      <h3>Задание 10. Своя программа</h3>
+      <div class="editor-box" id="box-task-10">
+        <button class="editor-hint" onclick="toggleHint('hint-task-10', event)">?</button>
+        <div class="editor-title">
+          Задание 10
+          <span class="task-badge">+1 ✦</span>
+          <span class="done-badge">✓ Готово</span>
+          <button class="autofill-btn" onclick="fillExample(10)">📝 Заполнить примером</button>
+        </div>
+        <div class="hint-popup" id="hint-task-10">
+          Создай массив минимум из 4 элементов.<br>
+          Выведи первый, последний, добавь новый элемент и выведи количество.
+        </div>
+        <p style="font-size:0.9em;color:#5a5a7a;">
+          Придумай свой массив (не меньше 4 элементов). Выведи первый элемент, последний, добавь новый и выведи количество.
+        </p>
+        <textarea id="code-task-10" spellcheck="false" style="min-height: 180px;"># Создай свой массив минимум из 4 элементов
+
+
+# Выведи первый и последний
+
+
+# Добавь ещё один элемент
+
+
+# Выведи общее количество
+
+</textarea>
+        <button class="btn" onclick="runTask('task-10', 10, checkTask10)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetTask('task-10')">↺ Сбросить</button>
+        <div class="output" id="out-task-10">Здесь появится результат</div>
+        <div class="answer-block" data-answer="10">
+          <div class="answer-title">💡 Пример решения</div>
+<pre>movies = ["Титаник", "Матрица", "Гладиатор", "Интерстеллар"]
+print("Первый:", movies[0])
+print("Последний:", movies[-1])
+movies.append("Начало")
+print("Всего:", len(movies))</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- СЛАЙД 13: ФИНАЛ -->
+    <div class="slide" data-slide="13">
+      <div class="slide-num">Слайд 13 · Финал</div>
+      <h2>🏆 Тема завершена</h2>
+
+      <div class="code-block" style="border-color:#a7f3d0;">
+        <span class="line">✦  Массив — много значений под одним именем</span>
+        <span class="line">✦  Индексы с нуля: 0, 1, 2, …</span>
+        <span class="line">✦  Отрицательные: -1 (последний), -2, …</span>
+        <span class="line">✦  arr[i] — чтение, arr[i] = x — запись</span>
+        <span class="line">✦  len, .append, .count, sum — работа с массивом</span>
+        <span class="line">✦  for — перебор и изменение элементов</span>
+        <span class="line">✦  Массивы бывают чисел и строк</span>
+      </div>
+
+      <h3>Финальная проверка 🎯</h3>
+
+      <div class="quiz" data-correct="1">
+        <div class="question">Какой индекс у последнего элемента массива из 5 элементов?</div>
+        <div class="options">
+          <button class="quiz-option" data-i="0"><span class="letter">A</span> Только 5</button>
+          <button class="quiz-option" data-i="1"><span class="letter">B</span> 4 или -1</button>
+          <button class="quiz-option" data-i="2"><span class="letter">C</span> Только -5</button>
+          <button class="quiz-option" data-i="3"><span class="letter">D</span> 0</button>
+        </div>
+      </div>
+
+      <div class="quiz" data-correct="1">
+        <div class="question">Что вернёт <code>[7, 3, 9, 1, 5][-2]</code>?</div>
+        <div class="options">
+          <button class="quiz-option" data-i="0"><span class="letter">A</span> 5</button>
+          <button class="quiz-option" data-i="1"><span class="letter">B</span> 1</button>
+          <button class="quiz-option" data-i="2"><span class="letter">C</span> 7</button>
+          <button class="quiz-option" data-i="3"><span class="letter">D</span> Ошибку</button>
+        </div>
+      </div>
+
+      <div class="quiz" data-correct="2">
+        <div class="question">Что делает <code>arr.append(7)</code>?</div>
+        <div class="options">
+          <button class="quiz-option" data-i="0"><span class="letter">A</span> Удаляет 7</button>
+          <button class="quiz-option" data-i="1"><span class="letter">B</span> Находит индекс 7</button>
+          <button class="quiz-option" data-i="2"><span class="letter">C</span> Добавляет 7 в конец</button>
+          <button class="quiz-option" data-i="3"><span class="letter">D</span> Меняет 7 на 0</button>
+        </div>
+      </div>
+
+      <div class="bouquet">
+        <div class="stars-big" id="end-stars">✦</div>
+        <div class="score-big" id="end-score">0 / 10</div>
+        <div class="score-label">выполнено</div>
+        <h2 id="end-message" style="margin-top:14px;">Молодец!</h2>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-bar">
+    <button class="nav-btn" id="prev-btn" onclick="prevSlide()">← Назад</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn next" id="next-btn" onclick="nextSlide()">Вперёд →</button>
+  </div>
+</div>
+
+<script>
+/* === ОПРЕДЕЛЯЕМ РЕЖИМ === */
+const isInIframe = (() => {
+  try { return window.self !== window.top; } catch(e) { return true; }
+})();
+const urlParams = new URLSearchParams(window.location.search);
+const isTeacher = isInIframe || urlParams.get('teacher') === '1';
+
+if (isTeacher) {
+  document.body.classList.add('teacher-mode-active');
+  document.getElementById('teacherBadge').classList.add('visible');
+}
+
+/* === НАСТРОЙКИ УЧИТЕЛЯ === */
+const TEACHER_SETTINGS_KEY = 'python_11_teacher_settings';
+function loadTeacherSettings() {
+  try {
+    const s = localStorage.getItem(TEACHER_SETTINGS_KEY);
+    return s ? JSON.parse(s) : { locked: false, answers: false, autofill: false, noCopyProtection: false, currentSlide: 1 };
+  } catch(e) {
+    return { locked: false, answers: false, autofill: false, noCopyProtection: false, currentSlide: 1 };
+  }
+}
+let teacherSettings = loadTeacherSettings();
+
+function applyTeacherSettings() {
+  teacherSettings = loadTeacherSettings();
+
+  document.querySelectorAll('.answer-block').forEach(el => {
+    el.classList.toggle('visible', isTeacher && teacherSettings.answers);
+  });
+  document.querySelectorAll('.autofill-btn').forEach(el => {
+    el.classList.toggle('visible', isTeacher && teacherSettings.autofill);
+  });
+
+  if (teacherSettings.locked && !isTeacher) {
+    document.body.classList.add('nav-locked');
+  } else {
+    document.body.classList.remove('nav-locked');
+  }
+}
+
+/* === ЗАЩИТА ОТ КОПИРОВАНИЯ === */
+function isCopyProtectionDisabled() {
+  try {
+    const s = localStorage.getItem(TEACHER_SETTINGS_KEY);
+    if (!s) return false;
+    const parsed = JSON.parse(s);
+    return parsed.noCopyProtection === true;
+  } catch(e) { return false; }
+}
+
+if (!isCopyProtectionDisabled()) {
+  document.addEventListener('copy', e => { e.preventDefault(); });
+  document.addEventListener('cut', e => { e.preventDefault(); });
+  document.addEventListener('contextmenu', e => { e.preventDefault(); });
+  document.addEventListener('selectstart', e => { e.preventDefault(); });
+  document.addEventListener('keydown', e => {
+    const m = e.ctrlKey || e.metaKey;
+    if (m && ['c','C','a','A','x','X'].includes(e.key)) { e.preventDefault(); }
+  });
+}
+
+function attachPasteGuards() {
+  if (isCopyProtectionDisabled()) return;
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('paste', e => { e.preventDefault(); return false; });
+    ta.addEventListener('drop', e => { e.preventDefault(); return false; });
+    ta.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
+    ta.addEventListener('selectstart', e => { e.stopPropagation(); });
+    ta.addEventListener('mousedown', e => { e.stopPropagation(); });
+  });
+}
+
+/* === ПРОГРЕСС === */
+const STORAGE_KEY = 'python_11_progress';
+let progress = {
+  name: '',
+  t3_1: false, t3_2: false, t3_3: false,
+  t3_4: false, t3_5: false, t3_6: false,
+  t3_7: false, t3_8: false, t3_9: false, t3_10: false
+};
+
+function loadProgress() {
+  if (isTeacher) return;
+  try { const s = localStorage.getItem(STORAGE_KEY); if (s) Object.assign(progress, JSON.parse(s)); } catch(e) {}
+}
+function saveProgress() {
+  if (isTeacher) return;
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch(e) {}
+}
+function countStars() {
+  return ['t3_1','t3_2','t3_3','t3_4','t3_5','t3_6','t3_7','t3_8','t3_9','t3_10'].filter(k => progress[k]).length;
+}
+function updateStarUI() {
+  const n = countStars();
+  document.getElementById('starsIcons').textContent = n ? '✦'.repeat(n) : '—';
+  document.getElementById('starsCount').textContent = `${n} / 10`;
+  document.getElementById('avatarLetter').textContent = progress.name ? progress.name.charAt(0).toUpperCase() : '?';
+  document.getElementById('studentName').textContent = progress.name || '—';
+  document.querySelectorAll('.editor-box[id^="box-task-"]').forEach(el => {
+    const m = el.id.match(/task-(\d+)/);
+    if (m && progress['t3_' + m[1]]) el.classList.add('completed');
+  });
+}
+function markTask(n) {
+  if (isTeacher) return;
+  const key = 't3_' + n;
+  if (progress[key]) return;
+  progress[key] = true;
+  saveProgress();
+  updateStarUI();
+}
+
+/* === МОДАЛКА === */
+function startLesson() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) return;
+  progress.name = name;
+  saveProgress();
+  updateStarUI();
+  closeNameModal();
+}
+function openNameModal() {
+  if (isTeacher) return;
+  const modal = document.getElementById('nameModal');
+  const input = document.getElementById('nameInput');
+  const btn = document.getElementById('startBtn');
+  input.value = progress.name || '';
+  btn.disabled = !input.value.trim();
+  if (progress.name) {
+    document.getElementById('modalTitle').textContent = 'Смена имени';
+    btn.textContent = 'Сохранить';
+  } else {
+    document.getElementById('modalTitle').textContent = 'Ассаляму алейкум!';
+    btn.textContent = 'Начать';
+  }
+  modal.classList.remove('hidden');
+  setTimeout(() => input.focus(), 100);
+}
+function closeNameModal() {
+  document.getElementById('nameModal').classList.add('hidden');
+}
+document.getElementById('nameInput').addEventListener('input', e => {
+  document.getElementById('startBtn').disabled = !e.target.value.trim();
+});
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.value.trim()) startLesson();
+});
+
+loadProgress();
+if (isTeacher) { closeNameModal(); }
+else if (progress.name) { updateStarUI(); closeNameModal(); }
+else { openNameModal(); }
+
+/* === НАВИГАЦИЯ === */
+let currentSlide = 1;
+const totalSlides = document.querySelectorAll('.slide').length;
+
+function buildDots() {
+  const dots = document.getElementById('dots');
+  dots.innerHTML = '';
+  for (let i = 1; i <= totalSlides; i++) {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === currentSlide ? ' active' : '');
+    d.onclick = () => goToSlide(i);
+    dots.appendChild(d);
+  }
+}
+
+function updateNav() {
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.slide[data-slide="${currentSlide}"]`).classList.add('active');
+  document.getElementById('prev-btn').disabled = currentSlide === 1;
+  document.getElementById('next-btn').disabled = currentSlide === totalSlides;
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i + 1 === currentSlide));
+  document.getElementById('slide-counter').textContent = `${currentSlide} / ${totalSlides}`;
+  document.getElementById('progress-fill').style.width = ((currentSlide / totalSlides) * 100) + '%';
+  if (currentSlide === totalSlides) updateFinalSlide();
+}
+
+function nextSlide() {
+  if (teacherSettings.locked && !isTeacher) return;
+  if (currentSlide < totalSlides) {
+    currentSlide++;
+    updateNav();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+function prevSlide() {
+  if (teacherSettings.locked && !isTeacher) return;
+  if (currentSlide > 1) {
+    currentSlide--;
+    updateNav();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+function goToSlide(n) {
+  if (teacherSettings.locked && !isTeacher) return;
+  currentSlide = n;
+  updateNav();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateFinalSlide() {
+  const n = ['t3_1','t3_2','t3_3','t3_4','t3_5','t3_6','t3_7','t3_8','t3_9','t3_10'].filter(k => progress[k]).length;
+  document.getElementById('end-stars').textContent = '✦'.repeat(Math.max(n,1));
+  document.getElementById('end-score').textContent = `${n} / 10`;
+  const name = progress.name || 'Умница';
+  let msg = `${name}, хорошее начало!`;
+  if (n >= 10) msg = `${name}, все 10 заданий! Отлично! 🏆`;
+  else if (n >= 7) msg = `${name}, почти всё! Ещё чуть-чуть.`;
+  else if (n >= 3) msg = `${name}, неплохо! Продолжай.`;
+  document.getElementById('end-message').textContent = msg;
+}
+
+/* === ПОДСКАЗКИ === */
+function toggleHint(id, ev) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('visible');
+  if (ev && ev.currentTarget) ev.currentTarget.classList.toggle('opened');
+}
+
+/* === АВТОЗАПОЛНЕНИЕ === */
+const examples = {
+  1: `p1 = 150
+p2 = 180
+p3 = 120
+p4 = 200
+p5 = 160
+
+total = p1 + p2 + p3 + p4 + p5
+avg = total / 5
+print("Сумма:", total)
+print("Среднее:", avg)`,
+  2: `cities = ["Москва", "Казань", "Уфа", "Грозный"]
+print(cities)`,
+  3: `fruits = ["яблоко", "банан", "вишня", "груша", "слива"]
+print("Первый:", fruits[0])
+print("Третий:", fruits[2])
+print("Пятый:", fruits[4])`,
+  4: `numbers = [10, 25, 40, 55, 70]
+print("Последний:", numbers[-1])
+print("Предпоследний:", numbers[-2])
+print("Второй:", numbers[1])`,
+  5: `grades = [4, 2, 5, 3, 4]
+print("Было:", grades)
+grades[-1] = 5
+grades[1] = 3
+print("Стало:", grades)`,
+  6: `cities = ["Москва", "Казань", "Уфа"]
+cities.append("Стамбул")
+print(cities)
+print("Всего:", len(cities))`,
+  7: `students = ["Али", "Марьям", "Юсуф", "Хадиджа"]
+for name in students:
+    print(name)`,
+  8: `prices = [5, 8, 12, 3]
+big = []
+for x in prices:
+    big.append(x * 10)
+print(big)`,
+  9: `grades = [5, 4, 3, 5, 2, 4, 5, 3, 4, 5]
+print("Сумма:", sum(grades))
+print("Средний балл:", sum(grades) / len(grades))
+print("Пятёрок:", grades.count(5))`,
+  10: `movies = ["Титаник", "Матрица", "Гладиатор", "Интерстеллар"]
+print("Первый:", movies[0])
+print("Последний:", movies[-1])
+movies.append("Начало")
+print("Всего:", len(movies))`
+};
+
+function fillExample(n) {
+  const el = document.getElementById('code-task-' + n);
+  if (el && examples[n]) el.value = examples[n];
+}
+
+/* === QUIZ === */
+document.querySelectorAll('.quiz').forEach(quiz => {
+  const correct = parseInt(quiz.dataset.correct);
+  quiz.querySelectorAll('.quiz-option').forEach(opt => {
+    opt.onclick = () => {
+      const i = parseInt(opt.dataset.i);
+      quiz.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('correct','wrong'));
+      opt.classList.add(i === correct ? 'correct' : 'wrong');
+      if (i !== correct) quiz.querySelector(`.quiz-option[data-i="${correct}"]`).classList.add('correct');
+    };
+  });
+});
+
+/* === F-СТРОКИ === */
+function expandFStrings(code) {
+  return code.replace(/\bf(["'])((?:\\.|(?!\1).)*?)\1/g, (match, quote, body) => {
+    const parts = [];
+    let lastIndex = 0;
+    const regex = /\{([^{}]+)\}/g;
+    let m;
+    while ((m = regex.exec(body)) !== null) {
+      const before = body.slice(lastIndex, m.index);
+      if (before) parts.push(quote + before + quote);
+      parts.push('(' + m[1] + ')');
+      lastIndex = m.index + m[0].length;
+    }
+    const after = body.slice(lastIndex);
+    if (after) parts.push(quote + after + quote);
+    if (parts.length === 0) return quote + quote;
+    return '(' + parts.join(' + ') + ')';
+  });
+}
+
+function humanizeError(msg) {
+  if (/Unexpected string literal/i.test(msg)) return 'Проблема со строкой. Проверь кавычки.';
+  if (/Unexpected token/i.test(msg)) return 'Синтаксическая ошибка. Проверь скобки и кавычки.';
+  if (/is not defined/i.test(msg)) return 'Программа использует имя, которое не объявлено.';
+  if (/expected/i.test(msg)) return 'Похоже, пропущен важный символ (скобка или кавычка).';
+  return msg;
+}
+
+/* === ИНТЕРПРЕТАТОР === */
+function fmt(v) {
+  if (Array.isArray(v)) return '[' + v.map(x => typeof x === 'string' ? `'${x}'` : fmt(x)).join(', ') + ']';
+  if (typeof v === 'number' && !Number.isInteger(v)) return Math.round(v * 1000) / 1000;
+  if (typeof v === 'boolean') return v ? 'True' : 'False';
+  if (v === null || v === undefined) return 'None';
+  return String(v);
+}
+
+function runCodeRaw(code) {
+  let buffer = '';
+  const __out = (...args) => { buffer += args.map(fmt).join(' ') + '\n'; };
+
+  const lines = code.split('\n');
+  let problemLine = -1;
+  for (let i = 0; i < lines.length; i++) {
+    const noComment = lines[i].split('#')[0];
+    const noStrings = noComment.replace(/"[^"]*"/g, '""').replace(/'[^']*'/g, "''");
+    if (noStrings.includes('?')) { problemLine = i; break; }
+  }
+  if (problemLine >= 0) {
+    return { output: buffer, error: `В строке ${problemLine + 1} остался «?». Впиши значение.` };
+  }
+
+  const codeStripped = code.split('\n').map(l => l.split('#')[0]).join('').trim();
+  if (!codeStripped) { return { output: '', error: null, empty: true }; }
+
+  try {
+    const expanded = expandFStrings(code);
+    const js = translatePython(expanded);
+    const wrapped = `
+      const __print = (...a) => __out(...a);
+      const __len = x => (Array.isArray(x) || typeof x === 'string') ? x.length : Object.keys(x).length;
+      const __sum = x => Array.isArray(x) ? x.reduce((a,b)=>a+b, 0) : 0;
+      const __min = (...a) => a.length===1 && Array.isArray(a[0]) ? Math.min(...a[0]) : Math.min(...a);
+      const __max = (...a) => a.length===1 && Array.isArray(a[0]) ? Math.max(...a[0]) : Math.max(...a);
+      const __range = (...a) => {
+        let start=0, stop, step=1;
+        if (a.length===1) stop=a[0];
+        else if (a.length===2) [start, stop]=a;
+        else [start, stop, step]=a;
+        const r=[]; if (step>0) for(let i=start;i<stop;i+=step) r.push(i); else for(let i=start;i>stop;i+=step) r.push(i);
+        return r;
+      };
+      const __iter = x => Array.isArray(x) ? x : (typeof x==='string' ? x.split('') : Object.values(x));
+      const __truthy = x => Array.isArray(x) ? x.length>0 : (typeof x==='string' ? x.length>0 : !!x);
+      const __get = (arr, i) => {
+        if (Array.isArray(arr) || typeof arr === 'string') {
+          const idx = i < 0 ? arr.length + i : i;
+          const val = arr[idx];
+          return val === undefined ? null : val;
+        }
+        return null;
+      };
+      const __set = (arr, i, val) => {
+        const idx = i < 0 ? arr.length + i : i;
+        arr[idx] = val;
+        return val;
+      };
+      const __append = (arr, x) => { arr.push(x); };
+      const __count = (arr, x) => arr.filter(v=>v===x).length;
+      const __int = x => { const n = parseInt(x, 10); if (isNaN(n)) throw new Error("ValueError: invalid int: '" + x + "'"); return n; };
+      const __float = x => { const n = parseFloat(x); if (isNaN(n)) throw new Error("ValueError: invalid float: '" + x + "'"); return n; };
+      const __str = x => String(x);
+
+      const __testData = window.__testData || {};
+      let __testKeys = Object.keys(__testData);
+      let __testIndex = 0;
+      const __input = (promptText) => {
+        if (__testIndex < __testKeys.length) {
+          const val = __testData[__testKeys[__testIndex]];
+          __testIndex++;
+          __out('(ввод: ' + val + ')');
+          return String(val);
+        }
+        return prompt(promptText || '');
+      };
+
+      ${js}
+    `;
+    const fn = new Function('__out', wrapped);
+    fn(__out);
+    return { output: buffer || '(нет вывода)', error: null };
+  } catch (e) {
+    return { output: buffer, error: humanizeError(e.message) };
+  }
+}
+
+function translatePython(code) {
+  const lines = code.split('\n'); let js = ''; const stack = [];
+  for (let raw of lines) {
+    const ci = raw.indexOf('#'); let line = ci >= 0 ? raw.slice(0, ci) : raw;
+    if (line.trim() === '') continue;
+    const indent = line.match(/^\s*/)[0].length; let t = line.trim();
+    while (stack.length && indent <= stack[stack.length-1]) { js += '}\n'; stack.pop(); }
+
+    t = t.replace(/\bprint\s*\(/g, '__print(');
+    t = t.replace(/\blen\s*\(/g, '__len(');
+    t = t.replace(/\bsum\s*\(/g, '__sum(');
+    t = t.replace(/\bmin\s*\(/g, '__min(');
+    t = t.replace(/\bmax\s*\(/g, '__max(');
+    t = t.replace(/\brange\s*\(/g, '__range(');
+    t = t.replace(/\bint\s*\(/g, '__int(');
+    t = t.replace(/\bfloat\s*\(/g, '__float(');
+    t = t.replace(/\bstr\s*\(/g, '__str(');
+    t = t.replace(/\binput\s*\(/g, '__input(');
+    t = t.replace(/\bTrue\b/g, 'true'); t = t.replace(/\bFalse\b/g, 'false'); t = t.replace(/\bNone\b/g, 'null');
+    t = t.replace(/\band\b/g, '&&'); t = t.replace(/\bor\b/g, '||');
+
+    let mFor = t.match(/^for\s+([A-Za-z_]\w*)\s+in\s+(.+):$/);
+    if (mFor) {
+      js += ' '.repeat(indent) + `for (let ${mFor[1]} of __iter(${mFor[2]})) {\n`;
+      stack.push(indent); continue;
+    }
+
+    if (/([A-Za-z_]\w*)\[[^\]]+\]\s*=(?!=)/.test(t)) {
+      t = t.replace(/([A-Za-z_]\w*)\[([^\]]+)\]\s*=(?!=)\s*(.+)/g,
+        (m, arr, idx, val) => `__set(${arr}, ${idx}, ${val})`);
+    }
+    if (!t.includes('__get(') && !t.includes('__set(')) {
+      t = t.replace(/([A-Za-z_]\w*)\[([^\]]+)\]/g, '__get($1, $2)');
+    }
+
+    t = t.replace(/([A-Za-z_]\w*)\.append\s*\(/g, '__append($1, ');
+    t = t.replace(/([A-Za-z_]\w*)\.count\s*\(/g, '__count($1, ');
+
+    let mIf = t.match(/^if\s+(.+):$/);
+    if (mIf) { js += ' '.repeat(indent) + `if (__truthy(${mIf[1]})) {\n`; stack.push(indent); continue; }
+    if (t === 'else:') { js += ' '.repeat(indent) + `} else {\n`; continue; }
+
+    js += ' '.repeat(indent) + t + ';\n';
+  }
+  while (stack.length) { js += '}\n'; stack.pop(); }
+  return js;
+}
+
+/* === ЗАПУСК ЗАДАНИЙ === */
+const taskDefaults = {};
+function saveDefaults() {
+  for (let i = 1; i <= 10; i++) {
+    const el = document.getElementById('code-task-' + i);
+    if (el) taskDefaults[i] = el.value;
+  }
+}
+saveDefaults();
+
+function runTask(taskId, taskNum, checker) {
+  const code = document.getElementById('code-' + taskId).value;
+  const out = document.getElementById('out-' + taskId);
+  const box = document.getElementById('box-' + taskId);
+  const result = runCodeRaw(code);
+
+  if (result.empty) { out.textContent = 'Напиши код ✍️'; out.classList.remove('error','success','hint'); return; }
+  if (result.error) { out.textContent = '❌ ' + result.error; out.classList.add('error'); out.classList.remove('success','hint'); return; }
+  out.textContent = result.output;
+  out.classList.remove('error','hint');
+  if (isTeacher) return;
+  if (checker) {
+    const ok = checker(code, result.output);
+    if (ok) {
+      out.classList.add('success');
+      out.textContent += '\n\n✦ Задание выполнено!';
+      box.classList.add('completed');
+      markTask(taskNum);
+    } else { out.classList.remove('success'); }
+  }
+}
+function resetTask(taskId) {
+  const num = taskId.split('-')[1];
+  const el = document.getElementById('code-' + taskId);
+  if (taskDefaults[num]) el.value = taskDefaults[num];
+  const out = document.getElementById('out-' + taskId);
+  out.textContent = 'Здесь появится результат';
+  out.classList.remove('error','success','hint');
+}
+
+/* === ПРОВЕРКИ === */
+function outputLines(output) { return output.trim().split('\n').map(l => l.trim()).filter(l => l); }
+function hasToken(output, value) {
+  const strVal = String(value);
+  return outputLines(output).some(line => {
+    const tokens = line.split(/[\s,()\[\]{}:;'"]+/).filter(t => t !== '');
+    return tokens.includes(strVal);
+  });
+}
+
+function checkTask1(code, output) {
+  if (/=\s*\?/.test(code)) return false;
+  return /p1/.test(code) && /p2/.test(code) && /p3/.test(code) && /p4/.test(code) && /p5/.test(code) &&
+         /total\s*=\s*p1\s*\+\s*p2/.test(code) &&
+         hasToken(output, 810) && hasToken(output, 162);
+}
+/* Задание 2 — ученик придумывает свой массив */
+function checkTask2(code, output) {
+  if (/=\s*\?\s*$/.test(code.trim()) || /my_array\s*=\s*\?/.test(code)) return false;
+  const m = code.match(/my_array\s*=\s*\[([^\]]+)\]/);
+  if (!m) return false;
+  const items = m[1].split(',').filter(s => s.trim() !== '' && !s.includes('?'));
+  if (items.length < 4) return false;
+  // вывод должен содержать сами элементы
+  return outputLines(output).length >= 1 && items.some(item => {
+    const clean = item.replace(/["'\s]/g, '');
+    return clean && output.includes(clean);
+  });
+}
+function checkTask3(code, output) {
+  if (/fruits\s*\[\s*\?\s*\]/.test(code)) return false;
+  return /fruits\s*\[\s*2\s*\]/.test(code) &&
+         /fruits\s*\[\s*4\s*\]/.test(code) &&
+         /яблоко/.test(output) && /вишня/.test(output) && /слива/.test(output);
+}
+function checkTask4(code, output) {
+  if (/numbers\s*\[\s*\?\s*\]/.test(code)) return false;
+  return /numbers\s*\[\s*-\s*1\s*\]/.test(code) &&
+         /numbers\s*\[\s*-\s*2\s*\]/.test(code) &&
+         /70/.test(output) && /55/.test(output) && /25/.test(output);
+}
+function checkTask5(code, output) {
+  if (/grades\s*\[\s*\?\s*\]/.test(code)) return false;
+  const o = output.replace(/\s+/g, '');
+  return /\[4,3,5,3,5\]/.test(o) &&
+         /grades\s*\[\s*-?\s*1\s*\]\s*=\s*5/.test(code) &&
+         /grades\s*\[\s*1\s*\]\s*=\s*3/.test(code);
+}
+function checkTask6(code, output) {
+  if (/cities\.\?\s*\(/.test(code)) return false;
+  return /\.append\s*\(\s*["']Стамбул["']\s*\)/.test(code) &&
+         /len\s*\(\s*cities\s*\)/.test(code) &&
+         /Стамбул/.test(output) && hasToken(output, 4);
+}
+function checkTask7(code, output) {
+  if (/for\s+\w+\s+in\s+\?/.test(code) || /print\s*\(\s*\?\s*\)/.test(code)) return false;
+  const names = ['Али', 'Марьям', 'Юсуф', 'Хадиджа'];
+  return names.every(n => output.includes(n)) &&
+         /for\s+\w+\s+in\s+students/.test(code);
+}
+function checkTask8(code, output) {
+  if (/for\s+\w+\s+in\s+\?/.test(code) || /big\.append\(\s*\?\s*\*/.test(code)) return false;
+  const nums = [50, 80, 120, 30];
+  return nums.every(n => hasToken(output, n)) &&
+         /for\s+\w+\s+in\s+prices/.test(code) &&
+         /big\.append\s*\(/.test(code);
+}
+function checkTask9(code, output) {
+  const codeOnly = code.split('\n').map(l => l.split('#')[0]).join('').replace(/\s+/g, '');
+  if (codeOnly.length < 30) return false;
+  return hasToken(output, 41) && /4[.,]1/.test(output) && hasToken(output, 4);
+}
+/* Задание 10 — ученик придумывает свой массив */
+function checkTask10(code, output) {
+  // Должен быть массив минимум из 4 элементов (строк или чисел)
+  const arrayMatch = code.match(/([A-Za-z_]\w*)\s*=\s*\[([^\]]{5,})\]/);
+  if (!arrayMatch) return false;
+  const items = arrayMatch[2].split(',').filter(s => s.trim() !== '' && !s.includes('?'));
+  if (items.length < 4) return false;
+  const varName = arrayMatch[1];
+  // Использованы: первый индекс, последний (-1), append, len
+  return new RegExp(varName + '\\s*\\[\\s*0\\s*\\]').test(code) &&
+         new RegExp(varName + '\\s*\\[\\s*-\\s*1\\s*\\]').test(code) &&
+         new RegExp(varName + '\\.append\\s*\\(').test(code) &&
+         new RegExp('len\\s*\\(\\s*' + varName + '\\s*\\)').test(code) &&
+         outputLines(output).length >= 4;
+}
+
+/* === ВИЗУАЛИЗАТОРЫ === */
+const idxData = ['Али', 'Марьям', 'Юсуф', 'Хадиджа'];
+(function buildIdxDemo() {
+  const box = document.getElementById('idx-demo');
+  if (!box) return;
+  idxData.forEach((v, i) => {
+    const c = document.createElement('div');
+    c.className = 'cell';
+    c.innerHTML = `<div class="idx">${i}</div><div class="val">${v}</div>`;
+    c.onclick = () => {
+      document.querySelectorAll('#idx-demo .cell').forEach(el => el.classList.remove('highlight'));
+      c.classList.add('highlight');
+      document.getElementById('idx-output').textContent = `Индекс ${i} → значение «${v}»`;
+    };
+    box.appendChild(c);
+  });
+})();
+
+(function buildIdxDemo2() {
+  const box = document.getElementById('idx-demo-2');
+  if (!box) return;
+  idxData.forEach((v, i) => {
+    const c = document.createElement('div');
+    c.className = 'cell';
+    const negIdx = i - idxData.length;
+    c.innerHTML = `<div class="idx">${i}<span class="neg">${negIdx}</span></div><div class="val">${v}</div>`;
+    c.onclick = () => {
+      document.querySelectorAll('#idx-demo-2 .cell').forEach(el => el.classList.remove('highlight'));
+      c.classList.add('highlight');
+      document.getElementById('idx-output-2').textContent =
+        `«${v}»: обычный индекс ${i}, отрицательный ${negIdx}`;
+    };
+    box.appendChild(c);
+  });
+})();
+
+let loopArr = [3, 7, 2];
+let loopResult = [];
+let loopPos = -1;
+function renderLoop(highlight=-1) {
+  const box = document.getElementById('loop-viz');
+  if (!box) return;
+  box.innerHTML = '';
+  loopArr.forEach((v, i) => {
+    const c = document.createElement('div');
+    c.className = 'cell' + (i === highlight ? ' highlight' : '');
+    const display = loopResult[i] !== undefined ? loopResult[i] : v;
+    c.innerHTML = `<div class="idx">${i}</div><div class="val">${display}</div>`;
+    box.appendChild(c);
+  });
+}
+function loopStep() {
+  loopPos++;
+  if (loopPos >= loopArr.length) {
+    document.getElementById('loop-output').textContent = '✅ Готово! result = ' + JSON.stringify(loopResult);
+    renderLoop(-1); return;
+  }
+  loopResult[loopPos] = loopArr[loopPos] * 10;
+  renderLoop(loopPos);
+  document.getElementById('loop-output').textContent =
+    `x = ${loopArr[loopPos]}\nresult.append(${loopArr[loopPos]} * 10) → ${loopResult[loopPos]}`;
+}
+function loopReset() {
+  loopPos = -1; loopResult = []; renderLoop();
+  document.getElementById('loop-output').textContent = 'Нажми «Следующий шаг»';
+}
+if (document.getElementById('loop-viz')) renderLoop();
+
+/* === СИНХРОНИЗАЦИЯ === */
+let lastTeacherSlide = null;
+
+function syncFromTeacher() {
+  const newSettings = loadTeacherSettings();
+  const teacherSlide = newSettings.currentSlide;
+
+  if (lastTeacherSlide === null) {
+    lastTeacherSlide = teacherSlide;
+  } else if (teacherSlide !== lastTeacherSlide) {
+    lastTeacherSlide = teacherSlide;
+    currentSlide = teacherSlide;
+    updateNav();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  applyTeacherSettings();
+}
+
+window.addEventListener('storage', (e) => {
+  if (e.key === TEACHER_SETTINGS_KEY) syncFromTeacher();
+});
+
+setInterval(syncFromTeacher, 1000);
+
+/* === ИНИЦИАЛИЗАЦИЯ === */
+buildDots();
+updateNav();
+attachPasteGuards();
+applyTeacherSettings();
+
+if (isTeacher && teacherSettings.currentSlide) {
+  currentSlide = teacherSettings.currentSlide;
+  lastTeacherSlide = teacherSettings.currentSlide;
+  updateNav();
+}
+</script>
+
+</body>
+</html>
