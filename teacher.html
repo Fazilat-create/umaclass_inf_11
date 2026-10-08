@@ -124,17 +124,6 @@
 
   main { padding: 22px 28px; }
 
-  .moon-greeting {
-    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-    border-left: 4px solid #10b981;
-    border-radius: 14px;
-    padding: 14px 20px;
-    margin-bottom: 18px;
-    color: #065f46;
-    font-weight: 600;
-    font-size: 0.95em;
-  }
-
   .status-bar {
     display: flex; align-items: center; gap: 12px;
     padding: 12px 18px;
@@ -234,28 +223,38 @@
   input:checked + .slider { background: linear-gradient(135deg, #6366f1, #ec4899); }
   input:checked + .slider::before { transform: translateX(20px); }
 
-  .actions {
-    display: flex; gap: 10px; flex-wrap: wrap;
-    margin-top: 8px;
-  }
-  .btn {
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    color: #fff; border: none;
-    padding: 11px 22px;
-    border-radius: 22px;
-    font-family: inherit; font-size: 0.88em; font-weight: 600;
-    cursor: pointer; transition: 0.2s;
-    display: inline-flex; align-items: center; gap: 6px;
-  }
-  .btn:hover:not(:disabled) { transform: translateY(-2px); }
-  .btn.mint { background: linear-gradient(135deg, #34d399, #10b981); }
-  .btn.rose { background: linear-gradient(135deg, #ec4899, #db2777); }
-  .btn.ghost {
-    background: #fff; color: #4f46e5;
+  /* ===== ВЫБОР ТЕМЫ ===== */
+  .topic-switch {
+    display: flex;
+    background: #f8faff;
+    border-radius: 14px;
+    padding: 5px;
+    gap: 5px;
+    margin-bottom: 18px;
     border: 2px solid #e0e7ff;
   }
-  .btn.ghost:hover { background: #f8faff; border-color: #a5b4fc; }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .topic-switch button {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.92em;
+    font-weight: 700;
+    color: #6b6b8a;
+    cursor: pointer;
+    transition: 0.25s;
+  }
+  .topic-switch button:hover {
+    color: #4f46e5;
+    background: #eef2ff;
+  }
+  .topic-switch button.active {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+  }
 
   .slides-nav {
     display: flex; align-items: center; gap: 8px;
@@ -337,23 +336,13 @@
     margin-bottom: 10px;
     line-height: 1.5;
   }
-  .topic .topic-status {
-    display: inline-block;
-    padding: 2px 10px;
-    border-radius: 10px;
-    font-size: 0.72em;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-  .topic .status-ready { background: #dcfce7; color: #065f46; }
-  .topic .status-soon { background: #fef3c7; color: #92400e; }
   .topic .topic-actions {
     display: flex; gap: 6px; flex-wrap: wrap;
   }
   .topic .topic-actions button {
-    padding: 6px 12px;
+    padding: 7px 14px;
     border-radius: 14px;
-    font-family: inherit; font-size: 0.78em; font-weight: 600;
+    font-family: inherit; font-size: 0.8em; font-weight: 600;
     border: none; cursor: pointer;
     transition: 0.2s;
   }
@@ -365,10 +354,10 @@
     background: linear-gradient(135deg, #f97316, #ea580c);
     color: #fff;
   }
-  .topic .btn-soon {
-    background: #f0eaff;
-    color: #8a8ab0;
-    cursor: not-allowed;
+  .topic .btn-ghost {
+    background: #fff;
+    color: #4f46e5;
+    border: 2px solid #e0e7ff;
   }
 
   .tip-block {
@@ -429,10 +418,6 @@
 
   <main>
 
-    <div class="moon-greeting">
-      🌙 Ассаляму алейкум ва рахматуллах! Панель учителя готова к работе.
-    </div>
-
     <!-- СТАТУС -->
     <div class="status-bar unlocked" id="statusBar">
       <div class="dot"></div>
@@ -441,7 +426,7 @@
       </div>
     </div>
 
-    <!-- УПРАВЛЕНИЕ УРОКОМ -->
+    <!-- УПРАВЛЕНИЕ -->
     <div class="card">
       <h3>🎛️ Управление уроком</h3>
 
@@ -477,23 +462,40 @@
           <span class="slider"></span>
         </label>
       </div>
+
+      <div class="toggle-row">
+        <div class="label">
+          <b>Отключить защиту от копирования</b>
+          <small>Ученицы смогут копировать, выделять и вставлять текст. После переключения нужно обновить открытые вкладки урока (F5).</small>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="noCopyToggle" onchange="toggleNoCopy()">
+          <span class="slider"></span>
+        </label>
+      </div>
     </div>
 
     <!-- ТЕКУЩИЙ СЛАЙД -->
     <div class="card">
       <h3>🎯 Текущий слайд</h3>
-      <p class="help">Открой урок в новой вкладке — ученицы увидят тот же слайд, что и ты. Переключай слайды здесь — они обновятся у всех, у кого открыт урок.</p>
+      <p class="help">Выбери тему, открой её в новой вкладке — ученицы увидят тот же слайд, что и ты. Переключай слайды здесь — они обновятся у всех, у кого открыта эта тема.</p>
+
+      <div class="topic-switch">
+        <button id="tabTema2" class="active" onclick="switchTopic('tema2')">🧩 Подпрограммы</button>
+        <button id="tabTema3" onclick="switchTopic('tema3')">📊 Массивы</button>
+      </div>
 
       <div class="slides-nav">
         <button class="btn ghost" onclick="goPrev()">← Назад</button>
-        <div class="slide-counter">Слайд <span class="num" id="slideNum">1</span> / 16</div>
+        <div class="slide-counter">Слайд <span class="num" id="slideNum">1</span> / <span id="slideTotal">16</span></div>
         <button class="btn ghost" onclick="goNext()">Вперёд →</button>
+        <button class="btn btn-primary" onclick="openCurrentTopic()">🚀 Открыть тему</button>
       </div>
 
       <div class="slides-list" id="slidesList"></div>
     </div>
 
-    <!-- ТЕМЫ -->
+    <!-- МАТЕРИАЛЫ -->
     <div class="card">
       <h3>📚 Материалы</h3>
       <p class="help">Открывай урок для показа или давай ученицам самостоятельную работу.</p>
@@ -503,31 +505,29 @@
         <div class="topic">
           <div class="t-icon">🧩</div>
           <h4>Подпрограммы</h4>
-          <span class="topic-status status-ready">✓ Готово</span>
           <p>Процедуры и функции. 16 слайдов, 6 заданий.</p>
           <div class="topic-actions">
-            <button class="btn-open" onclick="openLesson('tema2.html')">🚀 Показать классу</button>
-            <button class="btn-dz" onclick="openLesson('dz2.html')">📝 ДЗ</button>
-          </div>
-        </div>
-
-        <div class="topic">
-          <div class="t-icon">📖</div>
-          <h4>Справочник</h4>
-          <span class="topic-status status-ready">✓ Готов</span>
-          <p>Шпаргалка по основам Python: типы, ввод-вывод, циклы, подпрограммы.</p>
-          <div class="topic-actions">
-            <button class="btn-open" onclick="openLesson('spravochnik.html')">📖 Открыть</button>
+            <button class="btn-open" onclick="openLesson('tema2.html')">🚀 Показать</button>
+            <button class="btn-dz" onclick="openLesson('dz2.html')">📝 ДЗ №1</button>
           </div>
         </div>
 
         <div class="topic">
           <div class="t-icon">📊</div>
           <h4>Массивы</h4>
-          <span class="topic-status status-soon">⏳ Скоро</span>
-          <p>Структурированные типы данных. Массивы.</p>
+          <p>Структурированные типы данных. 13 слайдов, 10 заданий.</p>
           <div class="topic-actions">
-            <button class="btn-soon" disabled>В разработке</button>
+            <button class="btn-open" onclick="openLesson('tema3.html')">🚀 Показать</button>
+            <button class="btn-dz" onclick="openLesson('dz3.html')">📝 ДЗ №2</button>
+          </div>
+        </div>
+
+        <div class="topic">
+          <div class="t-icon">📖</div>
+          <h4>Справочник</h4>
+          <p>Шпаргалка по основам Python: типы, ввод-вывод, циклы, подпрограммы, массивы.</p>
+          <div class="topic-actions">
+            <button class="btn-ghost" onclick="openLesson('spravochnik.html')">📖 Открыть</button>
           </div>
         </div>
 
@@ -539,8 +539,9 @@
       💡 <b>Как это работает:</b><br>
       • Все настройки сохраняются в браузере учителя<br>
       • Ссылки с <code>?teacher=1</code> видят ответы и автозаполнение — их <b>не показывай ученицам</b><br>
-      • Ученица, открывшая просто <code>tema2.html</code>, увидит обычную версию — без ответов и без автозаполнения<br>
-      • Если блокировка включена — ученица не сможет листать сама
+      • Ученица, открывшая просто <code>tema3.html</code>, увидит обычную версию — без ответов и без автозаполнения<br>
+      • Если блокировка включена — ученица не сможет листать сама<br>
+      • У каждой темы <b>своя</b> нумерация слайдов — переключение между темами не сбивает позицию
     </div>
 
   </main>
@@ -551,21 +552,40 @@
 const TEACHER_PASSWORD = 'teacher2024';
 const AUTH_KEY = 'teacher_auth_v11';
 const SETTINGS_KEY = 'python_11_teacher_settings';
-const TOTAL_SLIDES = 16;
 
-const SLIDE_TITLES = [
-  'Проблема', 'Анализ', 'Теория', 'Синтаксис',
-  'Как это работает', 'Задание 2', 'Задание 3', 'Параметры',
-  'Задание 4', 'Задание 5', 'Квизы', 'Return',
-  'Предскажи', 'Найди ошибку', 'Напоминание', 'Финал'
-];
+const TOPICS = {
+  tema2: {
+    name: 'Подпрограммы',
+    file: 'tema2.html',
+    total: 16,
+    slides: [
+      'Проблема', 'Анализ', 'Теория', 'Синтаксис',
+      'Как это работает', 'Задание 2', 'Задание 3', 'Параметры',
+      'Задание 4', 'Задание 5', 'Квизы', 'Return',
+      'Предскажи', 'Найди ошибку', 'Напоминание', 'Финал'
+    ]
+  },
+  tema3: {
+    name: 'Массивы',
+    file: 'tema3.html',
+    total: 13,
+    slides: [
+      'Повтор', 'Проблема', 'Анализ', 'Что такое массив',
+      'Задание 2', 'Индексы', 'Отрицательные', 'Изменение',
+      'Методы', 'Перебор', 'Умножение', 'Самостоятельно', 'Финал'
+    ]
+  }
+};
 
 /* === СОСТОЯНИЕ === */
 let settings = {
   locked: false,
   answers: false,
   autofill: false,
-  currentSlide: 1
+  noCopyProtection: false,
+  currentTopic: 'tema2',
+  tema2Slide: 1,
+  tema3Slide: 1
 };
 
 function loadSettings() {
@@ -630,6 +650,7 @@ function showPanel() {
   document.getElementById('teacherPanel').classList.remove('hidden');
   loadSettings();
   syncUI();
+  updateTopicTabs();
   buildSlidesList();
   updateStatus();
   updateSlideNum();
@@ -648,6 +669,7 @@ function syncUI() {
   document.getElementById('lockToggle').checked = settings.locked;
   document.getElementById('answersToggle').checked = settings.answers;
   document.getElementById('autofillToggle').checked = settings.autofill;
+  document.getElementById('noCopyToggle').checked = settings.noCopyProtection;
 }
 
 function toggleLock() {
@@ -661,6 +683,10 @@ function toggleAnswers() {
 }
 function toggleAutofill() {
   settings.autofill = document.getElementById('autofillToggle').checked;
+  saveSettings();
+}
+function toggleNoCopy() {
+  settings.noCopyProtection = document.getElementById('noCopyToggle').checked;
   saveSettings();
 }
 
@@ -678,41 +704,73 @@ function updateStatus() {
   }
 }
 
+/* === ВЫБОР ТЕМЫ === */
+function switchTopic(topic) {
+  settings.currentTopic = topic;
+  saveSettings();
+  updateTopicTabs();
+  buildSlidesList();
+  updateSlideNum();
+}
+
+function updateTopicTabs() {
+  document.getElementById('tabTema2').classList.toggle('active', settings.currentTopic === 'tema2');
+  document.getElementById('tabTema3').classList.toggle('active', settings.currentTopic === 'tema3');
+  const topic = TOPICS[settings.currentTopic];
+  document.getElementById('slideTotal').textContent = topic.total;
+}
+
 /* === СПИСОК СЛАЙДОВ === */
 function buildSlidesList() {
+  const topic = TOPICS[settings.currentTopic];
+  const currentSlide = getCurrentSlide();
   const list = document.getElementById('slidesList');
   list.innerHTML = '';
-  for (let i = 1; i <= TOTAL_SLIDES; i++) {
+  for (let i = 1; i <= topic.total; i++) {
     const item = document.createElement('div');
-    item.className = 'slide-item' + (i === settings.currentSlide ? ' active' : '');
+    item.className = 'slide-item' + (i === currentSlide ? ' active' : '');
     item.onclick = () => goToSlide(i);
     item.innerHTML = `
       <span class="num">${i}</span>
-      <span>${SLIDE_TITLES[i-1] || 'Слайд'}</span>
+      <span>${topic.slides[i-1] || 'Слайд'}</span>
     `;
     list.appendChild(item);
   }
 }
 
+function getCurrentSlide() {
+  return settings.currentTopic === 'tema2' ? settings.tema2Slide : settings.tema3Slide;
+}
+
+function setCurrentSlide(n) {
+  if (settings.currentTopic === 'tema2') settings.tema2Slide = n;
+  else settings.tema3Slide = n;
+  saveSettings();
+}
+
 function updateSlideNum() {
-  document.getElementById('slideNum').textContent = settings.currentSlide;
+  document.getElementById('slideNum').textContent = getCurrentSlide();
 }
 
 function goToSlide(n) {
-  if (n < 1 || n > TOTAL_SLIDES) return;
-  settings.currentSlide = n;
-  saveSettings();
+  const topic = TOPICS[settings.currentTopic];
+  if (n < 1 || n > topic.total) return;
+  setCurrentSlide(n);
   buildSlidesList();
   updateSlideNum();
 }
 
-function goPrev() { goToSlide(settings.currentSlide - 1); }
-function goNext() { goToSlide(settings.currentSlide + 1); }
+function goPrev() { goToSlide(getCurrentSlide() - 1); }
+function goNext() { goToSlide(getCurrentSlide() + 1); }
 
 /* === ОТКРЫТИЕ МАТЕРИАЛОВ === */
 function openLesson(filename) {
   const url = filename.includes('tema') ? filename + '?teacher=1' : filename;
   window.open(url, '_blank');
+}
+
+function openCurrentTopic() {
+  openLesson(TOPICS[settings.currentTopic].file);
 }
 
 /* === СОБЫТИЕ STORAGE === */
@@ -721,6 +779,7 @@ window.addEventListener('storage', (e) => {
     try {
       Object.assign(settings, JSON.parse(e.newValue || '{}'));
       syncUI();
+      updateTopicTabs();
       buildSlidesList();
       updateStatus();
       updateSlideNum();
