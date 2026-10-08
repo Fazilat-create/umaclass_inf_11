@@ -135,7 +135,9 @@
   .card:hover .arrow { gap: 12px; }
 
   .card.tema    { border-left: 6px solid #6366f1; }
+  .card.tema3   { border-left: 6px solid #8b5cf6; }
   .card.dz      { border-left: 6px solid #f97316; }
+  .card.dz3     { border-left: 6px solid #fb923c; }
   .card.ref     { border-left: 6px solid #34d399; }
 
   .card .card-progress {
@@ -179,11 +181,11 @@
 
   <div class="hero">
     <div class="icon">🌙</div>
-    <h1>Ассаляму алейкум, умаклассники!</h1>
+    <h1>Ассаляму алейкум!</h1>
     <p>Интерактивный учебник по Python с редактором кода и проверкой прямо в браузере.</p>
     <div class="badges">
-      <span class="badge">📘 1 урок</span>
-      <span class="badge">📝 Домашнее задание</span>
+      <span class="badge">📘 2 темы</span>
+      <span class="badge">📝 Домашние задания</span>
       <span class="badge">📖 Справочник</span>
     </div>
   </div>
@@ -201,33 +203,57 @@
 
     <a href="tema2.html" class="card tema">
       <div class="card-icon">🧩</div>
-      <div class="meta">Урок</div>
-      <h3>Подпрограммы: процедуры и функции</h3>
+      <div class="meta">Тема · Подпрограммы</div>
+      <h3>Процедуры и функции</h3>
       <p>Что такое подпрограмма, чем отличается процедура от функции, как писать свои. 6 практических заданий.</p>
-      <div class="card-progress" id="prog-tema">
-        <span class="mini-bar"><div id="prog-tema-bar"></div></span>
-        <span id="prog-tema-text">0 / 6</span>
+      <div class="card-progress" id="prog-tema2">
+        <span class="mini-bar"><div id="prog-tema2-bar"></div></span>
+        <span id="prog-tema2-text">0 / 6</span>
       </div>
-      <div class="arrow">Открыть урок <span>→</span></div>
+      <div class="arrow">Открыть <span>→</span></div>
     </a>
 
     <a href="dz2.html" class="card dz">
       <div class="card-icon">📝</div>
-      <div class="meta">Домашнее задание</div>
-      <h3>Домашнее задание</h3>
+      <div class="meta">ДЗ · Подпрограммы</div>
+      <h3>Домашнее задание №1</h3>
       <p>3 задачи на процедуры и функции. Можно взять подсказку — но балл будет снижен.</p>
-      <div class="card-progress" id="prog-dz">
-        <span class="mini-bar"><div id="prog-dz-bar"></div></span>
-        <span id="prog-dz-text">0 / 3</span>
+      <div class="card-progress" id="prog-dz2">
+        <span class="mini-bar"><div id="prog-dz2-bar"></div></span>
+        <span id="prog-dz2-text">0 / 3</span>
       </div>
-      <div class="arrow">Открыть ДЗ <span>→</span></div>
+      <div class="arrow">Открыть <span>→</span></div>
+    </a>
+
+    <a href="tema3.html" class="card tema3">
+      <div class="card-icon">📊</div>
+      <div class="meta">Тема · Массивы</div>
+      <h3>Структурированные типы данных</h3>
+      <p>Массивы: создание, индексы, перебор, методы. 10 практических заданий.</p>
+      <div class="card-progress" id="prog-tema3">
+        <span class="mini-bar"><div id="prog-tema3-bar"></div></span>
+        <span id="prog-tema3-text">0 / 10</span>
+      </div>
+      <div class="arrow">Открыть <span>→</span></div>
+    </a>
+
+    <a href="dz3.html" class="card dz3">
+      <div class="card-icon">📝</div>
+      <div class="meta">ДЗ · Массивы</div>
+      <h3>Домашнее задание №2</h3>
+      <p>3 задачи на массивы: работа с числами, строками и перебор. Подсказка снижает балл.</p>
+      <div class="card-progress" id="prog-dz3">
+        <span class="mini-bar"><div id="prog-dz3-bar"></div></span>
+        <span id="prog-dz3-text">0 / 3</span>
+      </div>
+      <div class="arrow">Открыть <span>→</span></div>
     </a>
 
     <a href="spravochnik.html" class="card ref">
       <div class="card-icon">📖</div>
       <div class="meta">Справочник</div>
       <h3>Основы Python</h3>
-      <p>Шпаргалка: типы данных, ввод и вывод, операторы, условия, циклы, подпрограммы. Всё в одном месте.</p>
+      <p>Шпаргалка: типы данных, ввод и вывод, операторы, условия, циклы, подпрограммы, массивы.</p>
       <div class="arrow">Открыть <span>→</span></div>
     </a>
 
@@ -257,32 +283,53 @@
     greet.classList.add('visible');
     document.getElementById('greetAvatar').textContent = progress.name.charAt(0).toUpperCase();
 
-    const temaKeys = ['t2_1','t2_2','t2_3','t2_4','t2_5','t2_6'];
-    const dzKeys = ['dz_1','dz_2','dz_3'];
-    const nTema = temaKeys.filter(k => progress[k]).length;
-    const nDz = dzKeys.filter(k => progress[k]).length;
-    const total = nTema + nDz;
+    const tema2Keys = ['t2_1','t2_2','t2_3','t2_4','t2_5','t2_6'];
+    const dz2Keys = ['dz_1','dz_2','dz_3'];
+    const tema3Keys = ['t3_1','t3_2','t3_3','t3_4','t3_5','t3_6','t3_7','t3_8','t3_9','t3_10'];
+    const dz3Keys = ['dz3_1','dz3_2','dz3_3'];
+
+    const nT2 = tema2Keys.filter(k => progress[k]).length;
+    const nDz2 = dz2Keys.filter(k => progress[k]).length;
+    const nT3 = tema3Keys.filter(k => progress[k]).length;
+    const nDz3 = dz3Keys.filter(k => progress[k]).length;
+    const total = nT2 + nDz2 + nT3 + nDz3;
 
     let msg = '';
-    if (total === 0) msg = 'Готова начать? Открой урок и заработай первую звёздочку ✦';
-    else if (total < 6) msg = `Уже ${total} ${plural(total, 'звёздочка','звёздочки','звёздочек')}. Продолжай!`;
-    else if (total < 9) msg = `Отлично — ${total} ${plural(total, 'звёздочка','звёздочки','звёздочек')}! Ещё немного — и все 9 твои 🏆`;
-    else msg = `Все 9 звёздочек собраны! Ты настоящий программист! 🏆`;
+    if (total === 0) msg = 'Готова начать? Открой любую тему и заработай первую звёздочку ✦';
+    else if (total < 10) msg = `Уже ${total} ${plural(total, 'звёздочка','звёздочки','звёздочек')}. Продолжай!`;
+    else if (total < 22) msg = `Отлично — ${total} ${plural(total, 'звёздочка','звёздочки','звёздочек')}! Ещё немного — и все 22 твои 🏆`;
+    else msg = `Все 22 звёздочки собраны! Ты настоящий программист! 🏆`;
 
     document.getElementById('greetTitle').textContent = `С возвращением, ${progress.name}!`;
     document.getElementById('greetMessage').textContent = msg;
 
-    if (nTema > 0) {
-      const el = document.getElementById('prog-tema');
+    // Тема 2
+    if (nT2 > 0) {
+      const el = document.getElementById('prog-tema2');
       el.classList.add('visible');
-      document.getElementById('prog-tema-bar').style.width = (nTema / 6 * 100) + '%';
-      document.getElementById('prog-tema-text').textContent = `${nTema} / 6`;
+      document.getElementById('prog-tema2-bar').style.width = (nT2 / 6 * 100) + '%';
+      document.getElementById('prog-tema2-text').textContent = `${nT2} / 6`;
     }
-    if (nDz > 0) {
-      const el = document.getElementById('prog-dz');
+    // ДЗ 2
+    if (nDz2 > 0) {
+      const el = document.getElementById('prog-dz2');
       el.classList.add('visible');
-      document.getElementById('prog-dz-bar').style.width = (nDz / 3 * 100) + '%';
-      document.getElementById('prog-dz-text').textContent = `${nDz} / 3`;
+      document.getElementById('prog-dz2-bar').style.width = (nDz2 / 3 * 100) + '%';
+      document.getElementById('prog-dz2-text').textContent = `${nDz2} / 3`;
+    }
+    // Тема 3
+    if (nT3 > 0) {
+      const el = document.getElementById('prog-tema3');
+      el.classList.add('visible');
+      document.getElementById('prog-tema3-bar').style.width = (nT3 / 10 * 100) + '%';
+      document.getElementById('prog-tema3-text').textContent = `${nT3} / 10`;
+    }
+    // ДЗ 3
+    if (nDz3 > 0) {
+      const el = document.getElementById('prog-dz3');
+      el.classList.add('visible');
+      document.getElementById('prog-dz3-bar').style.width = (nDz3 / 3 * 100) + '%';
+      document.getElementById('prog-dz3-text').textContent = `${nDz3} / 3`;
     }
   }
 
