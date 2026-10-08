@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Домашнее задание · Массивы</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    user-select: none; -webkit-user-select: none;
+    font-family: 'Comfortaa', 'Segoe UI', 'Verdana', sans-serif;
+    background: linear-gradient(135deg, #fff7ed 0%, #fef6ff 50%, #f0f9ff 100%);
+    background-attachment: fixed; color: #3a3a5a; min-height: 100vh;
+    padding: 20px 12px; line-height: 1.55;
+  }
+  textarea { user-select: text !important; -webkit-user-select: text !important; }
+
+  .container {
+    max-width: 1000px; margin: 0 auto;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(200,120,60,0.15);
+    overflow: clip; min-height: 92vh;
+    display: flex; flex-direction: column;
+  }
+  header {
+    background: linear-gradient(135deg, #fed7aa 0%, #fbcfe8 50%, #bae6fd 100%);
+    padding: 14px 26px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+  }
+  header .left { display: flex; align-items: center; gap: 12px; }
+  header .logo { font-size: 1.8em; }
+  header h1 { font-size: 1.1em; color: #9a3412; font-weight: 700; }
+  header .subtitle { font-size: 0.78em; color: #7c2d12; opacity: 0.75; }
+  header .right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .nav-home {
+    text-decoration: none; padding: 6px 14px;
+    background: rgba(255,255,255,0.9); color: #9a3412;
+    border-radius: 20px; font-size: 0.82em; font-weight: 600;
+  }
+  .score-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.95); padding: 6px 14px;
+    border-radius: 20px; font-size: 0.88em; font-weight: 700;
+    color: #9a3412;
+  }
+  .score-badge .score-num { color: #f97316; }
+
+  .intro {
+    padding: 22px 30px;
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    border-bottom: 1px solid rgba(249,115,22,0.15);
+  }
+  .intro h2 {
+    color: #9a3412; font-size: 1.2em; margin-bottom: 8px;
+  }
+  .intro p { color: #7c2d12; font-size: 0.9em; margin-bottom: 6px; }
+  .intro ul { margin-left: 18px; color: #7c2d12; font-size: 0.88em; }
+
+  .tasks { flex: 1; padding: 24px 30px; }
+
+  .task {
+    background: #fff;
+    border: 2px solid #fed7aa;
+    border-radius: 18px;
+    padding: 20px 24px;
+    margin-bottom: 22px;
+    transition: 0.3s;
+    position: relative;
+  }
+  .task.done {
+    border-color: #34d399;
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  }
+  .task.done::after {
+    content: "✓";
+    position: absolute; top: 14px; right: 14px;
+    width: 30px; height: 30px;
+    background: linear-gradient(135deg, #34d399, #10b981);
+    color: #fff; font-weight: 700; font-size: 1.1em;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 10px rgba(52,211,153,0.4);
+  }
+  .task-head {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .task-num {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 14px;
+    font-size: 0.78em;
+    font-weight: 700;
+  }
+  .task-head h3 {
+    color: #9a3412; font-size: 1.05em; flex: 1;
+  }
+  .hint-btn {
+    background: linear-gradient(135deg, #fff8e6, #ffefcc);
+    color: #92400e;
+    border: 2px solid #fde68a;
+    padding: 6px 14px;
+    border-radius: 18px;
+    font-family: inherit; font-size: 0.82em; font-weight: 600;
+    cursor: pointer; transition: 0.2s;
+  }
+  .hint-btn:hover { background: #ffefcc; }
+  .hint-btn.used {
+    background: #fee2e2; color: #991b1b; border-color: #fca5a5;
+  }
+
+  .task-desc {
+    background: #f0f9ff;
+    border-left: 4px solid #3b82f6;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    font-size: 0.9em;
+    color: #1e3a8a;
+    line-height: 1.6;
+  }
+  .task-desc b { color: #1e40af; }
+  .task-desc code {
+    background: rgba(255,255,255,0.8);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', monospace;
+  }
+  .task-desc .array-example {
+    background: rgba(255,255,255,0.8);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-family: 'Consolas', monospace;
+    font-size: 0.88em;
+    color: #334155;
+  }
+  .task-desc .example {
+    background: rgba(255,255,255,0.8);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 8px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.88em;
+    color: #334155;
+  }
+
+  .hint-box {
+    display: none;
+    background: linear-gradient(135deg, #fff8e6, #ffefcc);
+    border-left: 4px solid #fbbf24;
+    color: #7a5a1a;
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    font-size: 0.87em;
+    line-height: 1.6;
+  }
+  .hint-box.visible { display: block; }
+  .hint-box code {
+    background: rgba(255,255,255,0.8); padding: 1px 6px;
+    border-radius: 4px; font-family: 'Consolas', monospace;
+  }
+  .hint-box .price {
+    display: inline-block;
+    background: #fca5a5;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.82em;
+    margin-top: 8px;
+  }
+
+  textarea {
+    width: 100%; min-height: 200px;
+    padding: 12px 16px;
+    border: 2px solid #fed7aa;
+    border-radius: 12px;
+    font-family: 'Consolas','Menlo',monospace;
+    font-size: 13.5px;
+    resize: vertical;
+    background: #fffbf5;
+    color: #3a3a5a;
+    line-height: 1.65;
+  }
+  textarea:focus { outline: none; border-color: #f97316; }
+
+  .actions {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff; border: none;
+    padding: 10px 20px; border-radius: 20px;
+    cursor: pointer; font-size: 0.9em; font-weight: 600;
+    font-family: inherit; transition: 0.2s;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.ghost {
+    background: #fff; color: #c2410c;
+    border: 2px solid #fed7aa;
+  }
+  .btn.ghost:hover { background: #fffbf5; }
+
+  .output {
+    background: #f0fdf4; border: 2px solid #a7f3d0;
+    color: #065f46; padding: 12px 16px;
+    border-radius: 12px; font-family: 'Consolas',monospace;
+    font-size: 12.5px; min-height: 42px; margin-top: 12px;
+    white-space: pre-wrap; word-break: break-word; line-height: 1.6;
+  }
+  .output.error { background: #fff0f0; border-color: #fca5a5; color: #c04a4a; }
+  .output.success {
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    border-color: #34d399; color: #065f46;
+    font-weight: 600;
+  }
+  .output.hint { background: #fff8e6; border-color: #fde68a; color: #7a5a1a; }
+
+  .result-bar {
+    background: linear-gradient(135deg, #fff7ed, #fef6ff);
+    border-top: 1px solid rgba(200,120,60,0.15);
+    padding: 20px 30px;
+    text-align: center;
+  }
+  .result-bar .total {
+    font-size: 2.2em; font-weight: 800;
+    background: linear-gradient(135deg, #f97316, #ec4899);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 6px 0;
+  }
+  .result-bar .label {
+    color: #7c2d12; font-size: 0.88em; opacity: 0.75;
+  }
+  .result-bar .hint-note {
+    display: none;
+    background: #fff7ed;
+    border: 2px dashed #f97316;
+    border-radius: 12px;
+    padding: 8px 14px;
+    margin-top: 12px;
+    font-size: 0.85em;
+    color: #9a3412;
+  }
+  .result-bar .hint-note.visible { display: inline-block; }
+
+  @media (max-width: 700px) {
+    .tasks { padding: 16px; }
+    .intro { padding: 16px 20px; }
+    .task { padding: 16px; }
+    header { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="left">
+      <a href="index.html" class="nav-home">← Главная</a>
+      <div class="logo">📝</div>
+      <div>
+        <h1>Домашнее задание · Массивы</h1>
+        <div class="subtitle">3 задачи с функциями · максимум 3 балла</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="score-badge">
+        Балл: <span class="score-num" id="scoreNum">0</span> / 3
+      </div>
+    </div>
+  </header>
+
+  <div class="intro">
+    <h2>📋 Как выполнять ДЗ</h2>
+    <p>Каждую задачу нужно решить <b>через функцию</b> — вспоминаем прошлую тему.</p>
+    <ul>
+      <li>Каждая задача = 1 балл, если решена <b>без подсказки</b></li>
+      <li>Откроешь подсказку — за задачу получишь <b>0.5 балла</b></li>
+      <li>Копирование и вставка кода отключены — пиши вручную</li>
+      <li>Функции должны что-то <b>возвращать</b> через <code>return</code></li>
+    </ul>
+  </div>
+
+  <div class="tasks">
+
+    <!-- ЗАДАЧА 1 -->
+    <div class="task" id="task-1">
+      <div class="task-head">
+        <span class="task-num">Задача 1</span>
+        <h3>⭐ Ночные звёзды</h3>
+        <button class="hint-btn" onclick="useHint(1)">💡 Подсказка (-0.5)</button>
+      </div>
+
+      <div class="task-desc">
+        Аиша и Фатима записали яркость звёзд:
+        <div class="array-example">stars_aisha  = [23, 67, 45, 89, 12, 55, 78, 34, 91, 40, 60, 52]<br>stars_fatima = [30, 72, 15, 88, 41, 66, 25, 95, 50, 60, 43, 77]</div>
+        Напиши <b>функцию</b> <code>count_bright(stars)</code>, которая считает, сколько звёзд имеют яркость <b>больше 50</b>, и возвращает это число.
+        <br>Затем выведи, сколько ярких звёзд у каждой девочки. <b>Строку для Фатимы допиши сама.</b>
+        <div class="example">
+          Ожидаемый результат:<br>
+          Звёзд у Аиши: 7<br>
+          Звёзд у Фатимы: 6
+        </div>
+      </div>
+
+      <div class="hint-box" id="hint-1">
+        💡 <b>Подсказка:</b><br>
+        Внутри функции заведи счётчик <code>count = 0</code>.<br>
+        Пройдись циклом <code>for x in stars:</code><br>
+        Если <code>x &gt; 50</code> — увеличь счётчик.<br>
+        Верни <code>count</code> через <code>return</code>.
+        <div class="price">Стоимость подсказки: -0.5 балла</div>
+      </div>
+
+      <textarea id="code-dz-1" spellcheck="false">stars_aisha  = [23, 67, 45, 89, 12, 55, 78, 34, 91, 40, 60, 52]
+stars_fatima = [30, 72, 15, 88, 41, 66, 25, 95, 50, 60, 43, 77]
+
+# Функция считает яркие звёзды
+def count_bright(stars):
+    # твой код
+    ?
+
+# Вывод для Аиши
+print("Звёзд у Аиши:", count_bright(stars_aisha))
+
+# Вывод для Фатимы — допиши сам
+?
+</textarea>
+
+      <div class="actions">
+        <button class="btn" onclick="runDz(1)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetDz(1)">↺ Сбросить</button>
+      </div>
+      <div class="output" id="out-dz-1">Здесь появится результат</div>
+    </div>
+
+    <!-- ЗАДАЧА 2 -->
+    <div class="task" id="task-2">
+      <div class="task-head">
+        <span class="task-num">Задача 2</span>
+        <h3>⭐ Чётные бусы</h3>
+        <button class="hint-btn" onclick="useHint(2)">💡 Подсказка (-0.5)</button>
+      </div>
+
+      <div class="task-desc">
+        Марьям собирает чётки из бусин. Размеры бусин:
+        <div class="array-example">beads = [3, 8, 5, 12, 7, 4, 9, 10, 15, 6, 11, 2, 13, 14, 1]</div>
+        Напиши <b>функцию</b> <code>filter_even(beads)</code>, которая возвращает <b>новый массив</b> только из чётных чисел.
+        <br>Затем вызови функцию и выведи новый массив.
+        <div class="example">
+          Ожидаемый результат:<br>
+          Чётные: [8, 12, 4, 10, 6, 2, 14]
+        </div>
+      </div>
+
+      <div class="hint-box" id="hint-2">
+        💡 <b>Подсказка:</b><br>
+        Внутри функции создай пустой массив <code>result = []</code>.<br>
+        Циклом <code>for x in beads:</code> проверь <code>x % 2 == 0</code>.<br>
+        Если чётное — <code>result.append(x)</code>.<br>
+        Верни <code>result</code> через <code>return</code>.
+        <div class="price">Стоимость подсказки: -0.5 балла</div>
+      </div>
+
+      <textarea id="code-dz-2" spellcheck="false">beads = [3, 8, 5, 12, 7, 4, 9, 10, 15, 6, 11, 2, 13, 14, 1]
+
+# Функция возвращает новый массив с чётными числами
+def filter_even(beads):
+    # твой код
+    ?
+
+# Вызови и выведи результат
+even = filter_even(beads)
+print("Чётные:", even)
+</textarea>
+
+      <div class="actions">
+        <button class="btn" onclick="runDz(2)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetDz(2)">↺ Сбросить</button>
+      </div>
+      <div class="output" id="out-dz-2">Здесь появится результат</div>
+    </div>
+
+    <!-- ЗАДАЧА 3 -->
+    <div class="task" id="task-3">
+      <div class="task-head">
+        <span class="task-num">Задача 3</span>
+        <h3>⭐ Учёт уроков в медресе</h3>
+        <button class="hint-btn" onclick="useHint(3)">💡 Подсказка (-0.5)</button>
+      </div>
+
+      <div class="task-desc">
+        В группе 8 учениц. Сколько аятов выучила каждая за неделю:
+        <div class="array-example">ayat = [4, 0, 7, 2, 0, 9, 3, 6]</div>
+        Напиши <b>функцию</b> <code>find_best(ayat)</code>, которая находит <b>номер ученицы</b> (индекс), выучившей больше всех аятов. Используй цикл, <b>без max()</b>.
+        <br>Затем вызови функцию и выведи результат в формате:
+        <div class="example">
+          Больше всех выучила ученица № 6 (9 аятов)
+        </div>
+      </div>
+
+      <div class="hint-box" id="hint-3">
+        💡 <b>Подсказка:</b><br>
+        Заведи <code>best_index = 0</code> и <code>best_value = ayat[0]</code>.<br>
+        Пройдись <code>for i in range(len(ayat)):</code><br>
+        Если <code>ayat[i] &gt; best_value</code> — обнови <code>best_index</code> и <code>best_value</code>.<br>
+        Верни <code>best_index</code> через <code>return</code>.
+        <div class="price">Стоимость подсказки: -0.5 балла</div>
+      </div>
+
+      <textarea id="code-dz-3" spellcheck="false">ayat = [4, 0, 7, 2, 0, 9, 3, 6]
+
+# Функция находит индекс ученицы с максимумом
+def find_best(ayat):
+    # твой код
+    ?
+
+# Вызови и выведи
+i = find_best(ayat)
+print("Больше всех выучила ученица №", i + 1, "(", ayat[i], "аятов)")
+</textarea>
+
+      <div class="actions">
+        <button class="btn" onclick="runDz(3)">▶ Запустить</button>
+        <button class="btn ghost" onclick="resetDz(3)">↺ Сбросить</button>
+      </div>
+      <div class="output" id="out-dz-3">Здесь появится результат</div>
+    </div>
+
+  </div>
+
+  <div class="result-bar">
+    <div class="label">Итоговый балл за ДЗ</div>
+    <div class="total"><span id="totalScore">0</span> / 3</div>
+    <div class="label" id="resultMessage">Начни с первой задачи — она самая простая</div>
+    <div class="hint-note" id="hintNote">💡 Ты использовала подсказки. Балл снижен, но ты всё ещё можешь решить задачи без них.</div>
+  </div>
+</div>
+
+<script>
+/* === ЗАЩИТА === */
+function isCopyProtectionDisabled() {
+  try {
+    const s = localStorage.getItem('python_11_teacher_settings');
+    if (!s) return false;
+    const parsed = JSON.parse(s);
+    return parsed.noCopyProtection === true;
+  } catch(e) { return false; }
+}
+
+if (!isCopyProtectionDisabled()) {
+  document.addEventListener('copy', e => { e.preventDefault(); });
+  document.addEventListener('cut', e => { e.preventDefault(); });
+  document.addEventListener('contextmenu', e => { e.preventDefault(); });
+  document.addEventListener('selectstart', e => { e.preventDefault(); });
+  document.addEventListener('keydown', e => {
+    const m = e.ctrlKey || e.metaKey;
+    if (m && ['c','C','a','A','x','X','v','V'].includes(e.key)) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('paste', e => {
+      e.preventDefault();
+      showPasteWarning(ta);
+      return false;
+    });
+    ta.addEventListener('drop', e => { e.preventDefault(); return false; });
+    ta.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
+    ta.addEventListener('selectstart', e => { e.stopPropagation(); });
+    ta.addEventListener('mousedown', e => { e.stopPropagation(); });
+  });
+}
+
+function showPasteWarning(ta) {
+  const out = ta.parentElement.querySelector('.output');
+  if (!out) return;
+  const prev = out.textContent;
+  out.textContent = '🚫 Вставка запрещена! Набирай код вручную.';
+  out.classList.add('hint');
+  setTimeout(() => {
+    if (out.textContent.startsWith('🚫')) {
+      out.textContent = prev || 'Здесь появится результат';
+      out.classList.remove('hint');
+    }
+  }, 2200);
+}
+
+/* === ПРОГРЕСС === */
+const STORAGE_KEY = 'python_11_progress';
+let progress = {
+  name: '',
+  dz3_1: false, dz3_2: false, dz3_3: false,
+  hint3_1: false, hint3_2: false, hint3_3: false
+};
+
+function loadProgress() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) Object.assign(progress, JSON.parse(s));
+  } catch(e) {}
+}
+function saveProgress() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch(e) {}
+}
+loadProgress();
+
+/* === ПОДСКАЗКИ === */
+function useHint(n) {
+  if (progress['hint3_' + n]) return;
+  progress['hint3_' + n] = true;
+  saveProgress();
+  document.getElementById('hint-' + n).classList.add('visible');
+  const btn = event.target;
+  btn.classList.add('used');
+  btn.textContent = '💡 Подсказка использована';
+  btn.disabled = true;
+  updateScore();
+}
+
+/* === СЧЁТ БАЛЛОВ === */
+function calculateScore() {
+  let score = 0;
+  for (let i = 1; i <= 3; i++) {
+    if (progress['dz3_' + i]) {
+      score += progress['hint3_' + i] ? 0.5 : 1;
+    }
+  }
+  return score;
+}
+
+function updateScore() {
+  const score = calculateScore();
+  document.getElementById('scoreNum').textContent = formatScore(score);
+  document.getElementById('totalScore').textContent = formatScore(score);
+
+  const anyHints = ['hint3_1','hint3_2','hint3_3'].some(k => progress[k]);
+  const note = document.getElementById('hintNote');
+  if (anyHints && score < 3) note.classList.add('visible');
+  else note.classList.remove('visible');
+
+  let msg = 'Начни с первой задачи — она самая простая';
+  if (score >= 3) msg = '🏆 Все три задачи решены без подсказок! Отлично!';
+  else if (score >= 2) msg = '👍 Хорошо! Ещё одна задача — и максимум.';
+  else if (score >= 1) msg = 'Продолжай — начало положено!';
+  else if (anyHints) msg = 'Подсказки использованы, но задачи ещё можно решить.';
+  document.getElementById('resultMessage').textContent = msg;
+}
+
+function formatScore(s) {
+  return Number.isInteger(s) ? s.toString() : s.toFixed(1);
+}
+
+/* === F-СТРОКИ === */
+function expandFStrings(code) {
+  return code.replace(/\bf(["'])((?:\\.|(?!\1).)*?)\1/g, (match, quote, body) => {
+    const parts = [];
+    let lastIndex = 0;
+    const regex = /\{([^{}]+)\}/g;
+    let m;
+    while ((m = regex.exec(body)) !== null) {
+      const before = body.slice(lastIndex, m.index);
+      if (before) parts.push(quote + before + quote);
+      parts.push('(' + m[1] + ')');
+      lastIndex = m.index + m[0].length;
+    }
+    const after = body.slice(lastIndex);
+    if (after) parts.push(quote + after + quote);
+    if (parts.length === 0) return quote + quote;
+    return '(' + parts.join(' + ') + ')';
+  });
+}
+
+/* === ОШИБКИ === */
+function humanizeError(msg) {
+  if (/Unexpected string literal/i.test(msg)) return 'Проблема со строкой. Проверь кавычки.';
+  if (/Unexpected token/i.test(msg)) return 'Синтаксическая ошибка. Проверь скобки и кавычки.';
+  if (/is not defined/i.test(msg)) return 'Программа использует имя, которое не объявлено.';
+  if (/expected/i.test(msg)) return 'Похоже, пропущен важный символ (скобка или кавычка).';
+  return msg;
+}
+
+/* === ИНТЕРПРЕТАТОР === */
+function fmt(v) {
+  if (Array.isArray(v)) return '[' + v.map(x => typeof x === 'string' ? `'${x}'` : fmt(x)).join(', ') + ']';
+  if (typeof v === 'number' && !Number.isInteger(v)) return Math.round(v * 1000) / 1000;
+  if (typeof v === 'boolean') return v ? 'True' : 'False';
+  if (v === null || v === undefined) return 'None';
+  return String(v);
+}
+
+function stripComments(code) {
+  return code.split('\n').map(l => l.split('#')[0]).join('\n');
+}
+
+function runCodeRaw(code) {
+  let buffer = '';
+  const __out = (...args) => { buffer += args.map(fmt).join(' ') + '\n'; };
+
+  const cleanCode = stripComments(code);
+  const lines = cleanCode.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes('?')) {
+      return { output: buffer, error: `В строке ${i + 1} остался «?». Впиши значение.` };
+    }
+  }
+  if (!cleanCode.trim()) {
+    return { output: '', empty: true };
+  }
+
+  try {
+    const expanded = expandFStrings(cleanCode);
+    const js = translatePython(expanded);
+    const wrapped = `
+      const __print = (...a) => __out(...a);
+      const __len = x => (Array.isArray(x) || typeof x === 'string') ? x.length : Object.keys(x).length;
+      const __sum = x => Array.isArray(x) ? x.reduce((a,b)=>a+b, 0) : 0;
+      const __range = (...a) => {
+        let start=0, stop, step=1;
+        if (a.length===1) stop=a[0];
+        else if (a.length===2) [start, stop]=a;
+        else [start, stop, step]=a;
+        const r=[]; if (step>0) for(let i=start;i<stop;i+=step) r.push(i); else for(let i=start;i>stop;i+=step) r.push(i);
+        return r;
+      };
+      const __iter = x => Array.isArray(x) ? x : (typeof x==='string' ? x.split('') : Object.values(x));
+      const __truthy = x => Array.isArray(x) ? x.length>0 : (typeof x==='string' ? x.length>0 : !!x);
+      const __get = (arr, i) => {
+        if (Array.isArray(arr) || typeof arr === 'string') {
+          const idx = i < 0 ? arr.length + i : i;
+          const val = arr[idx];
+          return val === undefined ? null : val;
+        }
+        return null;
+      };
+      const __set = (arr, i, val) => {
+        const idx = i < 0 ? arr.length + i : i;
+        arr[idx] = val;
+        return val;
+      };
+      const __append = (arr, x) => { arr.push(x); };
+      const __int = x => { const n = parseInt(x, 10); if (isNaN(n)) throw new Error("ValueError"); return n; };
+      const __float = x => { const n = parseFloat(x); if (isNaN(n)) throw new Error("ValueError"); return n; };
+      ${js}
+    `;
+    const fn = new Function('__out', wrapped);
+    fn(__out);
+    return { output: buffer || '(нет вывода)', error: null };
+  } catch (e) {
+    return { output: buffer, error: humanizeError(e.message) };
+  }
+}
+
+function translatePython(code) {
+  const lines = code.split('\n'); let js = ''; const stack = [];
+  for (let raw of lines) {
+    const ci = raw.indexOf('#'); let line = ci >= 0 ? raw.slice(0, ci) : raw;
+    if (line.trim() === '') continue;
+    const indent = line.match(/^\s*/)[0].length; let t = line.trim();
+    while (stack.length && indent <= stack[stack.length-1]) { js += '}\n'; stack.pop(); }
+
+    let mDef = t.match(/^def\s+([A-Za-z_]\w*)\s*\(([^)]*)\)\s*:$/);
+    if (mDef) {
+      js += ' '.repeat(indent) + `function ${mDef[1]}(${mDef[2].trim()}) {\n`;
+      stack.push(indent); continue;
+    }
+    if (t.startsWith('return ')) {
+      js += ' '.repeat(indent) + `return ${t.slice(7).trim()};\n`;
+      continue;
+    }
+
+    t = t.replace(/\bprint\s*\(/g, '__print(');
+    t = t.replace(/\blen\s*\(/g, '__len(');
+    t = t.replace(/\bsum\s*\(/g, '__sum(');
+    t = t.replace(/\brange\s*\(/g, '__range(');
+    t = t.replace(/\bint\s*\(/g, '__int(');
+    t = t.replace(/\bfloat\s*\(/g, '__float(');
+    t = t.replace(/\bTrue\b/g, 'true'); t = t.replace(/\bFalse\b/g, 'false'); t = t.replace(/\bNone\b/g, 'null');
+
+    let mFor = t.match(/^for\s+([A-Za-z_]\w*)\s+in\s+(.+):$/);
+    if (mFor) {
+      js += ' '.repeat(indent) + `for (let ${mFor[1]} of __iter(${mFor[2]})) {\n`;
+      stack.push(indent); continue;
+    }
+
+    if (/([A-Za-z_]\w*)\[[^\]]+\]\s*=(?!=)/.test(t)) {
+      t = t.replace(/([A-Za-z_]\w*)\[([^\]]+)\]\s*=(?!=)\s*(.+)/g,
+        (m, arr, idx, val) => `__set(${arr}, ${idx}, ${val})`);
+    }
+    if (!t.includes('__get(') && !t.includes('__set(')) {
+      t = t.replace(/([A-Za-z_]\w*)\[([^\]]+)\]/g, '__get($1, $2)');
+    }
+
+    t = t.replace(/([A-Za-z_]\w*)\.append\s*\(/g, '__append($1, ');
+
+    let mIf = t.match(/^if\s+(.+):$/);
+    if (mIf) { js += ' '.repeat(indent) + `if (__truthy(${mIf[1]})) {\n`; stack.push(indent); continue; }
+    if (t === 'else:') { js += ' '.repeat(indent) + `} else {\n`; continue; }
+
+    js += ' '.repeat(indent) + t + ';\n';
+  }
+  while (stack.length) { js += '}\n'; stack.pop(); }
+  return js;
+}
+
+/* === ЗАПУСК === */
+const dzDefaults = {};
+for (let i = 1; i <= 3; i++) {
+  const el = document.getElementById('code-dz-' + i);
+  if (el) dzDefaults[i] = el.value;
+}
+
+function runDz(n) {
+  const code = document.getElementById('code-dz-' + n).value;
+  const out = document.getElementById('out-dz-' + n);
+  const taskEl = document.getElementById('task-' + n);
+  const result = runCodeRaw(code);
+
+  if (result.empty) {
+    out.textContent = 'Напиши код ✍️';
+    out.classList.remove('error','success','hint');
+    return;
+  }
+  if (result.error) {
+    out.textContent = '❌ ' + result.error;
+    out.classList.add('error');
+    out.classList.remove('success','hint');
+    return;
+  }
+
+  out.textContent = result.output;
+  out.classList.remove('error','hint','success');
+
+  const ok = checkers[n](code, result.output);
+  if (ok) {
+    out.classList.add('success');
+    const withHint = progress['hint3_' + n];
+    const points = withHint ? 0.5 : 1;
+
+    if (!progress['dz3_' + n]) {
+      progress['dz3_' + n] = true;
+      saveProgress();
+      updateScore();
+      taskEl.classList.add('done');
+    }
+
+    out.textContent += `\n\n✦ Задача решена! +${formatScore(points)} балла${withHint ? ' (с подсказкой)' : ''}`;
+  }
+}
+
+function resetDz(n) {
+  const el = document.getElementById('code-dz-' + n);
+  if (dzDefaults[n]) el.value = dzDefaults[n];
+  const out = document.getElementById('out-dz-' + n);
+  out.textContent = 'Здесь появится результат';
+  out.classList.remove('error','success','hint');
+}
+
+/* === ПРОВЕРКИ === */
+function outputLines(output) { return output.trim().split('\n').map(l => l.trim()).filter(l => l); }
+
+const checkers = {
+  1: (code, output) => {
+    const clean = stripComments(code);
+    const hasDef = /def\s+count_bright\s*\(\s*\w+\s*\)\s*:/.test(clean);
+    const hasReturn = /return\s+\w+/.test(clean);
+    const hasFor = /for\s+\w+\s+in\s+stars/.test(clean);
+    const hasIf = /if\s+\w+\s*>\s*50/.test(clean);
+    // Должны быть ОБА вывода: Аиши и Фатимы
+    const hasAisha = /[Аа]иш/i.test(output);
+    const hasFatima = /[Фф]атим/i.test(output);
+    const has7 = /\b7\b/.test(output);
+    const has6 = /\b6\b/.test(output);
+    // Проверяем, что ученица вызвала функцию для Фатимы
+    const callsFatima = /count_bright\s*\(\s*stars_fatima\s*\)/.test(clean);
+    return hasDef && hasReturn && hasFor && hasIf && hasAisha && hasFatima && has7 && has6 && callsFatima;
+  },
+  2: (code, output) => {
+    const clean = stripComments(code);
+    const hasDef = /def\s+filter_even\s*\(\s*\w+\s*\)\s*:/.test(clean);
+    const hasReturn = /return\s+\w+/.test(clean);
+    const hasAppend = /\.append\s*\(/.test(clean);
+    const hasMod = /%\s*2\s*==\s*0/.test(clean);
+    // В выводе должен быть правильный массив
+    const expected = [8, 12, 4, 10, 6, 2, 14];
+    const hasArray = expected.every(n => output.includes(String(n)));
+    return hasDef && hasReturn && hasAppend && hasMod && hasArray;
+  },
+  3: (code, output) => {
+    const clean = stripComments(code);
+    const hasDef = /def\s+find_best\s*\(\s*\w+\s*\)\s*:/.test(clean);
+    const hasReturn = /return\s+\w+/.test(clean);
+    const hasRange = /range\s*\(\s*len\s*\(/.test(clean);
+    // Проверяем именно ayat[i]
+    const hasAyatI = /ayat\s*\[\s*i\s*\]/.test(clean);
+    // В выводе должна быть ученица № 6 и 9 аятов
+    const has6 = /№\s*6/.test(output) || /\b6\b/.test(output);
+    const has9 = /\b9\b/.test(output);
+    return hasDef && hasReturn && hasRange && hasAyatI && has6 && has9;
+  }
+};
+
+/* === ИНИЦИАЛИЗАЦИЯ === */
+updateScore();
+</script>
+
+</body>
+</html>
