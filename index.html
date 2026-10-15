@@ -138,7 +138,12 @@
   .card.tema3   { border-left: 6px solid #8b5cf6; }
   .card.dz      { border-left: 6px solid #f97316; }
   .card.dz3     { border-left: 6px solid #fb923c; }
+  .card.test    { border-left: 6px solid #ec4899; background: linear-gradient(135deg, #fdf2f8, #fff); }
   .card.ref     { border-left: 6px solid #34d399; }
+
+  .card.test .card-icon { animation: float 3s ease-in-out infinite; }
+  .card.test h3 { color: #be185d; }
+  .card.test .arrow { color: #be185d; }
 
   .card .card-progress {
     display: none;
@@ -158,6 +163,18 @@
   .card .card-progress .mini-bar > div {
     height: 100%;
     background: linear-gradient(90deg, #6366f1, #ec4899);
+  }
+
+  .card.test .test-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #fde68a, #fbbf24);
+    color: #7a4a00;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 0.72em;
+    font-weight: 700;
+    margin-top: 4px;
+    align-self: flex-start;
   }
 
   footer {
@@ -185,7 +202,8 @@
     <p>Интерактивный учебник по Python с редактором кода и проверкой прямо в браузере.</p>
     <div class="badges">
       <span class="badge">📘 2 темы</span>
-      <span class="badge">📝 Домашние задания</span>
+      <span class="badge">📝 2 домашки</span>
+      <span class="badge">🎯 Проверочная</span>
       <span class="badge">📖 Справочник</span>
     </div>
   </div>
@@ -217,7 +235,7 @@
       <div class="card-icon">📝</div>
       <div class="meta">ДЗ · Подпрограммы</div>
       <h3>Домашнее задание №1</h3>
-      <p>3 задачи на процедуры и функции. Можно взять подсказку — но балл будет снижен.</p>
+      <p>3 задачи на процедуры и функции. Подсказка снижает балл.</p>
       <div class="card-progress" id="prog-dz2">
         <span class="mini-bar"><div id="prog-dz2-bar"></div></span>
         <span id="prog-dz2-text">0 / 3</span>
@@ -241,7 +259,7 @@
       <div class="card-icon">📝</div>
       <div class="meta">ДЗ · Массивы</div>
       <h3>Домашнее задание №2</h3>
-      <p>3 задачи на массивы: работа с числами, строками и перебор. Подсказка снижает балл.</p>
+      <p>3 задачи на массивы с функциями. Подсказка снижает балл.</p>
       <div class="card-progress" id="prog-dz3">
         <span class="mini-bar"><div id="prog-dz3-bar"></div></span>
         <span id="prog-dz3-text">0 / 3</span>
@@ -254,6 +272,15 @@
       <div class="meta">Справочник</div>
       <h3>Основы Python</h3>
       <p>Шпаргалка: типы данных, ввод и вывод, операторы, условия, циклы, подпрограммы, массивы.</p>
+      <div class="arrow">Открыть <span>→</span></div>
+    </a>
+
+    <a href="test11.html" class="card test">
+      <div class="card-icon">🎯</div>
+      <div class="meta">Проверочная работа</div>
+      <h3>Итоговый тест</h3>
+      <p>25 заданий по подпрограммам и массивам. 45 минут, одна попытка, автоматическая оценка.</p>
+      <span class="test-badge">⚠️ Попытка одна</span>
       <div class="arrow">Открыть <span>→</span></div>
     </a>
 
@@ -294,6 +321,18 @@
     const nDz3 = dz3Keys.filter(k => progress[k]).length;
     const total = nT2 + nDz2 + nT3 + nDz3;
 
+    // Проверочная работа
+    let testInfo = '';
+    try {
+      const testState = localStorage.getItem('python_11_test');
+      if (testState) {
+        const ts = JSON.parse(testState);
+        if (ts.completed) {
+          testInfo = ` Проверочная: ${ts.score} / 25.`;
+        }
+      }
+    } catch(e) {}
+
     let msg = '';
     if (total === 0) msg = 'Готова начать? Открой любую тему и заработай первую звёздочку ✦';
     else if (total < 10) msg = `Уже ${total} ${plural(total, 'звёздочка','звёздочки','звёздочек')}. Продолжай!`;
@@ -301,30 +340,26 @@
     else msg = `Все 22 звёздочки собраны! Ты настоящий программист! 🏆`;
 
     document.getElementById('greetTitle').textContent = `С возвращением, ${progress.name}!`;
-    document.getElementById('greetMessage').textContent = msg;
+    document.getElementById('greetMessage').textContent = msg + testInfo;
 
-    // Тема 2
     if (nT2 > 0) {
       const el = document.getElementById('prog-tema2');
       el.classList.add('visible');
       document.getElementById('prog-tema2-bar').style.width = (nT2 / 6 * 100) + '%';
       document.getElementById('prog-tema2-text').textContent = `${nT2} / 6`;
     }
-    // ДЗ 2
     if (nDz2 > 0) {
       const el = document.getElementById('prog-dz2');
       el.classList.add('visible');
       document.getElementById('prog-dz2-bar').style.width = (nDz2 / 3 * 100) + '%';
       document.getElementById('prog-dz2-text').textContent = `${nDz2} / 3`;
     }
-    // Тема 3
     if (nT3 > 0) {
       const el = document.getElementById('prog-tema3');
       el.classList.add('visible');
       document.getElementById('prog-tema3-bar').style.width = (nT3 / 10 * 100) + '%';
       document.getElementById('prog-tema3-text').textContent = `${nT3} / 10`;
     }
-    // ДЗ 3
     if (nDz3 > 0) {
       const el = document.getElementById('prog-dz3');
       el.classList.add('visible');
