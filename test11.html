@@ -96,7 +96,6 @@
     overflow-y: auto; max-height: calc(92vh - 120px);
   }
 
-  /* ЭКРАН ИМЕНИ */
   .name-screen {
     text-align: center; padding: 40px 30px;
     background: linear-gradient(135deg, #fff, #fffbf5);
@@ -206,7 +205,6 @@
   }
   .name-screen .btn-start:disabled { background: #e5d5c0; cursor: not-allowed; box-shadow: none; }
 
-  /* ЗАДАНИЯ */
   .task {
     background: #fff; border: 2px solid #fed7aa;
     border-radius: 20px; padding: 22px 26px;
@@ -415,7 +413,6 @@
     flex-wrap: wrap; gap: 10px;
   }
 
-  /* МОДАЛЬНОЕ ОКНО */
   .custom-modal-bg {
     position: fixed; inset: 0;
     background: rgba(90, 60, 30, 0.5);
@@ -465,7 +462,6 @@
   }
   .custom-modal .modal-btn.ghost:hover { background: #fffbf5; border-color: #fb923c; }
 
-  /* РЕЗУЛЬТАТ */
   .result-modal-bg {
     position: fixed; inset: 0;
     background: linear-gradient(135deg, rgba(254,246,228,0.97), rgba(240,249,255,0.97));
@@ -591,7 +587,6 @@
 
   <div class="content" id="content">
 
-    <!-- ВВОД ИМЕНИ -->
     <div class="name-screen" id="nameScreen">
       <div class="big-icon">🌙</div>
 
@@ -977,6 +972,7 @@ print(names[-1])</div>
           <br>3. Находит и выводит <b>количество двоек</b>
           <br><br>
           💡 Используй <code>sum()</code>, <code>len()</code>, <code>.count()</code> и <code>print</code>.
+          <br>✅ Не забудь нажать <b>«▶ Запустить»</b> — иначе задание не зачтётся.
         </div>
         <textarea class="code-area" id="code-task24" spellcheck="false" style="min-height: 220px;">grades = [5, 4, 3, 5, 2, 4, 5, 3, 4, 5, 5, 4, 2, 5]
 
@@ -1006,6 +1002,7 @@ print(names[-1])</div>
           <br>4. Выводит, сколько всего билетов продано
           <br><br>
           💡 Используй <code>sum()</code>, <code>max()</code>, <code>len()</code>, цикл <code>for</code> с <code>if</code> и <code>print</code>.
+          <br>✅ Не забудь нажать <b>«▶ Запустить»</b> — иначе задание не зачтётся.
         </div>
         <textarea class="code-area" id="code-task25" spellcheck="false" style="min-height: 240px;">prices = [250, 400, 150, 300, 500, 200, 350, 450, 180, 320]
 
@@ -1023,7 +1020,6 @@ print(names[-1])</div>
         <div class="task-status" data-status="25"></div>
       </div>
 
-      <!-- ОТПРАВКА -->
       <div class="submit-block" id="submitBlock">
         <h3>Готова отправить работу?</h3>
         <p>⚠️ <b>Попытка одна.</b> После отправки изменить ответы будет нельзя.</p>
@@ -1039,7 +1035,7 @@ print(names[-1])</div>
   </div>
 </div>
 
-<!-- МОДАЛКА ПОДТВЕРЖДЕНИЯ -->
+<!-- МОДАЛКА -->
 <div class="custom-modal-bg" id="submitModal">
   <div class="custom-modal">
     <div class="modal-icon" id="submitModalIcon">🤔</div>
@@ -1081,48 +1077,35 @@ document.addEventListener('keydown', e => {
     e.preventDefault();
     return false;
   }
+  if (e.shiftKey && e.key === 'Insert') {
+    e.preventDefault();
+    return false;
+  }
 });
-
-/* Запрет вставки в любые поля ввода и textarea */
 document.addEventListener('paste', e => {
   e.preventDefault();
   showPasteWarning();
   return false;
 });
+document.addEventListener('drop', e => { e.preventDefault(); return false; });
+document.addEventListener('dragover', e => { e.preventDefault(); return false; });
 
-/* Запрет drag&drop и автозаполнения */
-document.addEventListener('drop', e => {
-  e.preventDefault();
-  return false;
-});
-document.addEventListener('dragover', e => {
-  e.preventDefault();
-  return false;
-});
-
-/* Показ предупреждения при вставке */
 function showPasteWarning() {
   let toast = document.getElementById('pasteWarning');
   if (!toast) {
     toast = document.createElement('div');
     toast.id = 'pasteWarning';
     toast.style.cssText = `
-      position: fixed;
-      top: 20px; left: 50%;
+      position: fixed; top: 20px; left: 50%;
       transform: translateX(-50%) translateY(-100px);
       background: linear-gradient(135deg, #fca5a5, #f87171);
-      color: #fff;
-      padding: 14px 26px;
-      border-radius: 16px;
-      font-family: inherit;
-      font-size: 0.95em;
-      font-weight: 700;
+      color: #fff; padding: 14px 26px;
+      border-radius: 16px; font-family: inherit;
+      font-size: 0.95em; font-weight: 700;
       box-shadow: 0 12px 30px rgba(248,113,113,0.5);
       z-index: 5000;
       transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-      pointer-events: none;
-      max-width: 90%;
-      text-align: center;
+      pointer-events: none; max-width: 90%; text-align: center;
     `;
     toast.textContent = '🚫 Вставка запрещена! Пиши вручную.';
     document.body.appendChild(toast);
@@ -1317,23 +1300,17 @@ function findUnanswered() {
     const t = document.querySelector(`[data-task="${i}"]`);
     if (!t) continue;
     const selects = t.querySelectorAll('select');
-    const inputs = t.querySelectorAll('input[type="text"]:not([name]), input:not([type="radio"]):not([type="checkbox"]):not([type="text"][name])');
     const textInputs = t.querySelectorAll('.input-answer');
     const radios = t.querySelectorAll('input[type="radio"]');
     const checkboxes = t.querySelectorAll('input[type="checkbox"]');
     const textarea = t.querySelector('textarea.code-area');
     const matchBlock = t.querySelector('[data-match]');
-
     let answered = false;
-    if (textInputs.length > 0) {
-      answered = Array.from(textInputs).every(inp => inp.value.trim() !== '');
-    } else if (radios.length > 0) {
-      answered = !!t.querySelector('input[type="radio"]:checked');
-    } else if (checkboxes.length > 0) {
-      answered = !!t.querySelector('input[type="checkbox"]:checked');
-    } else if (selects.length > 0) {
-      answered = Array.from(selects).every(s => s.value !== '');
-    } else if (matchBlock) {
+    if (textInputs.length > 0) answered = Array.from(textInputs).every(inp => inp.value.trim() !== '');
+    else if (radios.length > 0) answered = !!t.querySelector('input[type="radio"]:checked');
+    else if (checkboxes.length > 0) answered = !!t.querySelector('input[type="checkbox"]:checked');
+    else if (selects.length > 0) answered = Array.from(selects).every(s => s.value !== '');
+    else if (matchBlock) {
       const id = matchBlock.dataset.match;
       const need = matchBlock.querySelectorAll('[data-side="left"]').length;
       answered = Object.keys(matchState[id].matches).length >= need;
@@ -1358,7 +1335,6 @@ function captureAnswers() {
     const selects = t.querySelectorAll('select');
     const textarea = t.querySelector('textarea.code-area');
     const matchBlock = t.querySelector('[data-match]');
-
     if (textInputs.length > 0) {
       if (textInputs.length === 1) snap.answers[i] = textInputs[0].value.trim();
       else snap.answers[i] = Array.from(textInputs).map(x => x.value.trim());
@@ -1377,6 +1353,52 @@ function captureAnswers() {
     }
   }
   return snap;
+}
+
+/* ФУНКЦИИ ПРОВЕРКИ 24 И 25 */
+function check24(code, output) {
+  const codeOnly = code.split('\n').map(l => l.split('#')[0]).join('');
+  const hasSum = /sum\s*\(\s*grades\s*\)/.test(codeOnly);
+  const hasLen = /len\s*\(\s*grades\s*\)/.test(codeOnly);
+  const hasCount5 = /grades\s*\.count\s*\(\s*5\s*\)/.test(codeOnly);
+  const hasCount2 = /grades\s*\.count\s*\(\s*2\s*\)/.test(codeOnly);
+  const printCount = (codeOnly.match(/print\s*\(/g) || []).length;
+
+  // Разбираем вывод по строкам
+  const lines = output.split('\n').map(l => l.trim()).filter(l => l);
+
+  // Средний балл: первое число (может быть 3.9, 3.928..., 3.93 и т.д.)
+  const firstNumMatch = output.match(/[\d]+(?:[.,]\d+)?/);
+  const firstNum = firstNumMatch ? parseFloat(firstNumMatch[0].replace(',', '.')) : 0;
+  const hasAvg = firstNum >= 3.85 && firstNum <= 4.0;
+
+  // Пятёрки (6) и двойки (2) — как отдельные строки
+  const hasFives = lines.some(l => l === '6' || l === '6.0');
+  const hasTwos = lines.some(l => l === '2' || l === '2.0');
+
+  return hasSum && hasLen && hasCount5 && hasCount2 && printCount >= 3
+      && hasAvg && hasFives && hasTwos;
+}
+
+function check25(code, output) {
+  const codeOnly = code.split('\n').map(l => l.split('#')[0]).join('');
+  const hasSum = /sum\s*\(\s*prices\s*\)/.test(codeOnly);
+  const hasMax = /max\s*\(\s*prices\s*\)/.test(codeOnly);
+  const hasLen = /len\s*\(\s*prices\s*\)/.test(codeOnly);
+  const hasFor = /for\s+\w+\s+in/.test(codeOnly);
+  const hasIf = /if\s+/.test(codeOnly);
+  const printCount = (codeOnly.match(/print\s*\(/g) || []).length;
+
+  // Разбираем вывод по строкам
+  const lines = output.split('\n').map(l => l.trim()).filter(l => l);
+
+  const hasSumCheck = lines.some(l => l === '3100' || l === '3100.0');
+  const hasMaxCheck = lines.some(l => l === '500' || l === '500.0');
+  const hasCountCheck = lines.some(l => l === '5' || l === '5.0');
+  const hasLenCheck = lines.some(l => l === '10' || l === '10.0');
+
+  return hasSum && hasMax && hasLen && hasFor && hasIf && printCount >= 4
+      && hasSumCheck && hasMaxCheck && hasCountCheck && hasLenCheck;
 }
 
 /* ПОДТВЕРЖДЕНИЕ */
@@ -1414,7 +1436,41 @@ function confirmSubmit() {
 function performCheck() {
   if (testState.completed) return;
   stopTimer();
+
   savedAnswers = captureAnswers();
+
+  /* Автопроверка творческих заданий 24 и 25, если они не были запущены вручную */
+  if (!taskResults[24]) {
+    try {
+      const code24 = savedAnswers.answers[24] || '';
+      if (code24.trim()) {
+        const r = runCodeRaw(code24);
+        if (!r.error && !r.empty) {
+          taskResults[24] = check24(code24, r.output);
+        } else {
+          taskResults[24] = false;
+        }
+      } else {
+        taskResults[24] = false;
+      }
+    } catch(e) { taskResults[24] = false; }
+  }
+
+  if (!taskResults[25]) {
+    try {
+      const code25 = savedAnswers.answers[25] || '';
+      if (code25.trim()) {
+        const r = runCodeRaw(code25);
+        if (!r.error && !r.empty) {
+          taskResults[25] = check25(code25, r.output);
+        } else {
+          taskResults[25] = false;
+        }
+      } else {
+        taskResults[25] = false;
+      }
+    } catch(e) { taskResults[25] = false; }
+  }
 
   taskResults[1] = savedAnswers.answers[1] === CORRECT_ANSWERS.task1;
   const t2 = savedAnswers.answers[2];
@@ -1455,9 +1511,6 @@ function performCheck() {
   taskResults[21] = savedAnswers.answers[21] === CORRECT_ANSWERS.task21;
   taskResults[22] = savedAnswers.answers[22] === CORRECT_ANSWERS.task22;
   taskResults[23] = savedAnswers.answers[23] === CORRECT_ANSWERS.task23;
-
-  if (taskResults[24] !== true) taskResults[24] = false;
-  if (taskResults[25] !== true) taskResults[25] = false;
 
   const correctCount = Object.values(taskResults).filter(Boolean).length;
   testState.score = correctCount;
@@ -1554,13 +1607,16 @@ function buildWorkHtml(s) {
     if (Array.isArray(val)) return val.join(', ');
     return String(val).replace(/</g,'&lt;');
   }
-  function fmtSelect(arr) {
-    if (!arr || arr.length === 0) return '<i style="color:#a99cd0;">нет ответа</i>';
-    return arr.map((v, i) => `<b>${i+1}:</b> ${v || '<i>—</i>'}`).join('<br>');
-  }
   function fmtMatch(obj) {
     if (!obj || Object.keys(obj).length === 0) return '<i style="color:#a99cd0;">не выполнено</i>';
     return Object.keys(obj).map(k => `<b>${k} →</b> ${obj[k]}`).join('<br>');
+  }
+
+  let rows = '';
+  for (let i = 1; i <= 23; i++) {
+    const v = s.answers[i];
+    const val = (typeof v === 'object' && !Array.isArray(v)) ? fmtMatch(v) : fmt(v);
+    rows += `<div class="answer-row"><div class="answer-num">Задание ${i}</div><div class="answer-val">${val}</div></div>`;
   }
 
   return `<!DOCTYPE html>
@@ -1598,29 +1654,7 @@ function buildWorkHtml(s) {
     <div style="color:#6b7280;font-size:0.85em;margin-top:14px;">Дата: ${s.date}</div>
   </div>
   <h2>📋 Мои ответы</h2>
-  <div class="answer-row"><div class="answer-num">Задание 1</div><div class="answer-val">${fmt(s.answers[1])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 2</div><div class="answer-val">${fmt(s.answers[2])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 3</div><div class="answer-val">${fmt(s.answers[3])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 4</div><div class="answer-val">${fmt(s.answers[4])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 5</div><div class="answer-val">${fmt(s.answers[5])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 6</div><div class="answer-val">${fmt(s.answers[6])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 7</div><div class="answer-val">${fmt(s.answers[7])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 8</div><div class="answer-val">${fmtMatch(s.answers[8])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 9</div><div class="answer-val">${fmt(s.answers[9])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 10</div><div class="answer-val">${fmt(s.answers[10])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 11</div><div class="answer-val">${fmtMatch(s.answers[11])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 12</div><div class="answer-val">${fmt(s.answers[12])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 13</div><div class="answer-val">${fmt(s.answers[13])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 14</div><div class="answer-val">${fmt(s.answers[14])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 15</div><div class="answer-val">${fmt(s.answers[15])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 16</div><div class="answer-val">${fmt(s.answers[16])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 17</div><div class="answer-val">${fmt(s.answers[17])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 18</div><div class="answer-val">${fmt(s.answers[18])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 19</div><div class="answer-val">${fmtMatch(s.answers[19])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 20</div><div class="answer-val">${fmt(s.answers[20])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 21</div><div class="answer-val">${fmt(s.answers[21])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 22</div><div class="answer-val">${fmt(s.answers[22])}</div></div>
-  <div class="answer-row"><div class="answer-num">Задание 23</div><div class="answer-val">${fmt(s.answers[23])}</div></div>
+  ${rows}
   <h2>💻 Творческие задания</h2>
   <div class="answer-row"><div class="answer-num">Задание 24</div><div class="answer-val"><div class="code-block">${(s.answers[24] || '').replace(/</g,'&lt;') || '(пусто)'}</div></div></div>
   <div class="answer-row"><div class="answer-num">Задание 25</div><div class="answer-val"><div class="code-block">${(s.answers[25] || '').replace(/</g,'&lt;') || '(пусто)'}</div></div></div>
@@ -1628,55 +1662,56 @@ function buildWorkHtml(s) {
   <div class="footer">🌙 Удачи в учёбе! Работа сохранена из интерактивного учебника.</div>
 </div></body></html>`;
 }
-</script>
-<script>
-/* ЗАДАНИЕ 24 */
+
+/* ЗАПУСК 24 */
 function runTask24() {
   const code = document.getElementById('code-task24').value;
   const out = document.getElementById('out-task24');
+  const status = document.querySelector('[data-status="24"]');
   const result = runCodeRaw(code);
   if (result.empty) { out.textContent = 'Сначала напиши код.'; out.classList.remove('error'); return; }
   if (result.error) { out.textContent = '❌ Ошибка: ' + result.error; out.classList.add('error'); return; }
   out.textContent = result.output;
   out.classList.remove('error');
-  const codeOnly = code.split('\n').map(l => l.split('#')[0]).join('');
-  const hasSum = /sum\s*\(\s*grades\s*\)/.test(codeOnly);
-  const hasLen = /len\s*\(\s*grades\s*\)/.test(codeOnly);
-  const hasCount5 = /grades\s*\.count\s*\(\s*5\s*\)/.test(codeOnly);
-  const hasCount2 = /grades\s*\.count\s*\(\s*2\s*\)/.test(codeOnly);
-  const printCount = (codeOnly.match(/print\s*\(/g) || []).length;
-  const o = result.output.replace(/\s+/g, '');
-  const hasAvg = /3[.,]9/.test(o);
-  const hasFives = /(^|[^\d])6([^\d]|$)/.test(o);
-  const hasTwos = /(^|[^\d])2([^\d]|$)/.test(o);
-  const passed = hasSum && hasLen && hasCount5 && hasCount2 && printCount >= 3 && hasAvg && hasFives && hasTwos;
+
+  const passed = check24(code, result.output);
   taskResults[24] = passed;
+  if (status) {
+    status.classList.add('show');
+    if (passed) {
+      status.className = 'task-status ok show';
+      status.textContent = '✓ Задание 24 зачтено!';
+    } else {
+      status.className = 'task-status err show';
+      status.textContent = '✗ Пока не зачтено. Проверь: сумма/длина/count(5)/count(2) и числа в выводе.';
+    }
+  }
   updateProgress();
 }
 
-/* ЗАДАНИЕ 25 */
+/* ЗАПУСК 25 */
 function runTask25() {
   const code = document.getElementById('code-task25').value;
   const out = document.getElementById('out-task25');
+  const status = document.querySelector('[data-status="25"]');
   const result = runCodeRaw(code);
   if (result.empty) { out.textContent = 'Сначала напиши код.'; out.classList.remove('error'); return; }
   if (result.error) { out.textContent = '❌ Ошибка: ' + result.error; out.classList.add('error'); return; }
   out.textContent = result.output;
   out.classList.remove('error');
-  const codeOnly = code.split('\n').map(l => l.split('#')[0]).join('');
-  const hasSum = /sum\s*\(\s*prices\s*\)/.test(codeOnly);
-  const hasMax = /max\s*\(\s*prices\s*\)/.test(codeOnly);
-  const hasLen = /len\s*\(\s*prices\s*\)/.test(codeOnly);
-  const hasFor = /for\s+\w+\s+in/.test(codeOnly);
-  const hasIf = /if\s+/.test(codeOnly);
-  const printCount = (codeOnly.match(/print\s*\(/g) || []).length;
-  const o = result.output.replace(/\s+/g, '');
-  const hasSumCheck = /3100/.test(o);
-  const hasMaxCheck = /(^|[^\d])500([^\d]|$)/.test(o);
-  const hasCountCheck = /(^|[^\d])5([^\d]|$)/.test(o);
-  const hasLenCheck = /(^|[^\d])10([^\d]|$)/.test(o);
-  const passed = hasSum && hasMax && hasLen && hasFor && hasIf && printCount >= 4 && hasSumCheck && hasMaxCheck && hasCountCheck && hasLenCheck;
+
+  const passed = check25(code, result.output);
   taskResults[25] = passed;
+  if (status) {
+    status.classList.add('show');
+    if (passed) {
+      status.className = 'task-status ok show';
+      status.textContent = '✓ Задание 25 зачтено!';
+    } else {
+      status.className = 'task-status err show';
+      status.textContent = '✗ Пока не зачтено. Проверь: sum/max/len/for/if и числа в выводе (3100, 500, 5, 10).';
+    }
+  }
   updateProgress();
 }
 
