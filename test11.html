@@ -1071,17 +1071,68 @@ print(names[-1])</div>
 </div>
 
 <script>
-/* ЗАЩИТА */
+/* ЗАЩИТА ОТ КОПИРОВАНИЯ И ВСТАВКИ */
 document.addEventListener('copy', e => { e.preventDefault(); return false; });
 document.addEventListener('cut', e => { e.preventDefault(); return false; });
 document.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
 document.addEventListener('keydown', e => {
   const isMod = e.ctrlKey || e.metaKey;
-  if (isMod && ['c','C','a','A','x','X'].includes(e.key)) {
+  if (isMod && ['c','C','a','A','x','X','v','V'].includes(e.key)) {
     e.preventDefault();
     return false;
   }
 });
+
+/* Запрет вставки в любые поля ввода и textarea */
+document.addEventListener('paste', e => {
+  e.preventDefault();
+  showPasteWarning();
+  return false;
+});
+
+/* Запрет drag&drop и автозаполнения */
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  return false;
+});
+document.addEventListener('dragover', e => {
+  e.preventDefault();
+  return false;
+});
+
+/* Показ предупреждения при вставке */
+function showPasteWarning() {
+  let toast = document.getElementById('pasteWarning');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'pasteWarning';
+    toast.style.cssText = `
+      position: fixed;
+      top: 20px; left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: linear-gradient(135deg, #fca5a5, #f87171);
+      color: #fff;
+      padding: 14px 26px;
+      border-radius: 16px;
+      font-family: inherit;
+      font-size: 0.95em;
+      font-weight: 700;
+      box-shadow: 0 12px 30px rgba(248,113,113,0.5);
+      z-index: 5000;
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+      max-width: 90%;
+      text-align: center;
+    `;
+    toast.textContent = '🚫 Вставка запрещена! Пиши вручную.';
+    document.body.appendChild(toast);
+  }
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(window._pasteWarningTimer);
+  window._pasteWarningTimer = setTimeout(() => {
+    toast.style.transform = 'translateX(-50%) translateY(-100px)';
+  }, 2200);
+}
 
 /* КОНСТАНТЫ */
 const TEST_STORAGE = 'python_11_test';
