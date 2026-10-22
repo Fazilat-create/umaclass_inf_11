@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Итоговое задание · Python</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Comfortaa', 'Segoe UI', 'Verdana', sans-serif;
+    background: linear-gradient(135deg, #fef6e4 0%, #f0f9ff 50%, #fef3f8 100%);
+    background-attachment: fixed; color: #3a3a5a; min-height: 100vh;
+    padding: 20px 15px; line-height: 1.6;
+  }
+  .container {
+    max-width: 950px; margin: 0 auto;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(160,120,60,0.15);
+    overflow: hidden; padding: 30px 40px;
+  }
+  header {
+    display: flex; align-items: center; gap: 15px; margin-bottom: 20px;
+    border-bottom: 2px solid #fed7aa; padding-bottom: 15px;
+  }
+  header h1 { color: #9a3412; font-size: 1.5em; font-weight: 800; }
+  .back-link {
+    text-decoration: none; padding: 6px 14px;
+    background: #fff7ed; color: #c2410c;
+    border-radius: 18px; font-size: 0.8em; font-weight: 700;
+    border: 2px solid #fed7aa;
+  }
+  
+  .theory-block {
+    background: #fff; border-left: 4px solid #3b82f6;
+    border-radius: 12px; padding: 16px 20px; margin: 16px 0;
+    font-size: 0.95em; color: #1e3a8a;
+  }
+  .theory-block b { color: #1e40af; }
+  code {
+    background: #f0f9ff; color: #0369a1;
+    padding: 2px 6px; border-radius: 6px;
+    font-family: 'Consolas', monospace; font-size: 0.9em; font-weight: 600;
+  }
+  
+  .stage-box {
+    background: #fff; border: 2px solid #fed7aa;
+    border-radius: 16px; padding: 20px; margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(160,120,60,0.05);
+  }
+  .stage-title {
+    display: inline-block; background: #f97316; color: #fff;
+    padding: 4px 12px; border-radius: 12px; font-size: 0.8em;
+    font-weight: 700; margin-bottom: 10px;
+  }
+
+  .task-card {
+    border: 2px solid #cbd5e1; border-radius: 16px; padding: 20px; margin-bottom: 30px;
+    background: #f8fafc;
+  }
+  .task-hint {
+    background: #fef08a; color: #854d0e; padding: 10px 15px;
+    border-radius: 8px; font-size: 0.9em; margin-bottom: 15px;
+    border-left: 4px solid #eab308;
+    font-weight: 600;
+  }
+  
+  .editor-wrapper { display: flex; gap: 20px; flex-wrap: wrap; }
+  .editor-side { flex: 1; min-width: 300px; display: flex; flex-direction: column; }
+  
+  textarea {
+    width: 100%; min-height: 250px; padding: 15px;
+    border: 2px solid #fed7aa; border-radius: 12px;
+    font-family: 'Consolas', 'Menlo', monospace; font-size: 14px;
+    background: #fffbf5; color: #3a3a5a;
+    resize: vertical; line-height: 1.5; outline: none;
+  }
+  textarea:focus { border-color: #f97316; }
+
+  .canvas-side {
+    flex: 1; min-width: 300px;
+    background: #fdfbff; border: 2px solid #fed7aa;
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  canvas { width: 100%; max-width: 400px; height: 400px; }
+
+  .btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff; border: none; padding: 10px 20px;
+    border-radius: 12px; font-weight: 700; cursor: pointer;
+    font-family: inherit; font-size: 1em; margin-top: 10px;
+    transition: 0.2s; text-align: center;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(249,115,22,0.3); }
+
+  .terminal {
+    margin-top: 10px; background: #1e293b; border-radius: 10px;
+    padding: 12px; font-family: 'Consolas', monospace;
+    font-size: 13px; color: #a7f3d0; min-height: 40px; white-space: pre-wrap;
+  }
+  .terminal.error { color: #fca5a5; background: #451a03; }
+  .terminal.success { color: #34d399; background: #064e3b; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <a href="index.html" class="back-link">← На главную</a>
+    <h1>🏆 Итоговое задание</h1>
+  </header>
+
+  <div class="theory-block" style="border-left-color: #10b981; color: #065f46;">
+    <b>Поздравляем! Вы дошли до финала.</b><br>
+    Теперь вы знаете все основные команды. На этом слайде нет серых подсказок. Вам нужно самостоятельно прочитать условие задачи и написать программу, которая нарисует нужную фигуру.
+  </div>
+
+  <!-- ЗАДАЧА 1 -->
+  <div class="task-card">
+    <div class="task-hint">
+      <b>Задача 1. Квадрат</b><br>
+      Нарисуй квадрат со стороной 100 шагов. Используй цикл <code>for i in range(4):</code>. Цвет линии сделай синим (<code>blue</code>), а толщину 3.
+    </div>
+    <div class="editor-wrapper">
+      <div class="editor-side">
+        <textarea id="code1" spellcheck="false">from turtle import *
+
+# Твой код здесь
+</textarea>
+        <button class="btn" onclick="run(1, 'square')">▶ Проверить</button>
+        <div class="terminal" id="term1">Жду код...</div>
+      </div>
+      <div class="canvas-side"><canvas id="c1" width="400" height="400"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ЗАДАЧА 2 -->
+  <div class="task-card">
+    <div class="task-hint">
+      <b>Задача 2. Домик</b><br>
+      Нарисуй домик: квадрат (сторона 100) и сверху треугольник (крыша).<br>
+      Сначала нарисуй квадрат, потом подними перо (<code>penup</code>), перейди наверх, опусти перо и нарисуй треугольник.<br>
+      Цвет линии — коричневый (<code>brown</code>), толщина 4.
+    </div>
+    <div class="editor-wrapper">
+      <div class="editor-side">
+        <textarea id="code2" spellcheck="false">from turtle import *
+
+# Твой код здесь
+</textarea>
+        <button class="btn" onclick="run(2, 'house')">▶ Проверить</button>
+        <div class="terminal" id="term2">Жду код...</div>
+      </div>
+      <div class="canvas-side"><canvas id="c2" width="400" height="400"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ЗАДАЧА 3 -->
+  <div class="task-card">
+    <div class="task-hint">
+      <b>Задача 3. Ёлочка</b><br>
+      Нарисуй ёлочку из трёх треугольников разного размера (или один под другим).<br>
+      Цвет сделай зелёным (<code>green</code>), а толщину 2. Для перехода между ярусами используй <code>penup</code> и <code>pendown</code>.
+    </div>
+    <div class="editor-wrapper">
+      <div class="editor-side">
+        <textarea id="code3" spellcheck="false">from turtle import *
+
+# Твой код здесь
+</textarea>
+        <button class="btn" onclick="run(3, 'tree')">▶ Проверить</button>
+        <div class="terminal" id="term3">Жду код...</div>
+      </div>
+      <div class="canvas-side"><canvas id="c3" width="400" height="400"></canvas></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// --- ФУНКЦИИ ОТРИСОВКИ ---
+function drawGrid(c) {
+  c.clearRect(0, 0, 400, 400);
+  c.fillStyle = '#fdfbff'; c.fillRect(0, 0, 400, 400);
+  c.strokeStyle = '#f0eaff'; c.lineWidth = 1;
+  for(let i=0; i<=400; i+=25) {
+    c.beginPath(); c.moveTo(i, 0); c.lineTo(i, 400); c.stroke();
+    c.beginPath(); c.moveTo(0, i); c.lineTo(400, i); c.stroke();
+  }
+  c.strokeStyle = '#d1d5db'; c.lineWidth = 2;
+  c.beginPath(); c.moveTo(200, 0); c.lineTo(200, 400); c.stroke();
+  c.beginPath(); c.moveTo(0, 200); c.lineTo(400, 200); c.stroke();
+}
+
+function drawTurtleShape(c, x, y, angle) {
+  c.save(); c.translate(x, y); c.rotate(angle * Math.PI / 180);
+  c.fillStyle = 'rgba(0,0,0,0.12)'; c.beginPath(); c.arc(2, 2, 12, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#10b981';
+  c.beginPath(); c.ellipse(0, 10, 4, 7, 0, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.ellipse(0, -10, 4, 7, 0, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.ellipse(10, 0, 7, 4, 0, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.ellipse(-10, 0, 7, 4, 0, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#059669'; c.beginPath(); c.ellipse(0, 0, 12, 12, 0, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#34d399'; c.beginPath(); c.ellipse(0, 0, 8, 8, 0, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#10b981'; c.beginPath(); c.arc(12, 0, 6, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#fff'; c.beginPath(); c.arc(14, -2, 2, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#000'; c.beginPath(); c.arc(14, -2, 1, 0, Math.PI * 2); c.fill();
+  c.restore();
+}
+
+// --- ИНТЕРПРЕТАТОР ---
+function executeCode(code, term, targetCtx, onFinish) {
+  drawGrid(targetCtx);
+  drawTurtleShape(targetCtx, 200, 200, 0);
+  
+  if (code.includes('?')) {
+    term.textContent = '❌ Остались знаки вопроса! Впиши числа вместо них.';
+    term.className = 'terminal error';
+    return;
+  }
+
+  let state = { x: 200, y: 200, angle: 0, pen: true, color: 'black', size: 2 };
+  let history = [];
+  let lines = code.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+  let i = 0;
+  let loopStack = [];
+
+  term.textContent = 'Выполняю...\n';
+  term.className = 'terminal';
+
+  function nextStep() {
+    if (i >= lines.length) {
+      term.textContent += '✅ Программа завершена.';
+      if(onFinish) onFinish(state, code);
+      return;
+    }
+
+    let line = lines[i];
+    i++;
+
+    try {
+      if (line.startsWith('from turtle import')) {
+        // Игнорируем
+      }
+      else if (line.startsWith('for ') && line.includes('range(')) {
+        const match = line.match(/range\((\d+)\)/);
+        if (match) loopStack.push({ startIndex: i, iterationsLeft: parseInt(match[1]) });
+        setTimeout(nextStep, 50); return;
+      }
+      else if (line.startsWith('forward(')) {
+        const match = line.match(/forward\((\d+)\)/);
+        if (!match) throw new Error('Ошибка в forward');
+        const val = parseInt(match[1]);
+        const rad = state.angle * Math.PI / 180;
+        const nx = state.x + Math.cos(rad) * val;
+        const ny = state.y + Math.sin(rad) * val;
+        
+        if (state.pen) {
+          history.push({ x1: state.x, y1: state.y, x2: nx, y2: ny, color: state.color, size: state.size });
+        }
+        state.x = nx; state.y = ny;
+      }
+      else if (line.startsWith('right(')) {
+        const match = line.match(/right\((\d+)\)/);
+        if (!match) throw new Error('Ошибка в right');
+        state.angle += parseInt(match[1]);
+      }
+      else if (line.startsWith('left(')) {
+        const match = line.match(/left\((\d+)\)/);
+        if (!match) throw new Error('Ошибка в left');
+        state.angle -= parseInt(match[1]);
+      }
+      else if (line.startsWith('color(')) {
+        const match = line.match(/color\(["'](.*?)["']\)/);
+        if (match) state.color = match[1]; 
+      }
+      else if (line.startsWith('width(')) {
+        const match = line.match(/width\((\d+)\)/);
+        if (match) state.size = parseInt(match[1]);
+      }
+      else if (line === 'penup()') state.pen = false;
+      else if (line === 'pendown()') state.pen = true;
+      else {
+        term.textContent += `⚠️ Неизвестная команда: ${line}\n`;
+      }
+
+      // Обработка циклов
+      if (loopStack.length > 0) {
+        let top = loopStack[loopStack.length - 1];
+        top.iterationsLeft--;
+        if (top.iterationsLeft > 0) {
+          i = top.startIndex;
+        } else {
+          loopStack.pop();
+        }
+      }
+
+      drawGrid(targetCtx);
+      history.forEach(h => {
+        targetCtx.strokeStyle = h.color;
+        targetCtx.lineWidth = h.size;
+        targetCtx.lineCap = 'round';
+        targetCtx.beginPath(); targetCtx.moveTo(h.x1, h.y1); targetCtx.lineTo(h.x2, h.y2); targetCtx.stroke();
+      });
+      drawTurtleShape(targetCtx, state.x, state.y, state.angle);
+      
+      setTimeout(nextStep, 150);
+
+    } catch(e) {
+      term.textContent += `❌ Ошибка в строке: ${line}\n`;
+      term.className = 'terminal error';
+    }
+  }
+  nextStep();
+}
+
+// --- ПРОВЕРКА ЗАДАНИЙ ---
+function run(num, checkType) {
+  const code = document.getElementById('code' + num).value;
+  const term = document.getElementById('term' + num);
+  const ctx = document.getElementById('c' + num).getContext('2d');
+
+  executeCode(code, term, ctx, (state, code) => {
+    let ok = false;
+    
+    if (num === 1) {
+      // Квадрат: должен быть цикл на 4, синий, толщина 3
+      if (code.includes('range(4)') && code.includes('blue') && code.includes('width(3)')) ok = true;
+    }
+    else if (num === 2) {
+      // Домик: пенуп, коричневый, толщина 4, хотя бы 6 форвардов
+      if (code.includes('penup()') && code.includes('brown') && code.includes('width(4)') && (code.match(/forward/g)||[]).length >= 6) ok = true;
+    }
+    else if (num === 3) {
+      // Ёлочка: зеленый, пенуп, много форвардов
+      if (code.includes('green') && code.includes('penup()') && (code.match(/forward/g)||[]).length >= 9) ok = true;
+    }
+
+    if (ok) {
+       term.textContent += '\n🎉 Отлично! Ты написал правильную программу!';
+       term.classList.add('success');
+    } else {
+       term.textContent += '\n❌ Рисунок не совпал с заданием. Проверь цвета, толщину и команды.';
+    }
+  });
+}
+
+// --- СТАРТ ---
+window.onload = () => {
+  for (let i = 1; i <= 3; i++) {
+    const ctx = document.getElementById('c' + i).getContext('2d');
+    drawGrid(ctx);
+    drawTurtleShape(ctx, 200, 200, 0);
+  }
+};
+</script>
+</body>
+</html>
