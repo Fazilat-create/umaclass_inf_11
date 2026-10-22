@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Урок 2: Повороты · Python</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>↺</text></svg>">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Comfortaa', 'Segoe UI', 'Verdana', sans-serif;
+    background: linear-gradient(135deg, #fef6e4 0%, #f0f9ff 50%, #fef3f8 100%);
+    background-attachment: fixed; color: #3a3a5a; min-height: 100vh;
+    padding: 20px 15px; line-height: 1.6;
+  }
+  .container {
+    max-width: 950px; margin: 0 auto;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(160,120,60,0.15);
+    overflow: hidden; padding: 30px 40px;
+  }
+  header {
+    display: flex; align-items: center; gap: 15px; margin-bottom: 20px;
+    border-bottom: 2px solid #fed7aa; padding-bottom: 15px;
+  }
+  header h1 { color: #9a3412; font-size: 1.5em; font-weight: 800; }
+  .back-link {
+    text-decoration: none; padding: 6px 14px;
+    background: #fff7ed; color: #c2410c;
+    border-radius: 18px; font-size: 0.8em; font-weight: 700;
+    border: 2px solid #fed7aa;
+  }
+  
+  .theory-block {
+    background: #fff; border-left: 4px solid #3b82f6;
+    border-radius: 12px; padding: 16px 20px; margin: 16px 0;
+    font-size: 0.95em; color: #1e3a8a;
+  }
+  .theory-block b { color: #1e40af; }
+  code {
+    background: #f0f9ff; color: #0369a1;
+    padding: 2px 6px; border-radius: 6px;
+    font-family: 'Consolas', monospace; font-size: 0.9em; font-weight: 600;
+  }
+  
+  .stage-box {
+    background: #fff; border: 2px solid #fed7aa;
+    border-radius: 16px; padding: 20px; margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(160,120,60,0.05);
+  }
+  .stage-title {
+    display: inline-block; background: #f97316; color: #fff;
+    padding: 4px 12px; border-radius: 12px; font-size: 0.8em;
+    font-weight: 700; margin-bottom: 10px;
+  }
+
+  .task-card {
+    border: 2px solid #cbd5e1; border-radius: 16px; padding: 20px; margin-bottom: 20px;
+    background: #f8fafc;
+  }
+  
+  .editor-wrapper { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px; }
+  .editor-side { flex: 1; min-width: 300px; display: flex; flex-direction: column; }
+  
+  textarea {
+    width: 100%; min-height: 180px; padding: 15px;
+    border: 2px solid #fed7aa; border-radius: 12px;
+    font-family: 'Consolas', 'Menlo', monospace; font-size: 14px;
+    background: #fffbf5; color: #3a3a5a;
+    resize: vertical; line-height: 1.5; outline: none;
+  }
+  textarea:focus { border-color: #f97316; }
+
+  .canvas-side {
+    flex: 1; min-width: 300px;
+    background: #fdfbff; border: 2px solid #fed7aa;
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  canvas { width: 100%; max-width: 400px; height: 400px; }
+
+  .btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff; border: none; padding: 10px 20px;
+    border-radius: 12px; font-weight: 700; cursor: pointer;
+    font-family: inherit; font-size: 1em; margin-top: 10px;
+    transition: 0.2s; text-align: center;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(249,115,22,0.3); }
+
+  .terminal {
+    margin-top: 10px; background: #1e293b; border-radius: 10px;
+    padding: 12px; font-family: 'Consolas', monospace;
+    font-size: 13px; color: #a7f3d0; min-height: 40px; white-space: pre-wrap;
+  }
+  .terminal.error { color: #fca5a5; background: #451a03; }
+  .terminal.success { color: #34d399; background: #064e3b; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <a href="index.html" class="back-link">← На главную</a>
+    <h1>↺ Урок 2: Повороты</h1>
+  </header>
+
+  <!-- ЭТАП 1: ТЕОРИЯ -->
+  <div class="stage-box">
+    <div class="stage-title">Этап 1 · Как работают повороты</div>
+    
+    <div class="theory-block">
+      <b>Поворот не двигает черепаху с места!</b> Она просто крутится вокруг себя.<br><br>
+      <b>left(90)</b> — повернуть налево на 90 градусов.<br>
+      <b>right(90)</b> — повернуть направо на 90 градусов.<br><br>
+      <b>Текущее положение.</b> Команды работают относительно того, куда черепаха смотрит <b>прямо сейчас</b>. Если она смотрит вправо (▶), то <code>left(90)</code> развернёт её вверх (▲).
+    </div>
+  </div>
+
+  <!-- ЭТАП 2: ЗАДАНИЯ -->
+  <div class="stage-box">
+    <div class="stage-title">Этап 2 · Допиши код</div>
+    <p>На холсте черепашка стоит в центре и смотрит вправо. Синяя линия показывает путь, который ей нужно пройти, а <b>зеленая точка</b> — место, куда она должна прийти. Впиши числа в код!</p>
+
+    <!-- ЗАДАЧА 1 -->
+    <div class="task-card">
+      <div class="task-card-title">Задача 1. Буква «Г»</div>
+      
+      <div class="editor-wrapper">
+        <div class="editor-side">
+          <textarea id="code1" spellcheck="false">from turtle import *
+forward(?)
+left(?)
+forward(100)
+</textarea>
+          <button class="btn" onclick="run(1, 'corner')">▶ Выполнить</button>
+          <div class="terminal" id="term1">Жду код...</div>
+        </div>
+        <div class="canvas-side">
+          <canvas id="c1" width="400" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ЗАДАЧА 2 -->
+    <div class="task-card">
+      <div class="task-card-title">Задача 2. Спуск</div>
+      
+      <div class="editor-wrapper">
+        <div class="editor-side">
+          <textarea id="code2" spellcheck="false">from turtle import *
+forward(100)
+right(?)
+forward(?)
+</textarea>
+          <button class="btn" onclick="run(2, 'down')">▶ Выполнить</button>
+          <div class="terminal" id="term2">Жду код...</div>
+        </div>
+        <div class="canvas-side">
+          <canvas id="c2" width="400" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ЗАДАЧА 3 -->
+    <div class="task-card">
+      <div class="task-card-title">Задача 3. Ступенька</div>
+      
+      <div class="editor-wrapper">
+        <div class="editor-side">
+          <textarea id="code3" spellcheck="false">from turtle import *
+forward(80)
+right(?)
+forward(?)
+left(?)
+forward(80)
+</textarea>
+          <button class="btn" onclick="run(3, 'steps')">▶ Выполнить</button>
+          <div class="terminal" id="term3">Жду код...</div>
+        </div>
+        <div class="canvas-side">
+          <canvas id="c3" width="400" height="400"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// --- ФУНКЦИИ ОТРИСОВКИ ---
+function drawGrid(c) {
+  c.clearRect(0, 0, 400, 400);
+  c.fillStyle = '#fdfbff'; c.fillRect(0, 0, 400, 400);
+  c.strokeStyle = '#f0eaff'; c.lineWidth = 1;
+  for(let i=0; i<=400; i+=25) {
+    c.beginPath(); c.moveTo(i, 0); c.lineTo(i, 400); c.stroke();
+    c.beginPath(); c.moveTo(0, i); c.lineTo(400, i); c.stroke();
+  }
+  c.strokeStyle = '#d1d5db'; c.lineWidth = 2;
+  c.beginPath(); c.moveTo(200, 0); c.lineTo(200, 400); c.stroke();
+  c.beginPath(); c.moveTo(0, 200); c.lineTo(400, 200); c.stroke();
+}
+
+function drawTurtleShape(c, x, y, angle) {
+  c.save(); c.translate(x, y); c.rotate(angle * Math.PI / 180);
+  c.fillStyle = 'rgba(0,0,0,0.12)'; c.beginPath(); c.arc(2, 2, 12, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#10b981';
+  c.beginPath(); c.ellipse(0, 10, 4, 7, 0, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.ellipse(0, -10, 4, 7, 0, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.ellipse(10, 0, 7, 4, 0, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.ellipse(-10, 0, 7, 4, 0, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#059669'; c.beginPath(); c.ellipse(0, 0, 12, 12, 0, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#34d399'; c.beginPath(); c.ellipse(0, 0, 8, 8, 0, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#10b981'; c.beginPath(); c.arc(12, 0, 6, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#fff'; c.beginPath(); c.arc(14, -2, 2, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#000'; c.beginPath(); c.arc(14, -2, 1, 0, Math.PI * 2); c.fill();
+  c.restore();
+}
+
+// --- НАРИСОВАТЬ СТАТИЧЕСКУЮ ТРАЕКТОРИЮ ---
+function drawStaticPath(c, type) {
+  // Рисуем черепаху в стартовой точке (в центре, смотрит вправо)
+  drawTurtleShape(c, 200, 200, 0);
+
+  // Рисуем маршрут (синюю линию)
+  c.strokeStyle = '#3b82f6'; c.lineWidth = 4; 
+  c.beginPath();
+  c.moveTo(200, 200); 
+  
+  if (type === 'corner') {
+    c.lineTo(300, 200); // Вправо
+    c.lineTo(300, 100); // Вверх
+    c.stroke();
+    // Зеленая точка финиша
+    c.fillStyle = '#10b981';
+    c.beginPath(); c.arc(300, 100, 6, 0, Math.PI * 2); c.fill();
+  } 
+  else if (type === 'down') {
+    c.lineTo(300, 200); // Вправо
+    c.lineTo(300, 300); // Вниз
+    c.stroke();
+    // Зеленая точка финиша
+    c.fillStyle = '#10b981';
+    c.beginPath(); c.arc(300, 300, 6, 0, Math.PI * 2); c.fill();
+  }
+  else if (type === 'steps') {
+    c.lineTo(280, 200); // Вправо
+    c.lineTo(280, 250); // Вниз
+    c.lineTo(360, 250); // Вправо
+    c.stroke();
+    // Зеленая точка финиша
+    c.fillStyle = '#10b981';
+    c.beginPath(); c.arc(360, 250, 6, 0, Math.PI * 2); c.fill();
+  }
+}
+
+// --- ИНТЕРПРЕТАТОР ---
+function executeCode(code, term, targetCtx, type, onFinish) {
+  // При запуске ОЧИЩАЕМ холст и рисуем сетку + ломаную с черепахой на старте
+  drawGrid(targetCtx);
+  drawStaticPath(targetCtx, type);
+  
+  if (code.includes('?')) {
+    term.textContent = '❌ Остались знаки вопроса! Впиши числа вместо них.';
+    term.className = 'terminal error';
+    return;
+  }
+
+  let state = { x: 200, y: 200, angle: 0 };
+  let lines = code.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+  let i = 0;
+
+  term.textContent = 'Выполняю...\n';
+  term.className = 'terminal';
+
+  function nextStep() {
+    if (i >= lines.length) {
+      term.textContent += '✅ Программа завершена.';
+      if(onFinish) onFinish();
+      return;
+    }
+
+    let line = lines[i];
+    i++;
+
+    try {
+      if (line.startsWith('from turtle import')) {
+        // Игнорируем
+      }
+      else if (line.startsWith('forward(')) {
+        const match = line.match(/forward\((\d+)\)/);
+        if (!match) throw new Error('Ошибка в forward');
+        const val = parseInt(match[1]);
+        const rad = state.angle * Math.PI / 180;
+        const nx = state.x + Math.cos(rad) * val;
+        const ny = state.y + Math.sin(rad) * val;
+        
+        // Рисуем темно-синюю линию (след черепахи)
+        targetCtx.strokeStyle = '#1e3a8a'; targetCtx.lineWidth = 4;
+        targetCtx.beginPath(); targetCtx.moveTo(state.x, state.y); targetCtx.lineTo(nx, ny); targetCtx.stroke();
+        state.x = nx; state.y = ny;
+      }
+      else if (line.startsWith('right(')) {
+        const match = line.match(/right\((\d+)\)/);
+        if (!match) throw new Error('Ошибка в right');
+        state.angle += parseInt(match[1]);
+      }
+      else if (line.startsWith('left(')) {
+        const match = line.match(/left\((\d+)\)/);
+        if (!match) throw new Error('Ошибка в left');
+        state.angle -= parseInt(match[1]);
+      }
+      else {
+        term.textContent += `⚠️ Неизвестная команда: ${line}\n`;
+      }
+
+      // Перерисовываем всё заново
+      drawGrid(targetCtx);
+      drawStaticPath(targetCtx, type);
+      
+      // Но черепаху рисуем уже в новой точке! 
+      // Чтобы старая черепаха (в центре) исчезла, мы просто заново нарисовали фон и путь.
+      // А теперь рисуем текущую движущуюся черепаху:
+      drawTurtleShape(targetCtx, state.x, state.y, state.angle);
+      
+      setTimeout(nextStep, 400);
+
+    } catch(e) {
+      term.textContent += `❌ Ошибка в строке: ${line}\nПроверь скобки и числа.`;
+      term.className = 'terminal error';
+    }
+  }
+  nextStep();
+}
+
+// --- ЗАПУСК ---
+function run(num, checkType) {
+  const code = document.getElementById('code' + num).value;
+  const term = document.getElementById('term' + num);
+  const ctx = document.getElementById('c' + num).getContext('2d');
+
+  executeCode(code, term, ctx, checkType, () => {
+    if (checkType === 'corner' && code.includes('forward(100)') && code.includes('left(90)')) {
+       term.textContent += '\n🎉 Отлично! Буква Г нарисована правильно!';
+       term.classList.add('success');
+    }
+    else if (checkType === 'down' && code.includes('right(90)') && code.includes('forward(100)')) {
+       term.textContent += '\n🎉 Отлично! Спуск выполнен!';
+       term.classList.add('success');
+    }
+    else if (checkType === 'steps' && code.includes('right(90)') && code.includes('forward(50)') && code.includes('left(90)')) {
+       term.textContent += '\n🎉 Отлично! Ступенька готова!';
+       term.classList.add('success');
+    }
+  });
+}
+
+// --- СТАРТ ---
+window.onload = () => {
+  // Инициализация трех холстов
+  drawGrid(document.getElementById('c1').getContext('2d'));
+  drawStaticPath(document.getElementById('c1').getContext('2d'), 'corner');
+
+  drawGrid(document.getElementById('c2').getContext('2d'));
+  drawStaticPath(document.getElementById('c2').getContext('2d'), 'down');
+
+  drawGrid(document.getElementById('c3').getContext('2d'));
+  drawStaticPath(document.getElementById('c3').getContext('2d'), 'steps');
+};
+</script>
+</body>
+</html>
