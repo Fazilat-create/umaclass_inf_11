@@ -34,6 +34,8 @@
     text-align: center;
     margin-bottom: 26px;
   }
+  
+  /* Оставляем анимацию только для главного эмодзи (Луны) */
   .hero .icon {
     font-size: 3.4em;
     animation: float 3s ease-in-out infinite;
@@ -43,6 +45,7 @@
     0%,100% { transform: translateY(0) rotate(-3deg); }
     50% { transform: translateY(-12px) rotate(3deg); }
   }
+
   .hero h1 {
     font-size: 1.9em;
     margin: 14px 0 10px;
@@ -91,7 +94,9 @@
   .greeting .greet-text { flex: 1; }
   .greeting h3 { color: #065f46; font-size: 1em; margin-bottom: 3px; }
   .greeting p { color: #4b5563; font-size: 0.88em; }
-  .greeting .greet-icon { font-size: 1.5em; animation: float 3s ease-in-out infinite; }
+  
+  /* Убрали анимацию у звездочки */
+  .greeting .greet-icon { font-size: 1.5em; }
 
   .cards {
     display: grid;
@@ -140,8 +145,16 @@
   .card.dz3     { border-left: 6px solid #fb923c; }
   .card.test    { border-left: 6px solid #ec4899; background: linear-gradient(135deg, #fdf2f8, #fff); }
   .card.ref     { border-left: 6px solid #34d399; }
+  
+  /* Карточка Черепахи (без анимации) */
+  .card.turtle  { 
+    border-left: 6px solid #10b981; 
+    background: linear-gradient(135deg, #f0fdf4, #fff); 
+  }
+  .card.turtle h3 { color: #047857; }
+  .card.turtle .arrow { color: #059669; }
 
-  .card.test .card-icon { animation: float 3s ease-in-out infinite; }
+  /* Карточка Теста (без анимации) */
   .card.test h3 { color: #be185d; }
   .card.test .arrow { color: #be185d; }
 
@@ -201,8 +214,9 @@
     <h1>Ассаляму алейкум!</h1>
     <p>Интерактивный учебник по Python с редактором кода и проверкой прямо в браузере.</p>
     <div class="badges">
-      <span class="badge">📘 2 темы</span>
+      <span class="badge">📘 3 темы</span>
       <span class="badge">📝 2 домашки</span>
+      <span class="badge">🐢 Черепаха</span>
       <span class="badge">🎯 Проверочная</span>
       <span class="badge">📖 Справочник</span>
     </div>
@@ -265,6 +279,14 @@
         <span id="prog-dz3-text">0 / 3</span>
       </div>
       <div class="arrow">Открыть <span>→</span></div>
+    </a>
+
+    <a href="turtle_menu.html" class="card turtle">
+      <div class="card-icon">🐢</div>
+      <div class="meta">Курс · Исполнитель</div>
+      <h3>Исполнитель Черепаха</h3>
+      <p>Полный интерактивный курс: от первых шагов до подготовки к заданию 6 ЕГЭ. 5 уроков и финальный экзамен.</p>
+      <div class="arrow">Начать курс <span>→</span></div>
     </a>
 
     <a href="spravochnik.html" class="card ref">
