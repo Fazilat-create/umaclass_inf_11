@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Курс: Исполнитель Черепаха</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐢</text></svg>">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Comfortaa', 'Segoe UI', 'Verdana', sans-serif;
+    background: linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 50%, #fdf4ff 100%);
+    background-attachment: fixed; color: #3a3a5a; min-height: 100vh;
+    padding: 30px 15px; line-height: 1.6;
+  }
+  .container {
+    max-width: 900px; margin: 0 auto;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(16,185,129,0.15);
+    overflow: hidden; padding: 40px;
+  }
+  
+  .header {
+    text-align: center; margin-bottom: 30px;
+    border-bottom: 2px dashed #a7f3d0; padding-bottom: 20px;
+  }
+  .header h1 {
+    font-size: 2em; font-weight: 800;
+    background: linear-gradient(135deg, #059669, #10b981);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+  }
+  .header p { color: #4b5563; font-size: 1.05em; }
+  .back-link {
+    display: inline-block; text-decoration: none; padding: 6px 16px;
+    background: #fff; color: #059669; border-radius: 20px;
+    font-size: 0.85em; font-weight: 700; border: 2px solid #a7f3d0;
+    margin-bottom: 20px; transition: 0.2s;
+  }
+  .back-link:hover { background: #ecfdf5; }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .card {
+    background: #fff; border: 2px solid #d1fae5;
+    border-radius: 20px; padding: 24px;
+    text-decoration: none; color: #3a3a5a;
+    display: flex; flex-direction: column; gap: 10px;
+    transition: 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative; overflow: hidden;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    border-color: #34d399;
+    box-shadow: 0 15px 30px rgba(16,185,129,0.15);
+  }
+  .card .icon { font-size: 2.2em; margin-bottom: 5px; }
+  .card h3 { font-size: 1.15em; color: #065f46; font-weight: 800; }
+  .card p { font-size: 0.88em; color: #6b7280; flex: 1; }
+  .card .btn-go {
+    margin-top: 10px; font-weight: 700; font-size: 0.9em; color: #10b981;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card:hover .btn-go { gap: 12px; }
+
+  .card.final {
+    grid-column: 1 / -1; /* На всю ширину */
+    background: linear-gradient(135deg, #fef08a, #fef3c7);
+    border-color: #fbbf24;
+    flex-direction: row; align-items: center;
+  }
+  .card.final h3 { color: #92400e; }
+  .card.final .btn-go { color: #d97706; }
+  .card.final .icon { font-size: 3.5em; margin-right: 15px; }
+
+  /* Пасхалка */
+  .fun-fact {
+    margin-top: 40px; padding: 20px;
+    background: #f8fafc; border-radius: 16px;
+    display: flex; align-items: center; gap: 15px;
+    border: 2px dashed #cbd5e1;
+  }
+  .fun-fact .emoji { font-size: 2em; animation: float 3s infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+  .fun-fact p { margin: 0; font-size: 0.9em; color: #64748b; font-style: italic; }
+  .fun-fact b { color: #3b82f6; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <a href="index.html" class="back-link">← В главное меню</a>
+  
+  <div class="header">
+    <h1>🐢 Исполнитель Черепаха</h1>
+    <p>От первых шагов до подготовки к заданию 6 ЕГЭ.</p>
+  </div>
+
+  <div class="cards">
+    
+    <a href="turtle_intro.html" class="card">
+      <div class="icon">👣</div>
+      <h3>Урок 1. Первые шаги</h3>
+      <p>Знакомимся с библиотекой, командой forward и учимся управлять черепахой.</p>
+      <div class="btn-go">Начать <span>→</span></div>
+    </a>
+
+    <a href="turtle_turns.html" class="card">
+      <div class="icon">↺</div>
+      <h3>Урок 2. Повороты</h3>
+      <p>Учимся поворачивать налево и направо. Рисуем углы и букву «Г».</p>
+      <div class="btn-go">Открыть <span>→</span></div>
+    </a>
+
+    <a href="turtle_pen.html" class="card">
+      <div class="icon">✏️</div>
+      <h3>Урок 3. Перо черепашки</h3>
+      <p>Узнаем, как поднимать и опускать перо, чтобы рисовать прерывистые линии.</p>
+      <div class="btn-go">Открыть <span>→</span></div>
+    </a>
+
+    <a href="turtle_angles.html" class="card">
+      <div class="icon">📐</div>
+      <h3>Урок 4. Произвольные углы</h3>
+      <p>Как рисовать наклонные линии и фигуры, используя углы 30, 45, 60 и 120 градусов.</p>
+      <div class="btn-go">Открыть <span>→</span></div>
+    </a>
+
+    <a href="turtle_color_width.html" class="card">
+      <div class="icon">🎨</div>
+      <h3>Урок 5. Цвет и ширина</h3>
+      <p>Учимся менять цвет линий и их толщину для ярких рисунков.</p>
+      <div class="btn-go">Открыть <span>→</span></div>
+    </a>
+
+    <!-- ИТОГОВОЕ ЗАДАНИЕ НА ВСЮ ШИРИНУ -->
+    <a href="turtle_final.html" class="card final">
+      <div class="icon">🏆</div>
+      <div style="flex: 1;">
+        <h3>Итоговое задание (Экзамен)</h3>
+        <p>Проверь себя! Напиши программы для квадрата, домика и ёлочки без подсказок, как на реальном экзамене.</p>
+      </div>
+      <div class="btn-go" style="font-size: 1.1em; margin-top: 0;">Сдать экзамен <span>→</span></div>
+    </a>
+
+  </div>
+
+  <!-- Прикол в конце -->
+  <div class="fun-fact">
+    <div class="emoji">🐍🐢</div>
+    <p><b>Программистский факт:</b> Питон и Черепаха — это не битва животных, а отличный дуэт. В реальном Python библиотека <code>turtle</code> создана специально для того, чтобы учиться программировать и рисовать. Так что Черепаха — это официальный питомец Питона!</p>
+  </div>
+
+</div>
+
+</body>
+</html>
