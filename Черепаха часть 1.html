@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Знакомство с Черепашкой · Python</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐢</text></svg>">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Comfortaa', 'Segoe UI', 'Verdana', sans-serif;
+    background: linear-gradient(135deg, #fef6e4 0%, #f0f9ff 50%, #fef3f8 100%);
+    background-attachment: fixed; color: #3a3a5a; min-height: 100vh;
+    padding: 20px 15px; line-height: 1.6;
+  }
+  .container {
+    max-width: 950px; margin: 0 auto;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(160,120,60,0.15);
+    overflow: hidden; padding: 30px 40px;
+  }
+  header {
+    display: flex; align-items: center; gap: 15px; margin-bottom: 20px;
+    border-bottom: 2px solid #fed7aa; padding-bottom: 15px;
+  }
+  header h1 { color: #9a3412; font-size: 1.5em; font-weight: 800; }
+  .back-link {
+    text-decoration: none; padding: 6px 14px;
+    background: #fff7ed; color: #c2410c;
+    border-radius: 18px; font-size: 0.8em; font-weight: 700;
+    border: 2px solid #fed7aa;
+  }
+  
+  .theory-block {
+    background: #fff; border-left: 4px solid #3b82f6;
+    border-radius: 12px; padding: 16px 20px; margin: 16px 0;
+    font-size: 0.95em; color: #1e3a8a;
+  }
+  .theory-block b { color: #1e40af; }
+  code {
+    background: #f0f9ff; color: #0369a1;
+    padding: 2px 6px; border-radius: 6px;
+    font-family: 'Consolas', monospace; font-size: 0.9em; font-weight: 600;
+  }
+  
+  .stage-box {
+    background: #fff; border: 2px solid #fed7aa;
+    border-radius: 16px; padding: 20px; margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(160,120,60,0.05);
+  }
+  .stage-title {
+    display: inline-block; background: #f97316; color: #fff;
+    padding: 4px 12px; border-radius: 12px; font-size: 0.8em;
+    font-weight: 700; margin-bottom: 10px;
+  }
+
+  .play-area {
+    display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;
+  }
+  .controls {
+    display: flex; flex-direction: column; gap: 10px;
+    min-width: 220px; justify-content: center;
+  }
+  .btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff; border: none; padding: 12px 20px;
+    border-radius: 12px; font-weight: 700; cursor: pointer;
+    font-family: inherit; font-size: 1em;
+    transition: 0.2s; text-align: center;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(249,115,22,0.3); }
+  .btn.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+  .btn.gray { background: #e5e7eb; color: #4b5563; }
+  .btn.green { background: linear-gradient(135deg, #10b981, #059669); }
+
+  .canvas-side {
+    flex: 1; min-width: 300px;
+    background: #fdfbff; border: 2px solid #fed7aa;
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  canvas { width: 100%; max-width: 400px; height: 400px; }
+
+  /* СТИЛИ ДЛЯ ФЛИП-КАРТОЧЕК */
+  .cards-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px; margin-top: 15px;
+  }
+  .flip-card { perspective: 1000px; height: 120px; cursor: pointer; }
+  .flip-inner {
+    position: relative; width: 100%; height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+  .flip-front, .flip-back {
+    position: absolute; width: 100%; height: 100%;
+    backface-visibility: hidden; border-radius: 16px;
+    padding: 15px; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center;
+    box-shadow: 0 4px 10px rgba(160,120,60,0.1);
+  }
+  .flip-front { background: linear-gradient(135deg, #fff, #fffbf5); border: 2px solid #fed7aa; }
+  .flip-front .label { font-weight: 800; color: #9a3412; font-size: 1.2em; font-family: monospace; }
+  .flip-front .hint { font-size: 0.75em; color: #a8a29e; margin-top: 5px; }
+  .flip-back {
+    background: linear-gradient(135deg, #34d399, #10b981);
+    color: #fff; transform: rotateY(180deg);
+    font-size: 0.95em; font-weight: 600; line-height: 1.4;
+  }
+
+  /* СТИЛИ ДЛЯ КОДА */
+  .code-reveal {
+    display: none; margin-top: 15px;
+    background: #1e293b; color: #a7f3d0;
+    padding: 15px; border-radius: 12px;
+    font-family: 'Consolas', monospace; font-size: 1em; line-height: 1.6;
+  }
+  .code-reveal.visible { display: block; }
+  .code-reveal .comment { color: #94a3b8; }
+
+  .editor-wrapper {
+    display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;
+  }
+  .editor-side { flex: 1; min-width: 300px; display: flex; flex-direction: column; }
+  .editor-side textarea {
+    width: 100%; min-height: 250px; padding: 15px;
+    border: 2px solid #34d399; border-radius: 12px;
+    font-family: 'Consolas', 'Menlo', monospace; font-size: 14px;
+    background: #f0fdf4; color: #065f46;
+    resize: vertical; line-height: 1.5; outline: none;
+  }
+  .editor-side textarea:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.2); }
+  
+  .terminal {
+    margin-top: 10px; background: #1e293b; border-radius: 10px;
+    padding: 12px; font-family: 'Consolas', monospace;
+    font-size: 13px; color: #a7f3d0; min-height: 40px; white-space: pre-wrap;
+  }
+  .terminal.error { color: #fca5a5; background: #451a03; }
+  .terminal.success { color: #34d399; background: #064e3b; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <a href="index.html" class="back-link">← На главную</a>
+    <h1>🐢 Знакомство с Черепашкой</h1>
+  </header>
+
+  <!-- ЭТАП 0: ТЕОРИЯ -->
+  <div class="stage-box">
+    <div class="stage-title">Этап 0 · Кто это и что такое библиотека?</div>
+    <p><b>Черепашка (Turtle)</b> — это специальный исполнитель в языке Python. Представь, что на листе бумаги ползает робот-черепаха с ручкой в лапках. Ты даешь ей команды, а она оставляет за собой след.</p>
+    
+    <div class="theory-block">
+      <b>Как её включить? Библиотеки.</b><br>
+      В самом языке Python нет встроенной черепахи. Она живет в отдельной «коробке с инструментами», которая называется <b>библиотекой</b>.<br>
+      Чтобы достать черепаху, в начале программы пишут команду:<br><br>
+      <code>from turtle import *</code><br><br>
+      В переводе с английского: <i>«из (from) библиотеки черепахи (turtle) достать (import) всё (*)»</i>. Звездочка означает «все команды». Без этой строчки программа выдаст ошибку.
+    </div>
+  </div>
+
+  <!-- ЭТАП 1: ПУЛЬТ УПРАВЛЕНИЯ -->
+  <div class="stage-box">
+    <div class="stage-title">Этап 1 · Управляем руками</div>
+    <p>Главная команда — <code>forward(N)</code> (двигаться вперёд). Число в скобках — это шаги. Давай попробуем. Нажимай кнопки:</p>
+    
+    <div class="play-area">
+      <div class="controls">
+        <button class="btn" onclick="cmd('fwd', 50)">⬆️ forward(50)</button>
+        <button class="btn" onclick="cmd('fwd', 100)">⬆️ forward(100)</button>
+        <button class="btn blue" onclick="cmd('left', 90)">↺ left(90)</button>
+        <button class="btn blue" onclick="cmd('right', 90)">↻ right(90)</button>
+        <button class="btn gray" onclick="resetAll()">↺ Очистить (Сброс)</button>
+      </div>
+      <div class="canvas-side">
+        <canvas id="turtle-canvas" width="400" height="400"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ЭТАП 2: ФЛИП-КАРТОЧКИ -->
+  <div class="stage-box">
+    <div class="stage-title">Этап 2 · Проверь себя</div>
+    <p>Нажми на карточки, чтобы перевернуть их и узнать, что делает каждая команда:</p>
+    
+    <div class="cards-grid">
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div class="label">forward(100)</div>
+            <div class="hint">нажми, чтобы перевернуть</div>
+          </div>
+          <div class="flip-back">Идти вперёд<br>на 100 шагов</div>
+        </div>
+      </div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div class="label">left(90)</div>
+            <div class="hint">нажми, чтобы перевернуть</div>
+          </div>
+          <div class="flip-back">Повернуть налево<br>на 90 градусов</div>
+        </div>
+      </div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div class="label">right(90)</div>
+            <div class="hint">нажми, чтобы перевернуть</div>
+          </div>
+          <div class="flip-back">Повернуть направо<br>на 90 градусов</div>
+        </div>
+      </div>
+      <div class="flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <div class="label">from turtle import *</div>
+            <div class="hint">нажми, чтобы перевернуть</div>
+          </div>
+          <div class="flip-back">Подключить<br>библиотеку черепахи</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ЭТАП 3: КОД ИЗ ТВОИХ ДЕЙСТВИЙ -->
+  <div class="stage-box" id="stage-python" style="opacity: 0.5; pointer-events: none;">
+    <div class="stage-title">Этап 3 · Твой код на Python</div>
+    <p>Посмотри, как твои нажатия на кнопки превращаются в настоящий код на Python. (Нажимай кнопки в Этапе 1, чтобы обновить его).</p>
+    
+    <button class="btn green" style="margin-top:15px; display:none;" id="btn-convert" onclick="convertToPython()">✨ Показать код Python!</button>
+
+    <div class="code-reveal" id="python-code-box">
+      <div id="python-code-text"></div>
+    </div>
+  </div>
+
+  <!-- ЭТАП 4: САМОСТОЯТЕЛЬНАЯ РАБОТА С ХОЛСТОМ -->
+  <div class="stage-box" style="background: #f0fdf4; border-color: #34d399;">
+    <div class="stage-title" style="background: #10b981;">Этап 4 · Твоя первая программа</div>
+    <p><b>Задание:</b> Напиши программу, чтобы черепашка нарисовала <b>букву «Г»</b> (угол).</p>
+    <ul style="margin-left: 20px; margin-bottom: 15px; font-size: 0.95em;">
+      <li>Проползти вперёд на 100 шагов.</li>
+      <li>Повернуть налево на 90 градусов.</li>
+      <li>Снова проползти вперёд на 100 шагов.</li>
+    </ul>
+
+    <div class="editor-wrapper">
+      <!-- Левая колонка: Редактор -->
+      <div class="editor-side">
+        <textarea id="code-editor" spellcheck="false">from turtle import *
+
+# Твой код здесь
+</textarea>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+          <button class="btn" onclick="runStudentCode()">▶ Выполнить мой код</button>
+        </div>
+        <div class="terminal" id="terminal-student">Жду твой код...</div>
+      </div>
+
+      <!-- Правая колонка: Холст для задания -->
+      <div class="canvas-side" style="border-color:#34d399; flex: 1; min-width: 300px;">
+        <canvas id="canvas-student" width="400" height="400"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// --- СОСТОЯНИЕ ЧЕРЕПАШКИ (ДЛЯ КНОПОК) ---
+const canvas = document.getElementById('turtle-canvas');
+const ctx = canvas.getContext('2d');
+
+let turtleX = 200;
+let turtleY = 200;
+let turtleAngle = 0; // 0 = вправо
+let history = [];
+
+// --- ФУНКЦИИ ОТРИСОВКИ ---
+function drawGrid(c) {
+  c.clearRect(0, 0, 400, 400);
+  c.fillStyle = '#fdfbff';
+  c.fillRect(0, 0, 400, 400);
+  
+  c.strokeStyle = '#f0eaff'; c.lineWidth = 1;
+  for(let i=0; i<=400; i+=25) {
+    c.beginPath(); c.moveTo(i, 0); c.lineTo(i, 400); c.stroke();
+    c.beginPath(); c.moveTo(0, i); c.lineTo(400, i); c.stroke();
+  }
+  c.strokeStyle = '#d1d5db'; c.lineWidth = 2;
+  c.beginPath(); c.moveTo(200, 0); c.lineTo(200, 400); c.stroke();
+  c.beginPath(); c.moveTo(0, 200); c.lineTo(400, 200); c.stroke();
+}
+
+function drawTurtleShape(c, x, y, angle) {
+  c.save();
+  c.translate(x, y);
+  c.rotate(angle * Math.PI / 180);
+
+  c.fillStyle = 'rgba(0,0,0,0.12)';
+  c.beginPath(); c.arc(2, 2, 12, 0, Math.PI * 2); c.fill();
+
+  c.fillStyle = '#10b981';
+  c.beginPath(); c.ellipse(0, 10, 4, 7, 0, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.ellipse(0, -10, 4, 7, 0, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.ellipse(10, 0, 7, 4, 0, 0, Math.PI * 2); c.fill();
+  c.beginPath(); c.ellipse(-10, 0, 7, 4, 0, 0, Math.PI * 2); c.fill();
+
+  c.fillStyle = '#059669';
+  c.beginPath(); c.ellipse(0, 0, 12, 12, 0, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#34d399';
+  c.beginPath(); c.ellipse(0, 0, 8, 8, 0, 0, Math.PI * 2); c.fill();
+
+  c.fillStyle = '#10b981';
+  c.beginPath(); c.arc(12, 0, 6, 0, Math.PI * 2); c.fill();
+
+  c.fillStyle = '#fff'; c.beginPath(); c.arc(14, -2, 2, 0, Math.PI * 2); c.fill();
+  c.fillStyle = '#000'; c.beginPath(); c.arc(14, -2, 1, 0, Math.PI * 2); c.fill();
+
+  c.restore();
+}
+
+// --- КНОПКИ ИГРЫ (ЭТАП 1) ---
+function cmd(type, val) {
+  if (type === 'fwd') {
+    const rad = turtleAngle * Math.PI / 180;
+    const nextX = turtleX + Math.cos(rad) * val;
+    const nextY = turtleY + Math.sin(rad) * val;
+    
+    ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(turtleX, turtleY); ctx.lineTo(nextX, nextY); ctx.stroke();
+    
+    turtleX = nextX; turtleY = nextY;
+    history.push({ type: 'fwd', val: val });
+  } 
+  else if (type === 'left') {
+    turtleAngle -= val;
+    history.push({ type: 'left', val: val });
+  } 
+  else if (type === 'right') {
+    turtleAngle += val;
+    history.push({ type: 'right', val: val });
+  }
+
+  drawGrid(ctx);
+  drawTurtleShape(ctx, turtleX, turtleY, turtleAngle);
+  
+  if(history.length > 0) {
+    document.getElementById('btn-convert').style.display = 'block';
+    document.getElementById('stage-python').style.opacity = '1';
+    document.getElementById('stage-python').style.pointerEvents = 'auto';
+  }
+}
+
+// --- ГЕНЕРАЦИЯ КОДА (ЭТАП 3) ---
+function convertToPython() {
+  let pyHtml = '<div class="comment"># Твой код на Python:</div>';
+  pyHtml += 'from turtle import *\n';
+  
+  history.forEach(h => {
+    if (h.type === 'fwd') pyHtml += `forward(${h.val})\n`;
+    if (h.type === 'left') pyHtml += `left(${h.val})\n`;
+    if (h.type === 'right') pyHtml += `right(${h.val})\n`;
+  });
+
+  document.getElementById('python-code-text').innerHTML = pyHtml.replace(/\n/g, '<br>');
+  document.getElementById('python-code-box').classList.add('visible');
+  document.getElementById('btn-convert').style.display = 'none';
+}
+
+function resetAll() {
+  history = [];
+  turtleX = 200; turtleY = 200; turtleAngle = 0;
+  drawGrid(ctx); drawTurtleShape(ctx, turtleX, turtleY, turtleAngle);
+  
+  document.getElementById('python-code-box').classList.remove('visible');
+  document.getElementById('btn-convert').style.display = 'none';
+  document.getElementById('stage-python').style.opacity = '0.5';
+  document.getElementById('stage-python').style.pointerEvents = 'none';
+}
+
+// --- КАСТОМНЫЙ РЕДАКТОР (ЭТАП 4) ---
+function runStudentCode() {
+  const code = document.getElementById('code-editor').value;
+  const term = document.getElementById('terminal-student');
+  const canvasStudent = document.getElementById('canvas-student');
+  const ctxStudent = canvasStudent.getContext('2d');
+
+  term.className = 'terminal';
+  term.textContent = 'Выполняю...\n';
+
+  let execX = 200, execY = 200, execAngle = 0;
+  let hasFwd = false, hasLeft = false;
+
+  drawGrid(ctxStudent);
+  const lines = code.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+  let i = 0;
+
+  function executeNextLine() {
+    if (i >= lines.length) {
+      if (hasFwd && hasLeft) {
+        term.textContent += '\n🎉 Отлично! Буква «Г» нарисована! Ты справился!';
+        term.classList.add('success');
+      } else {
+        term.textContent += '\n✅ Программа завершена.';
+      }
+      return;
+    }
+
+    const line = lines[i];
+    i++;
+
+    try {
+      if (line.startsWith('from turtle import')) {
+        // Игнорируем
+      } 
+      else if (line.startsWith('forward(')) {
+        const val = parseInt(line.match(/forward\((\d+)\)/)[1]);
+        const rad = execAngle * Math.PI / 180;
+        const nextX = execX + Math.cos(rad) * val;
+        const nextY = execY + Math.sin(rad) * val;
+        ctxStudent.strokeStyle = '#10b981'; ctxStudent.lineWidth = 3;
+        ctxStudent.beginPath(); ctxStudent.moveTo(execX, execY); ctxStudent.lineTo(nextX, nextY); ctxStudent.stroke();
+        execX = nextX; execY = nextY;
+        hasFwd = true;
+      }
+      else if (line.startsWith('left(')) {
+        const val = parseInt(line.match(/left\((\d+)\)/)[1]);
+        execAngle -= val;
+        hasLeft = true;
+      }
+      else if (line.startsWith('right(')) {
+        const val = parseInt(line.match(/right\((\d+)\)/)[1]);
+        execAngle += val;
+      }
+      else {
+        term.textContent += `⚠️ Неизвестная команда: ${line}\n`;
+      }
+
+      drawTurtleShape(ctxStudent, execX, execY, execAngle);
+      setTimeout(executeNextLine, 300);
+
+    } catch (e) {
+      term.textContent += `❌ Ошибка в строке: ${line}\nПроверь скобки и цифры.\n`;
+      term.className = 'terminal error';
+    }
+  }
+
+  executeNextLine();
+}
+
+// --- ИНИЦИАЛИЗАЦИЯ ---
+window.onload = () => { 
+  resetAll(); 
+  // Инициализация холста для 4-го этапа
+  const ctxStudent = document.getElementById('canvas-student').getContext('2d');
+  drawGrid(ctxStudent);
+  drawTurtleShape(ctxStudent, 200, 200, 0);
+};
+</script>
+</body>
+</html>
