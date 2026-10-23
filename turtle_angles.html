@@ -453,6 +453,46 @@ window.onload = () => {
     drawTurtleShape(ctx, 200, 200, 0); 
   }
 };
+ // --- ЗАЩИТА ОТ КОПИРОВАНИЯ И СИНХРОНИЗАЦИЯ С УЧИТЕЛЕМ ---
+const urlParams = new URLSearchParams(window.location.search);
+const isTeacher = urlParams.get('teacher') === '1';
+
+function isCopyProtectionDisabled() {
+  try {
+    const s = localStorage.getItem('python_11_teacher_settings');
+    if (!s) return false;
+    const parsed = JSON.parse(s);
+    return parsed.noCopyProtection === true;
+  } catch(e) { return false; }
+}
+
+if (!isTeacher && !isCopyProtectionDisabled()) {
+  // Блокируем копирование, вырезание, контекстное меню
+  document.addEventListener('copy', e => e.preventDefault());
+  document.addEventListener('cut', e => e.preventDefault());
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('selectstart', e => {
+    if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') {
+      e.preventDefault();
+    }
+  });
+  
+  // Блокируем горячие клавиши
+  document.addEventListener('keydown', e => {
+    const m = e.ctrlKey || e.metaKey;
+    if (m && ['c','C','a','A','x','X','v','V'].includes(e.key)) {
+      // Разрешаем копирование внутри textarea (если ученик пишет код)
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+      e.preventDefault();
+    }
+  });
+
+  // Блокируем вставку в textarea, чтобы не сдавали чужой код
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.addEventListener('paste', e => e.preventDefault());
+    ta.addEventListener('drop', e => e.preventDefault());
+  });
+}
 </script>
 </body>
 </html>
